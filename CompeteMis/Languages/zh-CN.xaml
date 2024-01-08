@@ -1,0 +1,114 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+    <!--公用-->
+    <s:String x:Key="DateTimeStringFormat">yyyy年M月d日H:m:s.FFFFFFF</s:String>
+    <s:String x:Key="DateStringFormat">D</s:String>
+
+    <s:String x:Key="OKButton">确定(_O)</s:String>
+    <s:String x:Key="CancelButton">取消(_C)</s:String>
+    <s:String x:Key="WaitMessage">请等待程序运行……</s:String>
+
+    <!--异常消息-->
+    <s:String x:Key="Exception.DataCannotSubmit">数据不能正确提交。</s:String>
+
+    <!--登录窗口-->
+    <s:String x:Key="LoginPage.Login">登录</s:String>
+
+    <s:String x:Key="LoginPage.TenantTextBlock">租户</s:String>
+    <s:String x:Key="LoginPage.UserTextBlock">用户</s:String>
+    <s:String x:Key="LoginPage.PasswordTextBlock">口令</s:String>
+
+    <s:String x:Key="LoginPage.TenantWatermark">请输入租户编码。</s:String>
+    <s:String x:Key="LoginPage.UserWatermark">请输入用户编码。</s:String>
+    <s:String x:Key="LoginPage.PasswordWatermark">请输入口令。</s:String>
+
+    <!--实体选择对话框-->
+    <s:String x:Key="EntitySelectDialog.Title">{0}选择</s:String>
+    <s:String x:Key="EntitySelectDialog.FilterTextBlock">过滤</s:String>
+    <s:String x:Key="EntitySelectDialog.RefreshButton">刷新(_R)</s:String>
+    <s:String x:Key="EntitySelectDialog.ClearButton">清除(_C)</s:String>
+
+    <!--主窗口-->
+    <s:String x:Key="MainPage.EditMenu">编辑(_E)</s:String>
+    <s:String x:Key="MainPage.UndoMenu">撤消(_U)</s:String>
+    <s:String x:Key="MainPage.RedoMenu">重复(_R)</s:String>
+    <s:String x:Key="MainPage.CutMenu">剪切(_t)</s:String>
+    <s:String x:Key="MainPage.CopyMenu">复制(_C)</s:String>
+    <s:String x:Key="MainPage.PasteMenu">粘贴(_P)</s:String>
+    <s:String x:Key="MainPage.UndoTip">撤消</s:String>
+    <s:String x:Key="MainPage.RedoTip">重复</s:String>
+    <s:String x:Key="MainPage.CutTip">剪切</s:String>
+    <s:String x:Key="MainPage.CopyTip">复制</s:String>
+    <s:String x:Key="MainPage.PasteTip">粘贴</s:String>
+
+    <s:String x:Key="MainPage.SystemMenu">系统(_S)</s:String>
+    <s:String x:Key="MainPage.ModifyPasswordMenu">修改口令(_M)</s:String>
+    <s:String x:Key="MainPage.LogoutMenu">注销(_L)</s:String>
+    <s:String x:Key="MainPage.ExitMenu">退出(_x)</s:String>
+
+    <s:String x:Key="MainPage.HelpMenu">帮助(_H)</s:String>
+    <s:String x:Key="MainPage.ViewHelpMenu">查看帮助(_V)</s:String>
+    <s:String x:Key="MainPage.AboutMenu">关于(_A)</s:String>
+
+    <s:String x:Key="MainPage.Welcome">欢迎</s:String>
+
+    <!--关于对话框-->
+    <s:String x:Key="AboutBox.Title">关于</s:String>
+
+    <!--打印预览窗口-->
+    <s:String x:Key="PrintPreviewWindow.Title">打印预览</s:String>
+
+    <!--主视图模型-->
+    <s:String x:Key="MainViewModel.ExitMessage">存在未关闭的子文档窗体，是否退出本系统？</s:String>
+    <s:String x:Key="MainViewModel.LogoutMessage">是否关闭全部功能，并重新登录本系统？</s:String>
+    
+    <!--标题-->
+    <s:String x:Key="MessageTitle.Success">成功</s:String>
+    <s:String x:Key="MessageTitle.Information">信息</s:String>
+    <s:String x:Key="MessageTitle.Prompt">提示</s:String>
+    <s:String x:Key="MessageTitle.Warning">警告</s:String>
+    <s:String x:Key="MessageTitle.Error">错误</s:String>
+    <s:String x:Key="MessageTitle.Critical">危险</s:String>
+    <s:String x:Key="MessageTitle.Question">询问</s:String>
+    <s:String x:Key="MessageTitle.Exception">异常</s:String>
+
+    <!--消息-->
+    <s:String x:Key="Message.NetError">应用服务器访问异常，请检查网络是否正常。</s:String>
+    <s:String x:Key="Message.ServiceError">应用服务异常。（服务【{0}】   方法【{1}】）</s:String>
+    
+    <!--操作错误提示-->
+    <s:String x:Key="Message.DetailNonnullRuleError">第【{0}】行【{1}】为不能为空。</s:String>
+    <s:String x:Key="Message.NonnullRuleError">【{0}】为不能为空。</s:String>
+    <s:String x:Key="Message.InboundQuantityError">(【实际入库数量】+【折扣入库数量】)×【入库包装规格】不能大于【未入库数量】。</s:String>
+    <s:String x:Key="Message.InboundPieceError">【实际入库件数】+【折扣入库件数】不能大于【未入库件数】。</s:String>
+    <s:String x:Key="Message.InboundQuantityZero">【实际入库数量】+【折扣入库数量】不能为零。</s:String>
+    <s:String x:Key="Message.PaymentAmountError">【预支付金额】+【折扣支付金额】不能大于【未支付金额】。</s:String>
+    <s:String x:Key="Message.OutboundQuantityError">(【实际出库数量】+【折扣出库数量】)×【出库包装规格】不能大于【未出库数量】。</s:String>
+    <s:String x:Key="Message.OutboundPieceError">【实际出库件数】+【折扣出库件数】不能大于【未出库件数】。</s:String>
+    <s:String x:Key="Message.OutboundQuantityZero">【实际出库数量】+【折扣出库数量】不能为零。</s:String>
+    <s:String x:Key="Message.ReceiptAmountError">【预收入金额】+【折扣收入金额】不能大于【未收入金额】。</s:String>
+    <s:String x:Key="Message.RealInboundQuantitySignError">【实际入库数量】的符号必须与【未入库数量】一致。</s:String>
+    <s:String x:Key="Message.DiscountInboundQuantitySignError">【折扣入库数量】的符号必须与【未入库数量】一致。</s:String>
+    <s:String x:Key="Message.RealInboundPieceSignError">【实际入库件数】的符号必须与【未入库件数】一致。</s:String>
+    <s:String x:Key="Message.DiscountInboundPieceSignError">【折扣入库件数】的符号必须与【未入库件数】一致。</s:String>
+    <s:String x:Key="Message.RealOutboundQuantitySignError">【实际出库数量】的符号必须与【未出库数量】一致。</s:String>
+    <s:String x:Key="Message.DiscountOutboundQuantitySignError">【折扣出库数量】的符号必须与【未出库数量】一致。</s:String>
+    <s:String x:Key="Message.RealOutboundPieceSignError">【实际出库件数】的符号必须与【未出库件数】一致。</s:String>
+    <s:String x:Key="Message.DiscountOutboundPieceSignError">【折扣出库件数】的符号必须与【未出库件数】一致。</s:String>
+    <s:String x:Key="Message.PropaymentAmountSignError">【预支付金额】的符号必须与【未支付金额】一致。</s:String>
+    <s:String x:Key="Message.DiscountPaymentAmountSignError">【折扣支付金额】的符号必须与【未支付金额】一致。</s:String>
+    <s:String x:Key="Message.ProeceiptAmountSignError">【预收入金额】的符号必须与【未收入金额】一致。</s:String>
+    <s:String x:Key="Message.DiscountReceiptAmountSignError">【折扣收入金额】的符号必须与【未收入金额】一致。</s:String>
+    <s:String x:Key="Message.SameWareroomError">【出库仓库】不能与【入库仓库】相同。</s:String>
+
+    <!--插件-->
+    <s:String x:Key="QueryButton">查询(_Q)</s:String>
+    <s:String x:Key="AddButton">新增(_A)</s:String>
+    <s:String x:Key="DeleteButton">删除(_D)</s:String>
+    <s:String x:Key="ModifyButton">修改(_M)</s:String>
+    <s:String x:Key="SaveButton">保存(_S)</s:String>
+    <s:String x:Key="PrintButton">打印(_P)</s:String>
+    <s:String x:Key="PrintPreviewButton">打印预览(_v)</s:String>
+
+</ResourceDictionary>

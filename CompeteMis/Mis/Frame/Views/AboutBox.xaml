@@ -1,0 +1,23 @@
+﻿<Window x:Class="Compete.Mis.Frame.Views.AboutBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Compete.Mis.Frame.Views"
+        xmlns:vm="clr-namespace:Compete.Mis.Frame.ViewModels"
+        mc:Ignorable="d"
+        Name="Self"
+        Title="{DynamicResource AboutBox.Title}" Height="206" Width="410" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <vm:AboutViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <TextBlock Margin="12,12,12,0" Text="{Binding AssemblyTitle}" VerticalAlignment="Top" TextAlignment="Center" />
+        <TextBlock Margin="12,32,12,0" Text="{Binding AssemblyVersion}" VerticalAlignment="Top" TextAlignment="Center" />
+        <TextBlock Margin="12,52,12,0" Text="{Binding AssemblyDescription}" TextAlignment="Center" VerticalAlignment="Top" />
+        <TextBlock Margin="12,72,12,0" Text="{Binding AssemblyProduct}" TextAlignment="Center" VerticalAlignment="Top" />
+        <TextBlock Margin="12,92,12,0" Text="{Binding AssemblyCopyright}" TextAlignment="Center" VerticalAlignment="Top" />
+        <TextBlock Margin="12,112,12,0" Text="{Binding AssemblyCompany}" TextAlignment="Center" VerticalAlignment="Top" />
+        <Button Content="{DynamicResource OKButton}" Height="23" Margin="156,132,156,0" VerticalAlignment="Top" Width="75" Command="{Binding OkCommand}" CommandParameter="{Binding ElementName=Self}"/>
+    </Grid>
+</Window>

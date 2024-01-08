@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Compete</RootNamespace>
+    <ApplicationIcon>Compete.ico</ApplicationIcon>
+	<TieredPGO>true</TieredPGO>
+	<!--<PublishAot>true</PublishAot>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Images\Copy.png" />
+    <None Remove="Assets\Images\Cut.png" />
+    <None Remove="Assets\Images\Help.png" />
+    <None Remove="Assets\Images\Paste.png" />
+    <None Remove="Assets\Images\Redo.png" />
+    <None Remove="Assets\Images\Undo.png" />
+    <None Remove="SplashScreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Languages\zh-CN.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Compete.ico" />
+    <Content Include="Languages\zh-CN.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\Copy.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Cut.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Help.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Paste.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Redo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Undo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CompeteBase\CompeteBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="SplashScreen.png" />
+  </ItemGroup>
+
+</Project>

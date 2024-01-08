@@ -1,0 +1,88 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+    <!--公用-->
+    <s:String x:Key="OKButton">确定(_O)</s:String>
+    <s:String x:Key="CancelButton">取消(_C)</s:String>
+    <s:String x:Key="YesButton">是(_Y)</s:String>
+    <s:String x:Key="NoButton">否(_N)</s:String>
+
+    <s:String x:Key="SuccessMessageTitle">成功</s:String>
+    <s:String x:Key="InformationMessageTitle">信息</s:String>
+    <s:String x:Key="PromptMessageTitle">提示</s:String>
+    <s:String x:Key="WarningMessageTitle">警告</s:String>
+    <s:String x:Key="ErrorMessageTitle">错误</s:String>
+    <s:String x:Key="CriticalMessageTitle">崩溃</s:String>
+    <s:String x:Key="QuestionMessageTitle">询问</s:String>
+    <s:String x:Key="ExceptionMessageTitle">异常</s:String>
+
+    <!--主窗口-->
+    <s:String x:Key="MainWindow.Title">开发工具</s:String>
+    <s:String x:Key="MainWindow.Prject">项目</s:String>
+    <s:String x:Key="MainWindow.Property">属性</s:String>
+    <s:String x:Key="MainWindow.ErrorList">错误列表</s:String>
+    <s:String x:Key="MainWindow.Welcome">欢迎</s:String>
+
+    <s:String x:Key="MainWindow.FileMenu">文件(_F)</s:String>
+    <s:String x:Key="MainWindow.NewProjectMenu">新建(_N)...</s:String>
+    <s:String x:Key="MainWindow.OpenProjectMenu">打开(_O)...</s:String>
+    <s:String x:Key="MainWindow.SaveMenu">保存(_S)</s:String>
+    <s:String x:Key="MainWindow.SaveAsMenu">另存为(_A)...</s:String>
+    <s:String x:Key="MainWindow.SaveAllMenu">保存全部(_l)</s:String>
+    <s:String x:Key="MainWindow.CloseMenu">关闭(_C)</s:String>
+    <s:String x:Key="MainWindow.ExitMenu">退出(_x)</s:String>
+    <s:String x:Key="MainWindow.NewProjectTip">新建</s:String>
+    <s:String x:Key="MainWindow.OpenProjectTip">打开</s:String>
+    <s:String x:Key="MainWindow.SaveTip">保存</s:String>
+    <s:String x:Key="MainWindow.SaveAsTip">另存为</s:String>
+    <s:String x:Key="MainWindow.SaveAllTip">保存全部</s:String>
+    <s:String x:Key="MainWindow.CloseTip">关闭</s:String>
+    <s:String x:Key="MainWindow.ExitTip">退出</s:String>
+
+    <s:String x:Key="MainWindow.EditMenu">编辑(_E)</s:String>
+    <s:String x:Key="MainWindow.UndoMenu">撤消(_U)</s:String>
+    <s:String x:Key="MainWindow.RedoMenu">重复(_R)</s:String>
+    <s:String x:Key="MainWindow.CutMenu">剪切(_t)</s:String>
+    <s:String x:Key="MainWindow.CopyMenu">复制(_C)</s:String>
+    <s:String x:Key="MainWindow.PasteMenu">粘贴(_P)</s:String>
+    <s:String x:Key="MainWindow.UndoTip">撤消</s:String>
+    <s:String x:Key="MainWindow.RedoTip">重复</s:String>
+    <s:String x:Key="MainWindow.CutTip">剪切</s:String>
+    <s:String x:Key="MainWindow.CopyTip">复制</s:String>
+    <s:String x:Key="MainWindow.PasteTip">粘贴</s:String>
+
+    <s:String x:Key="MainWindow.PluginMenu">插件(_l)</s:String>
+    <s:String x:Key="MainWindow.NewPluginSettingMenu">新建插件设置(_N)</s:String>
+    <s:String x:Key="MainWindow.OpenPluginSettingMenu">打开插件设置(_O)</s:String>
+    <s:String x:Key="MainWindow.NewPluginSettingTip">新建插件设置</s:String>
+    <s:String x:Key="MainWindow.OpenPluginSettingTip">打开插件设置</s:String>
+
+    <s:String x:Key="MainWindow.ProjectMenu">项目(_P)</s:String>
+    <s:String x:Key="MainWindow.BuildMenu">生成(_B)</s:String>
+    <s:String x:Key="MainWindow.PropertySetupMenu">属性(_P)...</s:String>
+    <s:String x:Key="MainWindow.BuildTip">生成</s:String>
+    <s:String x:Key="MainWindow.PropertySetupTip">属性</s:String>
+
+    <s:String x:Key="MainWindow.DatabaseMenu">数据库(_D)</s:String>
+    <s:String x:Key="MainWindow.ImportDataModelMenu">导入数据模型(_I)</s:String>
+    <s:String x:Key="MainWindow.ShowDataModelMenu">显示数据模型(_S)</s:String>
+    <s:String x:Key="MainWindow.DatabaseConnectionMenu">数据库连接</s:String>
+    <s:String x:Key="MainWindow.SqlGeneraterMenu">SQL生成器</s:String>
+    <s:String x:Key="MainWindow.MemoryDataSetMenu">内存数据集</s:String>
+
+    <s:String x:Key="MainWindow.ToolsMenu">工具(_T)</s:String>
+    <s:String x:Key="MainWindow.RegularMenu">正则表达式(_R)</s:String>
+    <s:String x:Key="MainWindow.SqlBuilder">SQL构建器</s:String>
+    <s:String x:Key="MainWindow.CompressSqlFile">压缩SQL文件</s:String>
+    <s:String x:Key="MainWindow.FormatSqlFile">格式化SQL文件</s:String>
+
+    <s:String x:Key="MainWindow.DataModel">数据模型</s:String>
+    <s:String x:Key="MainWindow.CustomDataModel">自定义数据模型</s:String>
+    <s:String x:Key="MainWindow.TableList">表列表</s:String>
+    <s:String x:Key="MainWindow.Plugins">插件</s:String>
+
+    <s:String x:Key="MainWindow.AppendMenu">添加</s:String>
+    <s:String x:Key="MainWindow.NewItemMenu">新建项...</s:String>
+    <s:String x:Key="MainWindow.AddItemMenu">现有项...</s:String>
+    <s:String x:Key="MainWindow.CreateFolderMenu">新建文件夹</s:String>
+</ResourceDictionary>

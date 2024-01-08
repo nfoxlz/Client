@@ -1,0 +1,16 @@
+﻿<Application x:Class="Compete.Mis.Developer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Compete.Mis.Developer"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Languages/zh-CN.xaml" />
+                <ResourceDictionary Source="/PresentationFramework.Aero;component/themes/Aero.NormalColor.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/WPFToolkit;component/Themes/Aero.NormalColor.xaml" />-->
+                <!--<ResourceDictionary Source="/PresentationFramework.AeroLite, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35;component/themes/aerolite.normalcolor.xaml" />-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

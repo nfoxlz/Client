@@ -1,0 +1,205 @@
+﻿<Window x:Class="Compete.Mis.Developer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:vm="clr-namespace:Compete.Mis.Developer.ViewModels"
+        mc:Ignorable="d"
+        Title="{DynamicResource MainWindow.Title}" WindowState="Maximized" Icon="/Developer;component/Images/Tools.png">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="{DynamicResource MainWindow.FileMenu}">
+                <MenuItem Command="{Binding NewProjectCommand}" Header="{DynamicResource MainWindow.NewProjectMenu}" ToolTip="{DynamicResource MainWindow.NewProjectTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/NewProject.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding OpenProjectCommand}" Header="{DynamicResource MainWindow.OpenProjectMenu}" ToolTip="{DynamicResource MainWindow.OpenProjectTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/OpenProject.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Command="{Binding SaveProjectCommand}" Header="{DynamicResource MainWindow.SaveMenu}" ToolTip="{DynamicResource MainWindow.SaveTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Save.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="{Binding SaveAsProjectCommand}" Header="{DynamicResource MainWindow.SaveAsMenu}" ToolTip="{DynamicResource MainWindow.SaveAsTip}"/>
+                <!--<MenuItem Command="{Binding SaveAll}" Header="{DynamicResource MainWindow.SaveAllMenu}" ToolTip="{DynamicResource MainWindow.SaveAllTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/SaveAll.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>-->
+                <Separator/>
+                <MenuItem Command="{Binding Close}" Header="{DynamicResource MainWindow.CloseMenu}" ToolTip="{DynamicResource MainWindow.CloseTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Close.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Command="{Binding Exit}" Header="{DynamicResource MainWindow.ExitMenu}" ToolTip="{DynamicResource MainWindow.ExitTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Exit.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MainWindow.EditMenu}">
+                <MenuItem Command="Undo" Header="{DynamicResource MainWindow.UndoMenu}" ToolTip="{DynamicResource MainWindow.UndoTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Undo.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="Redo" Header="{DynamicResource MainWindow.RedoMenu}" ToolTip="{DynamicResource MainWindow.RedoTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Redo.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Command="Cut" Header="{DynamicResource MainWindow.CutMenu}" ToolTip="{DynamicResource MainWindow.CutTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Cut.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="Copy" Header="{DynamicResource MainWindow.CopyMenu}" ToolTip="{DynamicResource MainWindow.CopyTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Copy.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Command="Paste" Header="{DynamicResource MainWindow.PasteMenu}" ToolTip="{DynamicResource MainWindow.PasteTip}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Source="/Developer;component/Images/Paste.png" Width="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MainWindow.PluginMenu}">
+                <MenuItem Command="{Binding NewPlugin}" Header="{DynamicResource MainWindow.NewPluginSettingMenu}" ToolTip="{DynamicResource MainWindow.NewPluginSettingTip}"/>
+                <MenuItem Command="{Binding OpenPlugin}" Header="{DynamicResource MainWindow.OpenPluginSettingMenu}" ToolTip="{DynamicResource MainWindow.OpenPluginSettingTip}"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MainWindow.ProjectMenu}">
+                <MenuItem Command="{Binding BuildCommand}" Header="{DynamicResource MainWindow.BuildMenu}" ToolTip="{DynamicResource MainWindow.BuildTip}"/>
+                <MenuItem Command="{Binding PropertySetup}" Header="{DynamicResource MainWindow.PropertySetupMenu}" ToolTip="{DynamicResource MainWindow.PropertySetupTip}"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MainWindow.DatabaseMenu}">
+                <MenuItem Command="{Binding ImportDataModelCommand}" Header="{DynamicResource MainWindow.ImportDataModelMenu}"/>
+                <MenuItem Command="{Binding ShowDataModelCommand}" Header="{DynamicResource MainWindow.ShowDataModelMenu}"/>
+                <MenuItem Command="{Binding DatabaseConnectionOptions}" Header="{DynamicResource MainWindow.DatabaseConnectionMenu}"/>
+                <MenuItem Command="{Binding SqlGeneraterCommand}" Header="{DynamicResource MainWindow.SqlGeneraterMenu}"/>
+                <Separator/>
+                <MenuItem Command="{Binding MemoryDataSet}" Header="{DynamicResource MainWindow.MemoryDataSetMenu}"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MainWindow.ToolsMenu}">
+                <MenuItem Command="{Binding Regular}" Header="{DynamicResource MainWindow.RegularMenu}"/>
+                <MenuItem Command="{Binding SqlBuilder}" Header="{DynamicResource MainWindow.SqlBuilder}"/>
+                <MenuItem Command="{Binding CompressSqlFile}" Header="{DynamicResource MainWindow.CompressSqlFile}"/>
+                <MenuItem Command="{Binding FormatSqlFile}" Header="{DynamicResource MainWindow.FormatSqlFile}"/>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Name="mainToolBarTray" DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="Cut" ToolTip="{DynamicResource MainWindow.CutTip}">
+                    <Image Height="16" Source="/Developer;component/Images/Cut.png" Width="16"/>
+                </Button>
+                <Button Command="Copy" ToolTip="{DynamicResource MainWindow.CopyTip}">
+                    <Image Height="16" Source="/Developer;component/Images/Copy.png" Width="16"/>
+                </Button>
+                <Button Command="Paste" ToolTip="{DynamicResource MainWindow.PasteTip}">
+                    <Image Height="16" Source="/Developer;component/Images/Paste.png" Width="16"/>
+                </Button>
+                <Separator />
+                <Button Command="Undo" ToolTip="{DynamicResource MainWindow.UndoTip}">
+                    <Image Height="16" Source="/Developer;component/Images/Undo.png" Width="16"/>
+                </Button>
+                <Button Command="Redo" ToolTip="{DynamicResource MainWindow.RedoTip}">
+                    <Image Height="16" Source="/Developer;component/Images/Redo.png" Width="16"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem/>
+        </StatusBar>
+        <xcad:DockingManager>
+            <xcad:DockingManager.Theme>
+                <xcad:AeroTheme/>
+                <!--<xcad:MetroTheme/>-->
+            </xcad:DockingManager.Theme>
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel>
+                    <xcad:LayoutDocumentPane x:Name="mainDocumentPane">
+                        <xcad:LayoutDocument Title="{DynamicResource MainWindow.Welcome}"/>
+                    </xcad:LayoutDocumentPane>
+                </xcad:LayoutPanel>
+                <xcad:LayoutRoot.LeftSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                            <xcad:LayoutAnchorable Title="{DynamicResource MainWindow.Prject}" ContentId="prject" AutoHideWidth="280" AutoHideMinWidth="280">
+                                <TreeView>
+                                    <TreeViewItem Header="{DynamicResource MainWindow.DataModel}">
+                                        <Behaviors:Interaction.Triggers>
+                                            <Behaviors:EventTrigger EventName="MouseDoubleClick">
+                                                <Behaviors:InvokeCommandAction Command="{Binding ModifyDataModel}" />
+                                            </Behaviors:EventTrigger>
+                                        </Behaviors:Interaction.Triggers>
+                                    </TreeViewItem>
+                                    <TreeViewItem Header="{DynamicResource MainWindow.CustomDataModel}">
+                                        <Behaviors:Interaction.Triggers>
+                                            <Behaviors:EventTrigger EventName="MouseDoubleClick">
+                                                <Behaviors:InvokeCommandAction Command="{Binding ModifyCustomDataModel}" />
+                                            </Behaviors:EventTrigger>
+                                        </Behaviors:Interaction.Triggers>
+                                    </TreeViewItem>
+                                    <TreeViewItem Header="{DynamicResource MainWindow.TableList}">
+                                        <Behaviors:Interaction.Triggers>
+                                            <Behaviors:EventTrigger EventName="MouseDoubleClick">
+                                                <Behaviors:InvokeCommandAction Command="{Binding ModifyTableDataModel}" />
+                                            </Behaviors:EventTrigger>
+                                        </Behaviors:Interaction.Triggers>
+                                    </TreeViewItem>
+                                    <TreeViewItem ItemsSource="{Binding PluginItems}">
+                                        <TreeViewItem.Header>
+                                            <TextBlock Text="{DynamicResource MainWindow.Plugins}">
+                                                <TextBlock.ContextMenu>
+                                                    <ContextMenu Name="appendMenu">
+                                                        <MenuItem Header="{DynamicResource MainWindow.AppendMenu}">
+                                                            <MenuItem Header="{DynamicResource MainWindow.NewItemMenu}" Command="{Binding NewItem}"/>
+                                                            <MenuItem Header="{DynamicResource MainWindow.AddItemMenu}" Command="{Binding AddItem}"/>
+                                                            <MenuItem Header="{DynamicResource MainWindow.CreateFolderMenu}" Command="{Binding CreateFolder}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </TextBlock.ContextMenu>
+                                            </TextBlock>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                </TreeView>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.LeftSide>
+                <xcad:LayoutRoot.RightSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                            <xcad:LayoutAnchorable Title="{DynamicResource MainWindow.Property}" ContentId="property">
+                                <xctk:PropertyGrid/>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.RightSide>
+                <xcad:LayoutRoot.BottomSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                            <xcad:LayoutAnchorable Title="{DynamicResource MainWindow.ErrorList}" ContentId="property">
+                                <DataGrid IsReadOnly="True" ItemsSource="{Binding ErrorList}"/>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.BottomSide>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+    </DockPanel>
+</Window>

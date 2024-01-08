@@ -1,0 +1,105 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>Compete.Mis.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<TieredPGO>true</TieredPGO>
+		<!--<PublishAot>true</PublishAot>-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Images\Close.png" />
+		<None Remove="Images\Copy.png" />
+		<None Remove="Images\Cut.png" />
+		<None Remove="Images\Exit.png" />
+		<None Remove="Images\Folder.png" />
+		<None Remove="Images\NewProject.png" />
+		<None Remove="Images\OpenProject.png" />
+		<None Remove="Images\Paste.png" />
+		<None Remove="Images\Property.png" />
+		<None Remove="Images\Redo.png" />
+		<None Remove="Images\Save.png" />
+		<None Remove="Images\Tools.png" />
+		<None Remove="Images\Undo.png" />
+		<None Remove="Images\Wizard.png" />
+		<None Remove="SplashScreen.png" />
+		<None Remove="ViewModels\pbzx2hu5.vxt~" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Remove="Languages\zh-CN.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Languages\zh-CN.xaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Images\Close.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Copy.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Cut.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Exit.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Folder.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\NewProject.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\OpenProject.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Paste.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Property.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Redo.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Save.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Tools.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Undo.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\Wizard.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SplashScreen Include="SplashScreen.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Services\Data\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CompeteBase\CompeteBase.csproj" />
+	</ItemGroup>
+
+</Project>
