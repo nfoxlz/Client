@@ -12,7 +12,7 @@ namespace Compete.Mis.Frame.Views
             InitializeComponent();
 
             GlobalCommon.MainBusyIndicator = DefaultBusyIndicator;
-            GlobalCommon.MainDocumentPane = MainDocumentPane;
+            Global.MainDocumentPane = MainDocumentPane;
         }
     }
 }

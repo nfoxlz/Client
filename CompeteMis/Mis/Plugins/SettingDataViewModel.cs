@@ -11,11 +11,13 @@ using System.Windows.Markup;
 
 namespace Compete.Mis.Plugins
 {
-    public sealed class SettingDataViewModel : DataViewModel
-    {
-        public PluginCommandParameter? PluginParameter { get; set; }
+    public sealed class SettingDataViewModel : SettingDataViewModel<DataPluginSetting> { }
 
-        public PluginSetting? Setting { get; set; }
+    public abstract class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting
+    {
+        //public PluginCommandParameter? PluginParameter { get; set; }
+
+        //public PluginSetting? Setting { get; set; }
 
         protected override bool Initializing()
         {

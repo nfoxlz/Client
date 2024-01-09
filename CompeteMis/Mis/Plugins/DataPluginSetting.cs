@@ -2,11 +2,9 @@
 
 namespace Compete.Mis.Plugins
 {
-    public sealed class PluginSetting
+    public class DataPluginSetting : UIPluginSetting
     {
         public string? Title { get; set; }
-
-        public PluginUIType UIType { get; set; }
 
         public IEnumerable<string>? ConditionMemoryDataSettings { get; set; }
 

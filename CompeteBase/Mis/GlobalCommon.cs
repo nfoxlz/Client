@@ -29,8 +29,6 @@ namespace Compete.Mis
         /// </summary>
         public static BusyIndicator? MainBusyIndicator { get; set; }
 
-        public static LayoutDocumentPane? MainDocumentPane { get; set; }
-
         /// <summary>
         /// 取得消息。
         /// </summary>
