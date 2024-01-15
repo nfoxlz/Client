@@ -22,12 +22,8 @@ namespace Compete.Mis.Plugins
                 var viewModel = uiElement.DataContext is PluginViewModel model ? model : uiElement.DataContext == null ? (CustomSettingDataViewModel<T>)(uiElement.DataContext = CreateViewModel()) : null;
                 if (viewModel != null)
                 {
-                    if (viewModel is CustomSettingDataViewModel<T> settingDataViewModel)
-                    {
-                        settingDataViewModel.PluginParameter ??= parameter;
-                        settingDataViewModel.Setting ??= setting;
-                    }
-
+                    viewModel.PluginParameter ??= parameter;
+                    viewModel.PluginSetting ??= setting;
                     viewModel.Authorition &= parameter.Authorition;
                     uiElement.DataContext ??= viewModel;
                 }

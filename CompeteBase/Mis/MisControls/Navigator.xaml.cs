@@ -87,18 +87,11 @@ namespace Compete.Mis.MisControls
         /// 标识 RecordCount 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty RecordCountProperty =
-            DependencyProperty.Register(nameof(RecordCount), typeof(ulong), typeof(Navigator), new PropertyMetadata(0UL, new PropertyChangedCallback(OnRecordCountChanged)));
-
-        /// <summary>
-        /// RecordCount 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnRecordCountChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var navigator = d as Navigator;
-            navigator!.viewModel.RecordCount = navigator.RecordCount;
-        }
+            DependencyProperty.Register(nameof(RecordCount), typeof(ulong), typeof(Navigator), new PropertyMetadata(0UL, (d, e) =>
+            {
+                var navigator = d as Navigator;
+                navigator!.viewModel.RecordCount = navigator.RecordCount;
+            }));
 
         /// <summary>
         /// 获取或设置一个值，该值指示每页的记录数。
@@ -113,19 +106,12 @@ namespace Compete.Mis.MisControls
         /// 标识 PageSize 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty PageSizeProperty =
-            DependencyProperty.Register(nameof(PageSize), typeof(ushort), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageSize, new PropertyChangedCallback(OnPageSizeChanged)));
-
-        /// <summary>
-        /// RecordCount 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnPageSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var navigator = d as Navigator;
-            navigator!.PageCollectionComboBox.SelectedItem = navigator.PageSize;
-            navigator.viewModel.PageSize = navigator.PageSize;
-        }
+            DependencyProperty.Register(nameof(PageSize), typeof(ushort), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageSize, (d, e) =>
+            {
+                var navigator = d as Navigator;
+                navigator!.PageCollectionComboBox.SelectedItem = navigator.PageSize;
+                navigator.viewModel.PageSize = navigator.PageSize;
+            }));
 
         /// <summary>
         /// 获取或设置一组值，该组值用于每页显示最大记录的备选值，选择后做为PageSize的值。
@@ -140,18 +126,11 @@ namespace Compete.Mis.MisControls
         /// 标识 PageCollection 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty PageCollectionProperty =
-            DependencyProperty.Register(nameof(PageCollection), typeof(IEnumerable<ushort>), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageCollection, new PropertyChangedCallback(OnPageCollectionChanged)));
-
-        /// <summary>
-        /// PageCollection 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnPageCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var navigator = d as Navigator;
-            navigator!.viewModel.PageCollection = navigator.PageCollection;
-        }
+            DependencyProperty.Register(nameof(PageCollection), typeof(IEnumerable<ushort>), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageCollection, (d, e) =>
+            {
+                var navigator = d as Navigator;
+                navigator!.viewModel.PageCollection = navigator.PageCollection;
+            }));
 
         /// <summary>
         /// 获取或设置一个值，该值指示当前页号，值为1到MaxPageNo之间的数；当MaxPageNo为0时，值为1。
@@ -166,18 +145,11 @@ namespace Compete.Mis.MisControls
         /// 标识 CurrentPageNo 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty CurrentPageNoProperty =
-            DependencyProperty.Register(nameof(CurrentPageNo), typeof(ulong), typeof(Navigator), new PropertyMetadata(1UL, new PropertyChangedCallback(OnCurrentPageNoChanged)));
-
-        /// <summary>
-        /// CurrentPageNo 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnCurrentPageNoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var navigator = d as Navigator;
-            navigator!.viewModel.CurrentPageNo = navigator.CurrentPageNo;
-        }
+            DependencyProperty.Register(nameof(CurrentPageNo), typeof(ulong), typeof(Navigator), new PropertyMetadata(1UL, (d, e) =>
+            {
+                var navigator = d as Navigator;
+                navigator!.viewModel.CurrentPageNo = navigator.CurrentPageNo;
+            }));
 
         /// <summary>
         /// 获取一个值，该值指示最大页号，无数据时为“0”。

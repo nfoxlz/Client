@@ -1,10 +1,20 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 
 namespace Compete.Mis.Plugins
 {
     public partial class PluginViewModel : ViewModels.ViewModelBase
     {
+        public PluginCommandParameter? PluginParameter { get; set; }
+
+        [ObservableProperty]
+        private object? _pluginSetting;
+
+        partial void OnPluginSettingChanged(object? value) => NewSetting(value);
+
+        protected virtual void NewSetting(object? setting) { }
+
         /// <summary>
         /// 获取或设置插件内部权限。
         /// </summary>

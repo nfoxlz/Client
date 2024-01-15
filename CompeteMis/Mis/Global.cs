@@ -13,11 +13,6 @@ namespace Compete.Mis
 {
     internal static class Global
     {
-        /// <summary>
-        /// 获取或设置主文档面板。
-        /// </summary>
-        public static LayoutDocumentPane? MainDocumentPane { get; set; }
-
         public static Frame.Services.WebApi.WebApiHelper ServiceHelper { get; }
             = new Frame.Services.WebApi.WebApiHelper(ConfigurationManager.AppSettings["WebApiBaseAddress"] ?? Constants.DefaultBaseAddress, Constants.SignPassword);
 

@@ -11,8 +11,8 @@ namespace Compete.Mis.Plugins
         protected static void AddDocument(object ui, string title)
         {
             var document = new LayoutDocument() { Content = ui, Title = title };
-            Global.MainDocumentPane!.Children.Add(document);
-            Global.MainDocumentPane.SelectedContentIndex = Global.MainDocumentPane.Children.Count - 1;
+            GlobalCommon.MainDocumentPane!.Children.Add(document);
+            GlobalCommon.MainDocumentPane.SelectedContentIndex = GlobalCommon.MainDocumentPane.Children.Count - 1;
         }
 
         protected static void Show(object ui, PluginUIType uIType, string title)

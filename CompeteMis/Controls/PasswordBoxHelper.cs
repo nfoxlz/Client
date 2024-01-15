@@ -30,7 +30,15 @@ namespace Compete.Controls
         /// 标识 Attach 附加属性。
         /// </summary>
         public static readonly DependencyProperty AttachProperty =
-            DependencyProperty.RegisterAttached("Attach", typeof(bool), typeof(PasswordBoxHelper), new PropertyMetadata(false, Attach));
+            DependencyProperty.RegisterAttached("Attach", typeof(bool), typeof(PasswordBoxHelper), new PropertyMetadata(false, (d, e) =>
+            {
+                if (d is not WatermarkPasswordBox passwordBox)
+                    return;
+                if ((bool)e.OldValue)
+                    passwordBox.PasswordChanged -= PasswordChanged;
+                if ((bool)e.NewValue)
+                    passwordBox.PasswordChanged += PasswordChanged;
+            }));
 
         /// <summary>
         /// 标识 IsUpdating 附加属性。
@@ -93,21 +101,6 @@ namespace Compete.Controls
             if (!GetIsUpdating(passwordBox))
                 passwordBox.Password = (string)e.NewValue;
             passwordBox.PasswordChanged += PasswordChanged;
-        }
-
-        /// <summary>
-        /// Attach 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void Attach(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (sender is not WatermarkPasswordBox passwordBox)
-                return;
-            if ((bool)e.OldValue)
-                passwordBox.PasswordChanged -= PasswordChanged;
-            if ((bool)e.NewValue)
-                passwordBox.PasswordChanged += PasswordChanged;
         }
 
         /// <summary>

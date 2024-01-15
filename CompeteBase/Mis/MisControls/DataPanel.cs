@@ -71,8 +71,6 @@ namespace Compete.Mis.MisControls
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(DataPanel), new PropertyMetadata(false));
 
-
-
         protected override Brush? GetTitleForeground(DataColumn column)
         {
             if (column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]))
@@ -365,17 +363,18 @@ namespace Compete.Mis.MisControls
                         switch (dbType)
                         {
                             case DbType.Date:
-                                result = new DatePicker();
+                                var datePicker = columnName.EndsWith("_Year_Month") ? new YearMonthPicker() : new DatePicker();
+                                result = datePicker;
                                 result.SetBinding(DatePicker.SelectedDateProperty, binding);
 
                                 if (columnName.StartsWith(beginPrefix))
                                 {
-                                    ((DatePicker)result).SelectedDateChanged += BeginSelectionChanged;
+                                    datePicker.SelectedDateChanged += BeginSelectionChanged;
                                     result.Name = columnName;
                                 }
                                 else if (columnName.StartsWith(endPrefix))
                                 {
-                                    ((DatePicker)result).SelectedDateChanged += EndSelectionChanged;
+                                    datePicker.SelectedDateChanged += EndSelectionChanged;
                                     result.Name = columnName;
                                 }
 

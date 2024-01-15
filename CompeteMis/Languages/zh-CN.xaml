@@ -2,8 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:s="clr-namespace:System;assembly=mscorlib">
     <!--公用-->
-    <s:String x:Key="DateTimeStringFormat">yyyy年M月d日H:m:s.FFFFFFF</s:String>
-    <s:String x:Key="DateStringFormat">D</s:String>
+    <s:String x:Key="DateTimeStringFormat">yyyy年M月d日dddH:m:s.FFFFFFF</s:String>
+    <s:String x:Key="DateStringFormat">yyyy年M月d日ddd</s:String><!--D-->
+    <s:String x:Key="YearMonthStringForamt">yyyy年M月</s:String>
 
     <s:String x:Key="OKButton">确定(_O)</s:String>
     <s:String x:Key="CancelButton">取消(_C)</s:String>

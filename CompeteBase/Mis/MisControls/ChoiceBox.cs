@@ -22,7 +22,7 @@ namespace Compete.Mis.MisControls
         /// <summary>
         /// 项目字典。
         /// </summary>
-        private readonly IDictionary<ToggleButton, sbyte> itemDictionary = new Dictionary<ToggleButton, sbyte>();
+        private readonly Dictionary<ToggleButton, sbyte> itemDictionary = [];
 
         /// <summary>
         /// 静态构造方法。
@@ -109,17 +109,7 @@ namespace Compete.Mis.MisControls
         /// 标识 Value 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(long), typeof(ChoiceBox), new PropertyMetadata(new PropertyChangedCallback(OnValueChanged)));
-
-        /// <summary>
-        /// Value 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            (d as ChoiceBox)?.ShowValue();
-        }
+            DependencyProperty.Register("Value", typeof(long), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.ShowValue()));
 
         /// <summary>
         /// 获取或设置一个值，标识控件是否是只读的。
@@ -134,19 +124,12 @@ namespace Compete.Mis.MisControls
         /// 标识 IsReadOnly 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ChoiceBox), new PropertyMetadata(new PropertyChangedCallback(OnIsReadOnlyChanged)));
-
-        /// <summary>
-        /// IsReadOnly 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var choiceBox = d as ChoiceBox;
-            foreach (var item in choiceBox!.itemDictionary.Keys)
-                item.IsEnabled = !choiceBox.IsReadOnly;
-        }
+            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ChoiceBox), new PropertyMetadata((d, e) =>
+            {
+                var choiceBox = d as ChoiceBox;
+                foreach (var item in choiceBox!.itemDictionary.Keys)
+                    item.IsEnabled = !choiceBox.IsReadOnly;
+            }));
 
         /// <summary>
         /// 获取或设置控件项目的数据。
@@ -161,14 +144,7 @@ namespace Compete.Mis.MisControls
         /// 标识 ItemData 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ItemDataProperty =
-            DependencyProperty.Register("ItemData", typeof(IDictionary<sbyte, string>), typeof(ChoiceBox), new PropertyMetadata(new PropertyChangedCallback(OnItemDataChanged)));
-
-        /// <summary>
-        /// ItemData 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnItemDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as ChoiceBox)?.CreateItems();
+            DependencyProperty.Register("ItemData", typeof(IDictionary<sbyte, string>), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.CreateItems()));
 
         #endregion 依赖属性
     }

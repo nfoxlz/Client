@@ -403,13 +403,26 @@ namespace Compete.Mis.Plugins
 
         protected virtual bool Initializing() => false;
 
+        protected bool IsInitializing = false;
+
         public void Initialize()
         {
-            if (Initializing())
-                return;
+            IsInitializing = true;
 
-            if (CanQuery())
-                Query(null);
+            try
+            {
+                if (Initializing())
+                    return;
+
+                if (CanQuery())
+                    Query(null);
+            }
+            finally
+            {
+                IsInitializing = false;
+            }
+
+            QueryCommand.NotifyCanExecuteChanged();
         }
 
         //partial void OnDataChanging(DataSet? oldValue, DataSet? newValue)

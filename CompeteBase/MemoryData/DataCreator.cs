@@ -451,24 +451,58 @@ namespace Compete.MemoryData
         }
 
         private static object? CreateSystemVariable(SystemVariables value)
-            => value switch
+        {
+            DateTime now;
+
+            switch(value)
             {
-                SystemVariables.NewGuid => Guid.NewGuid(),
-                SystemVariables.CurrentDateTime => DateTime.Now,
-                SystemVariables.CurrentDate => DateTime.Now.Date,
-                SystemVariables.CurrentTime => DateTime.Now.TimeOfDay,
-                SystemVariables.ServerDateTime => Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDateTime(),
-                SystemVariables.ServerDate => Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDate(),
-                SystemVariables.ServerTime => Mis.GlobalCommon.ServerDateTimeProvider!.GetServerTime(),
-                SystemVariables.CurrentApplication => Mis.GlobalCommon.ApplicationNo,
-                SystemVariables.CurrentClientSide => Mis.GlobalCommon.ClientSide,
-                SystemVariables.CurrentTenantId => Mis.GlobalCommon.CurrentTenant!.Id,
-                SystemVariables.CurrentTenantCode => Mis.GlobalCommon.CurrentTenant!.Code,
-                SystemVariables.CurrentTenantName => Mis.GlobalCommon.CurrentTenant!.Name,
-                SystemVariables.CurrentUserId => Mis.GlobalCommon.CurrentUser!.Id,
-                SystemVariables.CurrentUserCode => Mis.GlobalCommon.CurrentUser!.Code,
-                SystemVariables.CurrentUserName => Mis.GlobalCommon.CurrentUser!.Name,
-                _ => null,
-            };
+                case SystemVariables.NewGuid:
+                    return Guid.NewGuid();
+                case SystemVariables.CurrentDateTime:
+                    return DateTime.Now;
+                case SystemVariables.CurrentDate:
+                    return DateTime.Now.Date;
+                case SystemVariables.CurrentTime:
+                    return DateTime.Now.TimeOfDay;
+                case SystemVariables.CurrentYearMonth:
+                    now = DateTime.Now;
+                    return new DateTime(now.Year, now.Month, 1);
+                case SystemVariables.CurrentYear:
+                    return new DateTime(DateTime.Now.Year, 1, 1);
+                case SystemVariables.CurrentMonth:
+                    return DateTime.Now.Month;
+                case SystemVariables.PreviousYearMonth:
+                    now = DateTime.Now;
+                    return new DateTime(now.AddMonths(-1).Year, now.AddMonths(-1).Month, 1);
+                case SystemVariables.PreviousYear:
+                    return new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1);
+                case SystemVariables.PreviousMonth:
+                    return DateTime.Now.AddMonths(-1).Month;
+                case SystemVariables.ServerDateTime:
+                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDateTime();
+                case SystemVariables.ServerDate:
+                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDate();
+                case SystemVariables.ServerTime:
+                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerTime();
+                case SystemVariables.CurrentApplication:
+                    return Mis.GlobalCommon.ApplicationNo;
+                case SystemVariables.CurrentClientSide:
+                    return Mis.GlobalCommon.ClientSide;
+                case SystemVariables.CurrentTenantId:
+                    return Mis.GlobalCommon.CurrentTenant!.Id;
+                case SystemVariables.CurrentTenantCode:
+                    return Mis.GlobalCommon.CurrentTenant!.Code;
+                case SystemVariables.CurrentTenantName:
+                    return Mis.GlobalCommon.CurrentTenant!.Name;
+                case SystemVariables.CurrentUserId:
+                    return Mis.GlobalCommon.CurrentUser!.Id;
+                case SystemVariables.CurrentUserCode:
+                    return Mis.GlobalCommon.CurrentUser!.Code;
+                case SystemVariables.CurrentUserName:
+                    return Mis.GlobalCommon.CurrentUser!.Name;
+                default:
+                    return null;
+            }
+        }
     }
 }

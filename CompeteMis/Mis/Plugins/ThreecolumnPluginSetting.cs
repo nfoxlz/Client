@@ -1,6 +1,9 @@
-﻿namespace Compete.Mis.Plugins
+﻿using System.Collections.Generic;
+
+namespace Compete.Mis.Plugins
 {
-    internal class ThreecolumnPluginSetting : DataPluginSetting
+    public class ThreecolumnPluginSetting : DataPluginSetting
     {
+        public IDictionary<string, IEnumerable<ThreecolumnSetting>>? CalculatedColumns { get; set; }
     }
 }

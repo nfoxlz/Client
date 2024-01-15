@@ -13,7 +13,7 @@ namespace Compete.Mis.Plugins
 {
     public sealed class SettingDataViewModel : SettingDataViewModel<DataPluginSetting> { }
 
-    public abstract class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting
+    public abstract class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting, new()
     {
         //public PluginCommandParameter? PluginParameter { get; set; }
 
@@ -316,6 +316,10 @@ namespace Compete.Mis.Plugins
                     SetBooleanProperty(data.Tables[pair.Key]!, pair.Value, propertyName, propertyValue);
         }
 
+        protected virtual void ProcessData(DataSet data) { }
+
+        protected override bool CanQuery() => (!IsInitializing || Setting!.IsInitialQuery) && base.CanQuery();
+
         protected override void QueryData(string? name)
         {
             var mainData = Setting?.MemoryDataSettings == null ? null : MemoryData.DataCreator.Create(Setting.MemoryDataSettings);
@@ -378,6 +382,8 @@ namespace Compete.Mis.Plugins
 
             if (mainData != null)
             {
+                ProcessData(mainData);
+
                 if (Setting?.AdditionalDataColumns != null)
                     MemoryData.DataCreator.AddColumns(mainData, Setting.AdditionalDataColumns);
 

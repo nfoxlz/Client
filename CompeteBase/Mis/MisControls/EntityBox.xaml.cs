@@ -252,42 +252,35 @@ namespace Compete.Mis.MisControls
         /// 标识 Value 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(object), typeof(EntityBox), new PropertyMetadata(new PropertyChangedCallback(OnValueChanged)));
+            DependencyProperty.Register("Value", typeof(object), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            {
+                var entityBox = (EntityBox)d;
+                if (entityBox.isSetValue || entityBox.Value != null && entityBox.Value.Equals(entityBox.oldValue) || string.IsNullOrWhiteSpace(entityBox.ServiceParameter) || string.IsNullOrWhiteSpace(entityBox.DisplayPath))
+                    return;
+
+                // 取得需要从UI线程向新线程传递的数据。
+                var serviceParameter = entityBox.ServiceParameter;  // 服务参数。
+                var entityBoxValue = entityBox.Value;               // 控件的值。
+
+                if (entityBoxValue == null || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && val == 0L)
+                {
+                    entityBox.DisplayTextBox.Text = string.Empty;
+                    return;
+                }
+
+                var entity = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(serviceParameter, entityBoxValue), "Query");
+                if (entity == null || entity.Rows.Count == 0 || !entity.Columns.Contains(entityBox.DisplayPath))
+                    return;
+
+                if (string.IsNullOrWhiteSpace(entityBox.Format) || entityBox.formatMethod == null)
+                    entityBox.DisplayTextBox.Text = entity.Rows[0][entityBox.DisplayPath].ToString();
+                else
+                    entityBox.DisplayTextBox.Text = entityBox.formatMethod?.Invoke(null, new object[] { entity.Rows[0] })?.ToString();
+
+                entityBox.oldValue = entityBox.Value;
+            }));
 
         private object? oldValue;
-
-        /// <summary>
-        /// Value 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityBox = (EntityBox)d;
-            if (entityBox.isSetValue || entityBox.Value != null && entityBox.Value.Equals(entityBox.oldValue) || string.IsNullOrWhiteSpace(entityBox.ServiceParameter) || string.IsNullOrWhiteSpace(entityBox.DisplayPath))
-                return;
-
-            // 取得需要从UI线程向新线程传递的数据。
-            var serviceParameter = entityBox.ServiceParameter;  // 服务参数。
-            var entityBoxValue = entityBox.Value;               // 控件的值。
-
-            if (entityBoxValue == null || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && val == 0L)
-            {
-                entityBox.DisplayTextBox.Text = string.Empty;
-                return;
-            }
-
-            var entity = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(serviceParameter, entityBoxValue), "Query");
-            if (entity == null || entity.Rows.Count == 0 || !entity.Columns.Contains(entityBox.DisplayPath))
-                return;
-
-            if (string.IsNullOrWhiteSpace(entityBox.Format) || entityBox.formatMethod == null)
-                entityBox.DisplayTextBox.Text = entity.Rows[0][entityBox.DisplayPath].ToString();
-            else
-                entityBox.DisplayTextBox.Text = entityBox.formatMethod?.Invoke(null, new object[] { entity.Rows[0] })?.ToString();
-
-            entityBox.oldValue = entityBox.Value;
-        }
 
         /// <summary>
         /// 获取或设置源对象上的值的路径，以用作对象的值。
@@ -347,26 +340,19 @@ namespace Compete.Mis.MisControls
         /// 标识 ServiceParameter 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ServiceParameterProperty =
-            DependencyProperty.Register(nameof(ServiceParameter), typeof(string), typeof(EntityBox), new PropertyMetadata(new PropertyChangedCallback(OnServiceParameterChanged)));
-
-        /// <summary>
-        /// ServiceParameter 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnServiceParameterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityBox = (EntityBox)d;
-            var path = Path.ChangeExtension(Path.Combine(Utils.PathHelper.PluginPath, "EntitySelector", entityBox.ServiceParameter), "json");
-            if (File.Exists(path))
+            DependencyProperty.Register(nameof(ServiceParameter), typeof(string), typeof(EntityBox), new PropertyMetadata((d, e) =>
             {
-                var setting = JsonSerializer.Deserialize<EntitySelectorSetting>(File.ReadAllText(path)); 
-                if (string.IsNullOrWhiteSpace(entityBox.Format) && !string.IsNullOrWhiteSpace(setting?.Format))
-                    entityBox.Format = setting.Format;
-                if (string.IsNullOrWhiteSpace(entityBox.FilterFormat) && !string.IsNullOrWhiteSpace(setting?.FilterFormat))
-                    entityBox.FilterFormat = setting.FilterFormat;
-            }
-        }
+                var entityBox = (EntityBox)d;
+                var path = Path.ChangeExtension(Path.Combine(Utils.PathHelper.PluginPath, "EntitySelector", entityBox.ServiceParameter), "json");
+                if (File.Exists(path))
+                {
+                    var setting = JsonSerializer.Deserialize<EntitySelectorSetting>(File.ReadAllText(path));
+                    if (string.IsNullOrWhiteSpace(entityBox.Format) && !string.IsNullOrWhiteSpace(setting?.Format))
+                        entityBox.Format = setting.Format;
+                    if (string.IsNullOrWhiteSpace(entityBox.FilterFormat) && !string.IsNullOrWhiteSpace(setting?.FilterFormat))
+                        entityBox.FilterFormat = setting.FilterFormat;
+                }
+            }));
 
         /// <summary>
         /// 获取或设置一个值，指示控件是否只读。
@@ -381,19 +367,12 @@ namespace Compete.Mis.MisControls
         /// 标识 IsReadOnly 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(EntityBox), new PropertyMetadata(new PropertyChangedCallback(OnIsReadOnlyChanged)));
-
-        /// <summary>
-        /// IsReadOnly 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityBox = (EntityBox)d;
-            entityBox.SelectButton.Visibility = entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
-            entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
-        }
+            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            {
+                var entityBox = (EntityBox)d;
+                entityBox.SelectButton.Visibility = entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+                entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+            }));
 
         /// <summary>
         /// 获取或设置一个值，指示是否是必填项。
@@ -406,13 +385,11 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for IsRequired.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsRequiredProperty =
-            DependencyProperty.Register(nameof(IsRequired), typeof(bool), typeof(EntityBox), new PropertyMetadata(false, new PropertyChangedCallback(OnIsRequiredChanged)));
-
-        private static void OnIsRequiredChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityBox = (EntityBox)d;
-            entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
-        }
+            DependencyProperty.Register(nameof(IsRequired), typeof(bool), typeof(EntityBox), new PropertyMetadata(false, (d, e) =>
+            {
+                var entityBox = (EntityBox)d;
+                entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+            }));
 
         /// <summary>
         /// 获取或设置一个值，指示取得实体后是否还进行同名复制。
@@ -437,19 +414,12 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Format.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FormatProperty =
-            DependencyProperty.Register(nameof(Format), typeof(string), typeof(EntityBox), new PropertyMetadata(new PropertyChangedCallback(OnFormatChanged)));
-
-        /// <summary>
-        /// Format 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnFormatChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityBox = (EntityBox)d;
-            if (!string.IsNullOrWhiteSpace(entityBox.Format))
-                entityBox.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, entityBox.Format, "Compete.Mis.Scripts.Formater", "GetString");
-        }
+            DependencyProperty.Register(nameof(Format), typeof(string), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            {
+                var entityBox = (EntityBox)d;
+                if (!string.IsNullOrWhiteSpace(entityBox.Format))
+                    entityBox.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, entityBox.Format, "Compete.Mis.Scripts.Formater", "GetString");
+            }));
 
         public string FilterFormat
         {

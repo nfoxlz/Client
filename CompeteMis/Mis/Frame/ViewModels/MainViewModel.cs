@@ -232,7 +232,7 @@ namespace Compete.Mis.Frame.ViewModels
         [RelayCommand]
         private void Logout()
         {
-            if (Global.MainDocumentPane!.Children.Count > 1 && MisControls.MessageDialog.Question("MainViewModel.LogoutMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            if (GlobalCommon.MainDocumentPane!.Children.Count > 1 && MisControls.MessageDialog.Question("MainViewModel.LogoutMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
             CanGoBack = true;
             ((NavigationWindow)Application.Current.MainWindow).GoBack();
@@ -241,7 +241,7 @@ namespace Compete.Mis.Frame.ViewModels
         [RelayCommand]
         private static void Exit()
         {
-            if (Global.MainDocumentPane!.Children.Count > 1 && MisControls.MessageDialog.Question("MainViewModel.ExitMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            if (GlobalCommon.MainDocumentPane!.Children.Count > 1 && MisControls.MessageDialog.Question("MainViewModel.ExitMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
             Application.Current.Shutdown();
         }

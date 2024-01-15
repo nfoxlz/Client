@@ -38,6 +38,8 @@ namespace Compete.Mis.Plugins
 
         public IDictionary<string, IEnumerable<MemoryData.DataColumnSetting>>? DataColumnSettings { get; set; }
 
+        public bool IsInitialQuery { get; set; } = true;
+
         public bool IsAddMaster { get; set; } = true;
 
         public IEnumerable<string>? ConditionRequiredColumns { get; set; }

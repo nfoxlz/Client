@@ -45,16 +45,14 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for EnumName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty EnumNameProperty =
-            DependencyProperty.Register("EnumName", typeof(string), typeof(EnumComboBox), new PropertyMetadata(new PropertyChangedCallback(OnEnumNameChanged)));
-
-        private static void OnEnumNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var enumComboBox = (EnumComboBox)d;
-            enumComboBox.Items.Clear();
-            if (!string.IsNullOrWhiteSpace(enumComboBox.EnumName))
-                enumComboBox.ItemsSource = Enums.EnumHelper.GetEnum(enumComboBox.EnumName);
-            //enumComboBox.SelectedValuePath;
-            //enumComboBox.DisplayMemberPath;
-        }
+            DependencyProperty.Register("EnumName", typeof(string), typeof(EnumComboBox), new PropertyMetadata((d, e) =>
+            {
+                var enumComboBox = (EnumComboBox)d;
+                enumComboBox.Items.Clear();
+                if (!string.IsNullOrWhiteSpace(enumComboBox.EnumName))
+                    enumComboBox.ItemsSource = Enums.EnumHelper.GetEnum(enumComboBox.EnumName);
+                //enumComboBox.SelectedValuePath;
+                //enumComboBox.DisplayMemberPath;
+            }));
     }
 }

@@ -95,84 +95,77 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(object), typeof(EntityTextBlock), new PropertyMetadata(new PropertyChangedCallback(OnValueChanged)));
-
-        /// <summary>
-        /// Value 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityTextBlock = d as EntityTextBlock;
-
-            // 取得需要从UI线程向新线程传递的数据。
-            //var serviceParameter = entityTextBlock.ServiceParameter;  // 服务参数。
-            //var eentityTextBlockValue = entityTextBlock.Value;               // 控件的值。
-            if (string.IsNullOrWhiteSpace(entityTextBlock?.ServiceParameter))
-                return;
-
-            //var entity = Threading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider.GetEntity(entityTextBlock.ServiceParameter, entityTextBlock.Value), "Query");
-            if (entityTextBlock.Value == null)
+            DependencyProperty.Register("Value", typeof(object), typeof(EntityTextBlock), new PropertyMetadata((d, e) =>
             {
-                entityTextBlock.Text = string.Empty;
-                return;
-            }
+                var entityTextBlock = d as EntityTextBlock;
 
-            if (long.TryParse(entityTextBlock.Value.ToString(), out long val))
-            {
-                if (val == 0L)
+                // 取得需要从UI线程向新线程传递的数据。
+                //var serviceParameter = entityTextBlock.ServiceParameter;  // 服务参数。
+                //var eentityTextBlockValue = entityTextBlock.Value;               // 控件的值。
+                if (string.IsNullOrWhiteSpace(entityTextBlock?.ServiceParameter))
+                    return;
+
+                //var entity = Threading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider.GetEntity(entityTextBlock.ServiceParameter, entityTextBlock.Value), "Query");
+                if (entityTextBlock.Value == null)
                 {
                     entityTextBlock.Text = string.Empty;
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(entityTextBlock.Format))
+                if (long.TryParse(entityTextBlock.Value.ToString(), out long val))
                 {
-                    if (entityTextBlock.ServiceParameter == "Operator" && val == GlobalCommon.CurrentUser!.Id)
+                    if (val == 0L)
                     {
-                        if (entityTextBlock.DisplayPath.EndsWith("_Code"))
-                        {
-                            entityTextBlock.Text = GlobalCommon.CurrentUser.Code;
-                            return;
-                        }
-
-                        if (entityTextBlock.DisplayPath.EndsWith("_Name"))
-                        {
-                            entityTextBlock.Text = GlobalCommon.CurrentUser.Name;
-                            return;
-                        }
+                        entityTextBlock.Text = string.Empty;
+                        return;
                     }
-                    else if (entityTextBlock.ServiceParameter == "Tenant" && val == GlobalCommon.CurrentTenant!.Id)
-                    {
-                        if (entityTextBlock.DisplayPath.EndsWith("_Code"))
-                        {
-                            entityTextBlock.Text = GlobalCommon.CurrentTenant.Code;
-                            return;
-                        }
 
-                        if (entityTextBlock.DisplayPath.EndsWith("_Name"))
+                    if (string.IsNullOrWhiteSpace(entityTextBlock.Format))
+                    {
+                        if (entityTextBlock.ServiceParameter == "Operator" && val == GlobalCommon.CurrentUser!.Id)
                         {
-                            entityTextBlock.Text = GlobalCommon.CurrentTenant.Name;
-                            return;
+                            if (entityTextBlock.DisplayPath.EndsWith("_Code"))
+                            {
+                                entityTextBlock.Text = GlobalCommon.CurrentUser.Code;
+                                return;
+                            }
+
+                            if (entityTextBlock.DisplayPath.EndsWith("_Name"))
+                            {
+                                entityTextBlock.Text = GlobalCommon.CurrentUser.Name;
+                                return;
+                            }
+                        }
+                        else if (entityTextBlock.ServiceParameter == "Tenant" && val == GlobalCommon.CurrentTenant!.Id)
+                        {
+                            if (entityTextBlock.DisplayPath.EndsWith("_Code"))
+                            {
+                                entityTextBlock.Text = GlobalCommon.CurrentTenant.Code;
+                                return;
+                            }
+
+                            if (entityTextBlock.DisplayPath.EndsWith("_Name"))
+                            {
+                                entityTextBlock.Text = GlobalCommon.CurrentTenant.Name;
+                                return;
+                            }
                         }
                     }
                 }
-            }
 
-            try
-            {
-                var entity = GlobalCommon.EntityDataProvider!.GetEntity(entityTextBlock.ServiceParameter, entityTextBlock.Value);
-                if (entity == null || entity.Rows.Count == 0 || !entity.Columns.Contains(entityTextBlock.DisplayPath))
-                    return;
+                try
+                {
+                    var entity = GlobalCommon.EntityDataProvider!.GetEntity(entityTextBlock.ServiceParameter, entityTextBlock.Value);
+                    if (entity == null || entity.Rows.Count == 0 || !entity.Columns.Contains(entityTextBlock.DisplayPath))
+                        return;
 
-                if (string.IsNullOrWhiteSpace(entityTextBlock.Format) || entityTextBlock.formatMethod == null)
-                    entityTextBlock.Text = entity.Rows[0][entityTextBlock.DisplayPath].ToString();
-                else
-                    entityTextBlock.Text = entityTextBlock.formatMethod.Invoke(null, new object[] { entity.Rows[0] })?.ToString();
-            }
-            catch(InvalidOperationException) { }
-        }
+                    if (string.IsNullOrWhiteSpace(entityTextBlock.Format) || entityTextBlock.formatMethod == null)
+                        entityTextBlock.Text = entity.Rows[0][entityTextBlock.DisplayPath].ToString();
+                    else
+                        entityTextBlock.Text = entityTextBlock.formatMethod.Invoke(null, new object[] { entity.Rows[0] })?.ToString();
+                }
+                catch (InvalidOperationException) { }
+            }));
 
         public string Format
         {
@@ -182,19 +175,12 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Format.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FormatProperty =
-            DependencyProperty.Register(nameof(Format), typeof(string), typeof(EntityTextBlock), new PropertyMetadata(new PropertyChangedCallback(OnFormatChanged)));
-
-        /// <summary>
-        /// Format 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnFormatChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var entityTextBlock = d as EntityTextBlock;
-            if (!string.IsNullOrWhiteSpace(entityTextBlock?.Format))
-                entityTextBlock.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, entityTextBlock.Format, "Compete.Scripts.Formater", "GetString");
-        }
+            DependencyProperty.Register(nameof(Format), typeof(string), typeof(EntityTextBlock), new PropertyMetadata((d, e) =>
+            {
+                var entityTextBlock = d as EntityTextBlock;
+                if (!string.IsNullOrWhiteSpace(entityTextBlock?.Format))
+                    entityTextBlock.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, entityTextBlock.Format, "Compete.Scripts.Formater", "GetString");
+            }));
 
         private static string GetEntityName(string columnName)
         {

@@ -30,6 +30,11 @@ namespace Compete.Mis
         public static BusyIndicator? MainBusyIndicator { get; set; }
 
         /// <summary>
+        /// 获取或设置主文档面板。
+        /// </summary>
+        public static LayoutDocumentPane? MainDocumentPane { get; set; }
+        
+        /// <summary>
         /// 取得消息。
         /// </summary>
         /// <param name="displayName">显示名。</param>
@@ -37,6 +42,9 @@ namespace Compete.Mis
         /// <returns>屏幕消息。</returns>
         public static string GetMessage(string displayName, params object[] arg)
             => Application.Current.Resources.MergedDictionaries.Count > 0 ? string.Format((Application.Current.Resources.MergedDictionaries[0][displayName] ?? displayName).ToString()!, arg) : displayName;
+
+        public static string GetMessageOrDefault(string displayName, string defaultMessage, params object[] arg)
+            => Application.Current.Resources.MergedDictionaries.Count > 0 ? string.Format((Application.Current.Resources.MergedDictionaries[0][displayName] ?? defaultMessage).ToString()!, arg) : defaultMessage;
 
         /// <summary>
         /// 获取枚举字典。

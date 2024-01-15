@@ -116,5 +116,35 @@
         /// 当前角色名。
         /// </summary>
         CurrentRoleName,
+
+        /// <summary>
+        /// 当前年月日期。
+        /// </summary>
+        CurrentYearMonth,
+
+        /// <summary>
+        /// 当前年份日期。
+        /// </summary>
+        CurrentYear,
+
+        /// <summary>
+        /// 当前月份。
+        /// </summary>
+        CurrentMonth,
+
+        /// <summary>
+        /// 前一年月日期。
+        /// </summary>
+        PreviousYearMonth,
+
+        /// <summary>
+        /// 前一年月日期。
+        /// </summary>
+        PreviousYear,
+
+        /// <summary>
+        /// 前一月份。
+        /// </summary>
+        PreviousMonth,
     }
 }

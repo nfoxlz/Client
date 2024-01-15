@@ -101,14 +101,7 @@ namespace Compete.Mis.MisControls
         /// 标识 ItemsSource 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(DataPanelBase), new PropertyMetadata(new PropertyChangedCallback(OnItemsSourceChanged)));
-
-        /// <summary>
-        /// ItemsSource 依赖项属性更变的回调方法。
-        /// </summary>
-        /// <param name="d">属性已更改值的 DependencyObject 。</param>
-        /// <param name="node">由所有事件跟踪问题到该属性的有效值的更改事件数据。</param>
-        private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DataPanelBase)d).CreateItems();
+            DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(DataPanelBase), new PropertyMetadata((d, e) => ((DataPanelBase)d).CreateItems()));
 
         /// <summary>
         /// 创建项。每一项包括一个标题控件与一个编辑或显示控件。
