@@ -45,7 +45,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for EnumName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty EnumNameProperty =
-            DependencyProperty.Register("EnumName", typeof(string), typeof(EnumComboBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(EnumName), typeof(string), typeof(EnumComboBox), new PropertyMetadata((d, e) =>
             {
                 var enumComboBox = (EnumComboBox)d;
                 enumComboBox.Items.Clear();

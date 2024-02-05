@@ -13,6 +13,10 @@ namespace Compete.Mis.Provider
         public DataTable GetEntity(string name, object id) => MemoryData.DataCreator.Create(service.Query(pluginPath, $"get{name}", new Dictionary<string, object> { { "id", id } })).Tables[0];
 
         public Models.PagingDataQueryResult Query(string name, IDictionary<string, object>? conditions, ulong currentPageNo, ushort pageSize)
-            => service.PagingQuery(pluginPath, $"query{name}", Utils.JavaHelper.Convert(conditions), currentPageNo, pageSize).ToDataResult();
+#if JAVA_LANGUAGE
+            => service.PagingQuery(pluginPath, $"query{name}", Utils.JavaHelper.Convert(conditions), currentPageNo, pageSize).ToDataResult();   // Java
+#else
+            => service.PagingQuery(pluginPath, $"query{name}", conditions, currentPageNo, pageSize).ToDataResult();
+#endif
     }
 }

@@ -13,6 +13,11 @@
         public long ParentMenuNo { get; set; }
 
         /// <summary>
+        /// 序号。
+        /// </summary>
+        public long Sn { get; set; }
+
+        /// <summary>
         /// 获取或设置菜单显示名。
         /// </summary>
         public required string DisplayName { get; set; }
@@ -20,7 +25,7 @@
         /// <summary>
         /// 获取或设置工具提示。
         /// </summary>
-        public string? Tooltip { get; set; }
+        public string? ToolTip { get; set; }
 
         /// <summary>
         /// 获取或设置菜单调用功能所在程序集。

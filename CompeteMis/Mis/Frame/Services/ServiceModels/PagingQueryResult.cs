@@ -4,7 +4,7 @@ namespace Compete.Mis.Frame.Services.ServiceModels
 {
     public sealed class PagingQueryResult
     {
-        public IList<Models.SimpleDataTable>? Data { get; set; }
+        public IDictionary<string, Models.SimpleData>? Data { get; set; }
 
         public ulong Count { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -7,7 +8,7 @@ using System.Windows.Navigation;
 
 namespace Compete.Mis.Frame.ViewModels
 {
-    internal sealed partial class LoginViewModel : ObservableObject
+    internal sealed partial class LoginViewModel : PageViewModel
     {
         private static readonly Services.IAccountService service = DispatchProxy.Create<Services.IAccountService, Services.WebApi.WpfWebApiServiceProxy>();
 
@@ -30,7 +31,7 @@ namespace Compete.Mis.Frame.ViewModels
 
         public LoginViewModel()
         {
-#if DEBUG
+#if DEBUG || DEBUG_JAVA
             // 调试时自动输入的租户、用户与口令。
             Tenant = "Test";    // Defualt
             User = "SuperMan";
@@ -45,6 +46,7 @@ namespace Compete.Mis.Frame.ViewModels
             var user = service.Authenticate(Tenant!, User!, Password!);
             if (user != null)
             {
+                GC.Collect();
                 Tenant = string.Empty;
                 User = string.Empty;
                 Password = string.Empty;
@@ -58,22 +60,26 @@ namespace Compete.Mis.Frame.ViewModels
                 mainWindow.WindowStyle = WindowStyle.SingleBorderWindow;
                 mainWindow.ResizeMode = ResizeMode.CanResize;
                 mainWindow.WindowState = WindowState.Maximized;
-                mainWindow.Navigate(new Views.MainPage());
+
+                if (mainWindow.CanGoForward)
+                    mainWindow.GoForward();
+                else
+                    mainWindow.Navigate(new Views.MainPage());
             }
-            else if (authenticationCount > 1)
+            else if (authenticationCount <= 0)
             {
                 // 失败，且已达到验证最大次数。
                 MisControls.MessageDialog.Error("LoginPage.UserOrPasswordErrorMessageExit");
                 //var window = (sender as FrameworkElement).GetWindow();
                 //if (window != null && !BrowserInteropHelper.IsBrowserHosted)
                 //    window.Close();
-                Application.Current.MainWindow.Close();
+                //Application.Current.MainWindow.Close();
+                Application.Current.Shutdown();
             }
-            else
+            else    // 失败，但未达到验证最大次数。
             {
-                // 失败，但未达到验证最大次数。
-                authenticationCount++;
-                //Controls.MessageDialog.Warning("LoginPage.UserOrPasswordErrorMessage");
+                MisControls.MessageDialog.Warning("LoginPage.UserOrPasswordErrorMessage", authenticationCount);
+                authenticationCount--;
             }
         }
 
@@ -81,5 +87,7 @@ namespace Compete.Mis.Frame.ViewModels
 
         [RelayCommand]
         private static void Cancel() => Application.Current.Shutdown();
+
+        public override void Refresh() => authenticationCount = 2;
     }
 }

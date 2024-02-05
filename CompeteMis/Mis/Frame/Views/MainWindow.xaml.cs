@@ -28,8 +28,14 @@ namespace Compete.Mis.Frame.Views
                     WindowState = WindowState.Normal;
                 }
                 else
+                {
                     e.Cancel = true;
+                    return;
+                }
             }
+
+            if (e.Content is FrameworkElement element && element.DataContext is ViewModels.PageViewModel viewModel)
+                viewModel.Refresh();
         }
     }
 }

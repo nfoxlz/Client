@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +11,9 @@ using System.Windows.Navigation;
 
 namespace Compete.Mis.Frame.ViewModels
 {
-    internal sealed partial class MainViewModel : ObservableObject
+    internal sealed partial class MainViewModel : PageViewModel
     {
-        public ICollection<Control> Menus { get; set; } = new List<Control>();
+        public ICollection<Control> Menus { get; set; } = new ObservableCollection<Control>();
 
         public bool CanGoBack { get; set; }
 
@@ -25,7 +25,7 @@ namespace Compete.Mis.Frame.ViewModels
             var item = new MenuItem()
             {
                 Header = setting.DisplayName,
-                ToolTip = setting.Tooltip,
+                ToolTip = string.IsNullOrWhiteSpace(setting.ToolTip) ? null : setting.ToolTip,
                 Tag = setting.PluginSetting,
             };
 
@@ -52,17 +52,21 @@ namespace Compete.Mis.Frame.ViewModels
         {
             var settings = from setting in menuSettings
                            where setting.ParentMenuNo == parentNo
+                           orderby setting.Sn
                            select setting;
 
             foreach (var setting in settings)
                 control.Items.Add(CreateMenu(setting, menuSettings));
         }
 
-        public MainViewModel()
+        public override void Refresh()
         {
+            Menus.Clear();
+
             var menuSettings = Services.GlobalServices.FrameService.GetMenus();
             var settings = from setting in menuSettings
                            where setting.ParentMenuNo == 0L
+                           orderby setting.Sn
                            select setting;
 
             foreach (var setting in settings)
@@ -232,8 +236,13 @@ namespace Compete.Mis.Frame.ViewModels
         [RelayCommand]
         private void Logout()
         {
-            if (GlobalCommon.MainDocumentPane!.Children.Count > 1 && MisControls.MessageDialog.Question("MainViewModel.LogoutMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            var count = GlobalCommon.MainDocumentPane!.Children.Count;
+            if (count > 1 && MisControls.MessageDialog.Question("MainViewModel.LogoutMessage", MessageBoxButton.YesNo) == MessageBoxResult.No)
                 return;
+
+            for (int index = count - 1; index > 0; index--)
+                GlobalCommon.MainDocumentPane.Children.RemoveAt(index);
+
             CanGoBack = true;
             ((NavigationWindow)Application.Current.MainWindow).GoBack();
         }

@@ -95,7 +95,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(object), typeof(EntityTextBlock), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(Value), typeof(object), typeof(EntityTextBlock), new PropertyMetadata((d, e) =>
             {
                 var entityTextBlock = d as EntityTextBlock;
 

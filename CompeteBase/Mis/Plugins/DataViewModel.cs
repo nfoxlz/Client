@@ -265,6 +265,13 @@ namespace Compete.Mis.Plugins
 
         protected virtual bool CanSave() => HasSaveAuthorition && VerifyData();
 
+        public bool HasExtendedSaveAuthorition { get => HasAuthorition(ReserveAuthorition.ExtendedSave); }
+
+        private bool CanExtendedSave(ExtendedSaveParameter? parameter) => HasAuthorition((long)ReserveAuthorition.ExtendedSave << (parameter?.AuthoritionFlag ?? 0)) && VerifyData();
+
+        [RelayCommand(CanExecute = nameof(CanExtendedSave))]
+        private void ExtendedSave(ExtendedSaveParameter? parameter) => Save(parameter?.Name ?? "extendedSave");
+
         [RelayCommand(CanExecute = nameof(CanAudit))]
         private void Audit(string? name) => DirectExecuteSaveSql(name ?? "audit");
 

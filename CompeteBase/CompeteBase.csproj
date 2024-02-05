@@ -6,7 +6,20 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>Compete</RootNamespace>
 	<TieredPGO>true</TieredPGO>
+	<Configurations>Debug;Release;Debug-Java;Release-Java</Configurations>
 	<!--<PublishAot>true</PublishAot>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|AnyCPU'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|AnyCPU'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

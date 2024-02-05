@@ -59,33 +59,48 @@ namespace Compete.Mis.Plugins
         Audit = 128L,
 
         /// <summary>
+        /// 记账。
+        /// </summary>
+        Keep = 256L,
+
+        /// <summary>
         /// 直接增加。
         /// </summary>
-        DirectAdd = 256L,
+        DirectAdd = 512L,
 
         /// <summary>
         /// 直接删除。
         /// </summary>
-        DirectDelete = 512L,
+        DirectDelete = 1024L,
 
         /// <summary>
         /// 直接修改。
         /// </summary>
-        DirectModify = 1024L,
+        DirectModify = 2048L,
 
         /// <summary>
         /// 批量删除。
         /// </summary>
-        BatchDelete = 2048L,
+        BatchDelete = 4096L,
 
         /// <summary>
         /// 批量审核。
         /// </summary>
-        BatchAudit = 4096L,
+        BatchAudit = 8192L,
+
+        /// <summary>
+        /// 批量记账。
+        /// </summary>
+        BatchKeep = 16384L,
 
         /// <summary>
         /// 执行SQL。
         /// </summary>
-        ExecuteSql = 8192L,
+        ExecuteSql = 32768L,
+
+        /// <summary>
+        /// 扩展保存。
+        /// </summary>
+        ExtendedSave = 65536L
     }
 }

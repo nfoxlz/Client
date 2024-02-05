@@ -107,19 +107,17 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for DateForamt.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DateForamtProperty =
-            DependencyProperty.Register("DateForamt", typeof(string), typeof(YearMonthPicker), new PropertyMetadata(GlobalCommon.GetMessageOrDefault("YearMonthStringForamt", "yyyy/MM"), (d, e) => ((YearMonthPicker)d).BindingTextBox()));
+            DependencyProperty.Register(nameof(DateForamt), typeof(string), typeof(YearMonthPicker), new PropertyMetadata(GlobalCommon.GetMessageOrDefault("YearMonthStringForamt", "yyyy/MM"), (d, e) => ((YearMonthPicker)d).BindingTextBox()));
 
         private void BindingTextBox()
         {
-            var binding = new Binding("SelectedDate")
+            var textBox = GetTemplateTextBox();
+            textBox.SetBinding(TextBox.TextProperty, new Binding(nameof(SelectedDate))
             {
                 RelativeSource = new RelativeSource { AncestorType = typeof(DatePicker) },
                 Converter = new YearMonthConverter(),
                 ConverterParameter = new Tuple<DatePicker, string>(this, DateForamt)
-            };
-
-            var textBox = GetTemplateTextBox();
-            textBox.SetBinding(TextBox.TextProperty, binding);
+            });
 
             textBox.PreviewKeyDown -= TextBox_PreviewKeyDown;
             textBox.PreviewKeyDown += TextBox_PreviewKeyDown;

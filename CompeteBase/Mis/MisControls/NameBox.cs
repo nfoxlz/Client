@@ -68,7 +68,7 @@ namespace Compete.Mis.MisControls
 
         //// Using a DependencyProperty as the backing store for NameData.  This enables animation, styling, binding, etc...
         //public static readonly DependencyProperty NameDataProperty =
-        //    DependencyProperty.Register("NameData", typeof(string), typeof(NameBox), new PropertyMetadata(OnNameDataChanged));
+        //    DependencyProperty.Register(nameof(NameData), typeof(string), typeof(NameBox), new PropertyMetadata(OnNameDataChanged));
 
         ///// <summary>
         ///// NameData 依赖项属性更变的回调方法。
@@ -89,6 +89,6 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for MnemonicCode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MnemonicCodeProperty =
-            DependencyProperty.Register("MnemonicCode", typeof(string), typeof(NameBox));
+            DependencyProperty.Register(nameof(MnemonicCode), typeof(string), typeof(NameBox));
     }
 }

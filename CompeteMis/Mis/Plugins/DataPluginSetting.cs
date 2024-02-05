@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 
 namespace Compete.Mis.Plugins
 {
@@ -8,7 +9,7 @@ namespace Compete.Mis.Plugins
 
         public IEnumerable<string>? ConditionMemoryDataSettings { get; set; }
 
-        public Models.SimpleDataTable? ConditionMemoryData { get; set; }
+        public Models.SimpleData? ConditionMemoryData { get; set; }
 
         public IEnumerable<MemoryData.DataColumnSetting>? ConditionDataColumnSettings { get; set; }
 
@@ -24,7 +25,7 @@ namespace Compete.Mis.Plugins
 
         //public string? MemoryDataName { get; set; }
 
-        public IDictionary<string, Models.SimpleDataTable>? MemoryData { get; set; }
+        public IDictionary<string, Models.SimpleData>? MemoryData { get; set; }
 
         //public string? DataSettingsName { get; set; }
 
@@ -71,6 +72,10 @@ namespace Compete.Mis.Plugins
         public string? DataSaveName { get; set; }
 
         public bool IsMergeConditionData { get; set; }
+
+        public IDictionary<string, DataViewRowState>? SaveRowStateFilters { get; set; }
+
+        public IDictionary<string, string>? SaveFilters { get; set; }
 
         public string[]? SaveConditionColumns { get; set; }
 

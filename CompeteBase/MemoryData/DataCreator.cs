@@ -1,4 +1,5 @@
 ﻿using Compete.Extensions;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -192,7 +193,7 @@ namespace Compete.MemoryData
 
         private const string billTypeNameColumnName = "BillTypeName";
 
-        public static DataTable Create(Mis.Models.SimpleDataTable table)
+        public static DataTable Create(Mis.Models.SimpleData table, string? tableName = null)
         {
             string column;
             DataColumn dataColumn;
@@ -200,8 +201,8 @@ namespace Compete.MemoryData
             var billTypeIndex = -1;
             bool hasDefaultSystemValue = false;
 
-            if (!string.IsNullOrWhiteSpace(table.TableName))
-                result.TableName = table.TableName;
+            if (!string.IsNullOrWhiteSpace(tableName))
+                result.TableName = tableName;
 
             var count = table.Columns!.Length;
             for (int index = 0; index < count; index++)
@@ -259,25 +260,25 @@ namespace Compete.MemoryData
             return result;
         }
 
-        public static DataSet Create(IDictionary<string, Mis.Models.SimpleDataTable> tables)
+        public static DataSet Create(IDictionary<string, Mis.Models.SimpleData> tables)
         {
             var result = new DataSet();
             foreach (var tablePair in tables)
             {
-                var dataTable = Create(tablePair.Value);
+                var dataTable = Create(tablePair.Value, tablePair.Key);
                 dataTable.TableName = tablePair.Key;
                 result.Tables.Add(dataTable);
             }
             return result;
         }
 
-        public static DataSet Create(IList<Mis.Models.SimpleDataTable> tables)
-        {
-            var result = new DataSet();
-            foreach (var table in tables)
-                result.Tables.Add(Create(table));
-            return result;
-        }
+        //public static DataSet Create(IList<Mis.Models.SimpleData> tables)
+        //{
+        //    var result = new DataSet();
+        //    foreach (var table in tables)
+        //        result.Tables.Add(Create(table));
+        //    return result;
+        //}
 
         public static void AddColumns(DataTable table, IEnumerable<DataColumnSetting> settings)
         {
@@ -385,12 +386,12 @@ namespace Compete.MemoryData
                     SetColumns(table, setting);
         }
 
-        public static Mis.Models.SimpleDataTable ConvertSimpleDataTable(DataTable table)
+        public static Mis.Models.SimpleData ConvertSimpleDataTable(DataTable table)
         {
             var columnCount = table.Columns.Count;
             var rowCount = table.Rows.Count;
 
-            var result = new Mis.Models.SimpleDataTable
+            var result = new Mis.Models.SimpleData
             {
                 Columns = new string[columnCount],
                 Rows = new object[rowCount][],
@@ -403,20 +404,29 @@ namespace Compete.MemoryData
             {
                 result.Rows[i] = new object[columnCount];
                 for (int j = 0; j < columnCount; j++)
-                    if (table.Columns[j].DataType == typeof(DateTime))
+#if JAVA_LANGUAGE
+                    if (table.Columns[j].DataType == typeof(DateTime))    // Java
                         result.Rows[i][j] = Utils.JavaHelper.ConvertDateTime((DateTime)table.Rows[i][j]);
                     else if (table.Columns[j].DataType == typeof(DateTimeOffset))
                         result.Rows[i][j] = Utils.JavaHelper.ConvertDateTime((DateTimeOffset)table.Rows[i][j]);
                     else
+#endif
                         result.Rows[i][j] = table.Rows[i][j];
             }
 
             return result;
         }
 
-        public static IDictionary<string, Mis.Models.SimpleDataTable> ConvertSimpleDataSet(DataSet data)
+        //public static IDictionary<string, Mis.Models.SimpleDataTable> ConvertSimpleDataSet(DataSet data)
+        //{
+        //    var result = new Dictionary<string, Mis.Models.SimpleDataTable>();
+        //    foreach (DataTable table in data.Tables)
+        //        result.Add(table.TableName, ConvertSimpleDataTable(table));
+        //    return result;
+        //}
+        public static IDictionary<string, Mis.Models.SimpleData> ConvertSimpleDataSet(DataSet data)
         {
-            var result = new Dictionary<string, Mis.Models.SimpleDataTable>();
+            var result = new Dictionary<string, Mis.Models.SimpleData>();
             foreach (DataTable table in data.Tables)
                 result.Add(table.TableName, ConvertSimpleDataTable(table));
             return result;

@@ -69,7 +69,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for IsReadOnly.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(DataPanel), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(DataPanel), new PropertyMetadata(false));
 
         protected override Brush? GetTitleForeground(DataColumn column)
         {
@@ -446,7 +446,7 @@ namespace Compete.Mis.MisControls
                         result = new EnumComboBox
                         {
                             Name = columnName,
-                            EnumName = columnName,
+                            EnumName = columnName,  // .Replace("_", string.Empty)
                             SelectedValuePath = nameof(EnumItem.Value),
                             DisplayMemberPath = nameof(EnumItem.DisplayName),
                         };

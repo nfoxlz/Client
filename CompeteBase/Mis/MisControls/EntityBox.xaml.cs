@@ -252,7 +252,7 @@ namespace Compete.Mis.MisControls
         /// 标识 Value 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(object), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(Value), typeof(object), typeof(EntityBox), new PropertyMetadata((d, e) =>
             {
                 var entityBox = (EntityBox)d;
                 if (entityBox.isSetValue || entityBox.Value != null && entityBox.Value.Equals(entityBox.oldValue) || string.IsNullOrWhiteSpace(entityBox.ServiceParameter) || string.IsNullOrWhiteSpace(entityBox.DisplayPath))
@@ -295,7 +295,7 @@ namespace Compete.Mis.MisControls
         /// 标识 ValuePath 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValuePathProperty =
-            DependencyProperty.Register("ValuePath", typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(ValuePath), typeof(string), typeof(EntityBox));
 
         /// <summary>
         /// 获取或设置源对象上的值的路径，以用作对象的可视表示形式。
@@ -310,7 +310,7 @@ namespace Compete.Mis.MisControls
         /// 标识 DisplayPath 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty DisplayPathProperty =
-            DependencyProperty.Register("DisplayPath", typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(DisplayPath), typeof(string), typeof(EntityBox));
 
         /// <summary>
         /// 获取或设置实体的名称。
@@ -367,7 +367,7 @@ namespace Compete.Mis.MisControls
         /// 标识 IsReadOnly 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(EntityBox), new PropertyMetadata((d, e) =>
             {
                 var entityBox = (EntityBox)d;
                 entityBox.SelectButton.Visibility = entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;

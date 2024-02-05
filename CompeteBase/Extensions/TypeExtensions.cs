@@ -364,8 +364,10 @@ namespace Compete.Extensions
                         list.Add(item.GetInt32());
                     return new DateTime(list[0], list[1], list[2], list[3], list[4], list[5], list[6] / 1000000);
                 }
-                else if (element.ValueKind == JsonValueKind.Number)
+#if JAVA_LANGUAGE
+                else if (element.ValueKind == JsonValueKind.Number) // Java
                     return Utils.JavaHelper.ToDateTime(element.GetInt64());
+#endif
                 else
                     return element.GetDateTime();
             else if (type == typeof(DateTimeOffset))

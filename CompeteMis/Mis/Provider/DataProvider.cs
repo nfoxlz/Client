@@ -12,9 +12,17 @@ namespace Compete.Mis.Provider
         private static readonly Frame.Services.IDataService service = DispatchProxy.Create<Frame.Services.IDataService, Frame.Services.WebApi.WebApiServiceProxy>();
 
         public Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30)
-            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters)).ToDataResult();
+#if JAVA_LANGUAGE
+            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters)).ToDataResult();    // Java
+#else
+            => service.PagingQuery(path, name, parameters).ToDataResult();
+#endif
 
-        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, Utils.JavaHelper.Convert(parameters)));
+#if JAVA_LANGUAGE
+        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, Utils.JavaHelper.Convert(parameters)));  // Java
+#else
+        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, parameters));
+#endif
 
         public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), actionId.ToByteArray());
 

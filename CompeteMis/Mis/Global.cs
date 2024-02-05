@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
-using Xceed.Wpf.AvalonDock.Layout;
 
 namespace Compete.Mis
 {
@@ -15,6 +14,8 @@ namespace Compete.Mis
     {
         public static Frame.Services.WebApi.WebApiHelper ServiceHelper { get; }
             = new Frame.Services.WebApi.WebApiHelper(ConfigurationManager.AppSettings["WebApiBaseAddress"] ?? Constants.DefaultBaseAddress, Constants.SignPassword);
+
+        private static string settingsPath = ConfigurationManager.AppSettings["SettingsPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings");
 
         public static void Initialize()
         {
@@ -26,13 +27,13 @@ namespace Compete.Mis
 
             Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
 
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings/columns.json");
+            var path = Path.Combine(settingsPath, "columns.json");
             if (File.Exists(path))
                 MemoryData.DataCreator.GlobalDataColumnSettings = JsonSerializer.Deserialize<IEnumerable<MemoryData.DataColumnSetting>>(File.ReadAllText(path));
-            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings/billType.json");
+            path = Path.Combine(settingsPath, "billType.json");
             if (File.Exists(path))
                 MemoryData.DataCreator.BillTypeNameSettings = JsonSerializer.Deserialize<IDictionary<ushort, string>>(File.ReadAllText(path));
-            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings/errors.json");
+            path = Path.Combine(settingsPath, "errors.json");
             if (File.Exists(path))
                 GlobalCommon.ErrorDictionary = JsonSerializer.Deserialize<IDictionary<int, string>>(File.ReadAllText(path));
             GlobalCommon.ServerDateTimeProvider = new Provider.DateTimeProvider();
@@ -40,9 +41,10 @@ namespace Compete.Mis
             GlobalCommon.EntityDataProvider = new Provider.EntityDataProvider();
 
             Plugins.PluginHelper.DefaultCommand = new Plugins.SettingPlugin();
-            //Enums.EnumHelper.Initialize(new Provider.EumnDataProvider());
         }
 
-        public static void LoginedInitialize() => Enums.EnumHelper.Initialize(new Provider.EumnDataProvider());
+        private static readonly Enums.IEumnDataProvider provider = new Provider.EumnDataProvider();
+
+        public static void LoginedInitialize() => Enums.EnumHelper.Initialize(provider);
     }
 }

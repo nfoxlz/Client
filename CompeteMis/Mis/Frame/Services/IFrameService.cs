@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Compete.Mis.Frame.Services
 {
@@ -8,7 +9,12 @@ namespace Compete.Mis.Frame.Services
 
         IEnumerable<Enums.EnumInfo> GetEnums();
 
-        long GetServerDateTime();
+#if JAVA_LANGUAGE
+        long GetServerDateTime();   // Java
+#else
+        DateTime GetServerDateTime();
+#endif
+
 
 #if DEBUG
         void ClearCache();

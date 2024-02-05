@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -63,14 +64,7 @@ namespace Compete.Mis.MisControls
         /// <summary>
         /// 初始化 <see cref="DataPanelBase"/> 类的新实例。
         /// </summary>
-        public DataPanelBase() => DataContextChanged += DataPanelBase_DataContextChanged;
-
-        /// <summary>
-        /// DataContext 属性改变事件处理方法。
-        /// </summary>
-        /// <param name="sender">事件源。</param>
-        /// <param name="e">事件数据。</param>
-        private void DataPanelBase_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) => CreateItems();
+        public DataPanelBase() => DataContextChanged += (sender, e) => CreateItems();
 
         /// <summary>
         /// 获取或设置一个值，用于指示生成的每个表示题控件的宽度。

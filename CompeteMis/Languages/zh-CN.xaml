@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:s="clr-namespace:System;assembly=mscorlib">
     <!--公用-->
-    <s:String x:Key="DateTimeStringFormat">yyyy年M月d日dddH:m:s.FFFFFFF</s:String>
-    <s:String x:Key="DateStringFormat">yyyy年M月d日ddd</s:String><!--D-->
+    <s:String x:Key="DateTimeStringFormat">yyyy年M月d日H:m:s.FFFFFFF</s:String>
+    <s:String x:Key="DateStringFormat">yyyy年M月d日</s:String><!--D-->
     <s:String x:Key="YearMonthStringForamt">yyyy年M月</s:String>
 
     <s:String x:Key="OKButton">确定(_O)</s:String>
@@ -23,6 +23,9 @@
     <s:String x:Key="LoginPage.TenantWatermark">请输入租户编码。</s:String>
     <s:String x:Key="LoginPage.UserWatermark">请输入用户编码。</s:String>
     <s:String x:Key="LoginPage.PasswordWatermark">请输入口令。</s:String>
+
+    <s:String x:Key="LoginPage.UserOrPasswordErrorMessageExit">用户或口令错误。应用程序将退出。</s:String>
+    <s:String x:Key="LoginPage.UserOrPasswordErrorMessage">用户或口令错误，您还有【{0}】次机会，请重新输入用户与口令。</s:String>
 
     <!--实体选择对话框-->
     <s:String x:Key="EntitySelectDialog.Title">{0}选择</s:String>
@@ -111,5 +114,7 @@
     <s:String x:Key="SaveButton">保存(_S)</s:String>
     <s:String x:Key="PrintButton">打印(_P)</s:String>
     <s:String x:Key="PrintPreviewButton">打印预览(_v)</s:String>
+    <s:String x:Key="AuditButton">审核(_u)</s:String>
+    <s:String x:Key="KeepButton">记账(_K)</s:String>
 
 </ResourceDictionary>

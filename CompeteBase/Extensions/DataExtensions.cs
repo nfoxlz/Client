@@ -98,5 +98,14 @@ namespace Compete.Extensions
 
             return [.. result];
         }
+
+        public static DataTable FilterToTable(this DataView view, string? rowFilter, params string[] columnNames)
+        {
+            var tempFilter = view.RowFilter;
+            view.RowFilter = rowFilter;
+            var result = view.ToTable(false, columnNames);
+            view.RowFilter = tempFilter;
+            return result;
+        }
     }
 }

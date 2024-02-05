@@ -109,7 +109,7 @@ namespace Compete.Mis.MisControls
         /// 标识 Value 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(long), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.ShowValue()));
+            DependencyProperty.Register(nameof(Value), typeof(long), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.ShowValue()));
 
         /// <summary>
         /// 获取或设置一个值，标识控件是否是只读的。
@@ -124,7 +124,7 @@ namespace Compete.Mis.MisControls
         /// 标识 IsReadOnly 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ChoiceBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(ChoiceBox), new PropertyMetadata((d, e) =>
             {
                 var choiceBox = d as ChoiceBox;
                 foreach (var item in choiceBox!.itemDictionary.Keys)
@@ -144,7 +144,7 @@ namespace Compete.Mis.MisControls
         /// 标识 ItemData 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ItemDataProperty =
-            DependencyProperty.Register("ItemData", typeof(IDictionary<sbyte, string>), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.CreateItems()));
+            DependencyProperty.Register(nameof(ItemData), typeof(IDictionary<sbyte, string>), typeof(ChoiceBox), new PropertyMetadata((d, e) => (d as ChoiceBox)?.CreateItems()));
 
         #endregion 依赖属性
     }

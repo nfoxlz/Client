@@ -16,6 +16,23 @@ namespace Compete.Mis.Frame.Services.WebApi
             if (className.Length > 1 && className.StartsWith('I') && className[1].IsUpper())
                 className = className[1..];
 
+            var methodName = targetMethod.Name;
+#if !JAVA_LANGUAGE
+            #region Iris（Go 语言）服务器特别处理。（换为其它服务器时，应注释掉这些代码。）
+
+            if (methodName.Length > 3 && methodName.StartsWith("Get") && methodName[3].IsUpper())
+                methodName = methodName[3..];
+            //else if (methodName.Length > 4 && methodName.StartsWith("Post") && methodName[4].IsUpper())
+            //    methodName = methodName[4..];
+
+            string name = string.Empty;
+            foreach (var ch in methodName)
+                name += ch.IsUpper() ? "/" + ch.ToString().ToLower() : ch;
+            methodName = name[1..];
+
+            #endregion Iris（Go 语言）服务器特别处理。
+#endif
+
             Dictionary<string, object?>? parameters;
             if (args == null)
                 parameters = null;
@@ -32,11 +49,11 @@ namespace Compete.Mis.Frame.Services.WebApi
             {
                 if (targetMethod?.ReturnType == typeof(void))
                 {
-                    Global.ServiceHelper.Post($"{className}/{targetMethod?.Name}", parameters);
+                    Global.ServiceHelper.Post($"{className}/{methodName}", parameters);
                     return null;
                 }
                 else
-                    return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{targetMethod?.Name}", parameters);
+                    return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
             }
             catch (InvalidOperationException)
             {
@@ -44,7 +61,7 @@ namespace Compete.Mis.Frame.Services.WebApi
             }
             catch (Exception exception)
             {
-                throw new Exceptions.PlatformException(GlobalCommon.GetMessage("Message.ServiceError", className, targetMethod.Name), exception);
+                throw new Exceptions.PlatformException(GlobalCommon.GetMessage("Message.ServiceError", className, methodName), exception);
             }
         }
     }

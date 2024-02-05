@@ -1,9 +1,11 @@
-﻿using System;
+﻿#if JAVA_LANGUAGE
+
+using System;
 using System.Collections.Generic;
 
 namespace Compete.Utils
 {
-    public static class JavaHelper
+    public static class JavaHelper    // Java
     {
         private static readonly DateTime startTime = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Utc);
 
@@ -47,3 +49,5 @@ namespace Compete.Utils
         }
     }
 }
+
+#endif

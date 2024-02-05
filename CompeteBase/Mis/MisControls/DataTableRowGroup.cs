@@ -52,7 +52,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for ShowColumns.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowColumnsProperty =
-            DependencyProperty.Register("ShowColumns", typeof(IEnumerable<string>), typeof(DataTableRowGroup), new PropertyMetadata((d, e) => ((DataTableRowGroup)d).CreateRow()));
+            DependencyProperty.Register(nameof(ShowColumns), typeof(IEnumerable<string>), typeof(DataTableRowGroup), new PropertyMetadata((d, e) => ((DataTableRowGroup)d).CreateRow()));
 
         public object ItemsSource
         {
@@ -62,7 +62,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for ItemsSource.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(object), typeof(DataTableRowGroup), new PropertyMetadata((d, e) => ((DataTableRowGroup)d).CreateRow()));
+            DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(DataTableRowGroup), new PropertyMetadata((d, e) => ((DataTableRowGroup)d).CreateRow()));
 
         //private static void CreateRow(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DataTableRowGroup)d).CreateRow();
 

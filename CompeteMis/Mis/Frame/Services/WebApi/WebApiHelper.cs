@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Compete.Mis.Plugins;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -87,7 +88,18 @@ namespace Compete.Mis.Frame.Services.WebApi
             Execute(async client =>
             {
                 var response = await client.PostAsJsonAsync(requestUri, signHelper.GenerateSignParameter(parameters), DefaultJsonSerializerOptions);
-                return response.EnsureSuccessStatusCode().IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync(type) : defaultValue;
+                try
+                {
+                    var responseMessage = response.EnsureSuccessStatusCode();
+                    return responseMessage.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync(type) : throw new WebApiServiceException(responseMessage);
+                }
+                catch(Exception exception)
+                {
+                    using var factory = GlobalCommon.CreateLoggerFactory();
+                    var logger = factory.CreateLogger<UIPlugin>();
+                    logger.LogError(exception, exception.Message);
+                    return defaultValue;
+                }
             });
         //{
         //    var response = await GetHttpClient().PostAsJsonAsync(requestUri, signHelper.GenerateSignParameter(parameters));

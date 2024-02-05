@@ -2,12 +2,12 @@
 {
     public sealed class SaveData
     {
-        public Models.SimpleDataTable? AddedTable { get; set; }
+        public Models.SimpleData? AddedTable { get; set; }
 
-        public Models.SimpleDataTable? DeletedTable { get; set; }
+        public Models.SimpleData? DeletedTable { get; set; }
 
-        public Models.SimpleDataTable? ModifiedTable { get; set; }
+        public Models.SimpleData? ModifiedTable { get; set; }
 
-        public Models.SimpleDataTable? ModifiedOriginalTable { get; set; }
+        public Models.SimpleData? ModifiedOriginalTable { get; set; }
     }
 }

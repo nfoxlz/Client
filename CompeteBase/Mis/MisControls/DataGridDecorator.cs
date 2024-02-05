@@ -8,6 +8,7 @@
 // 1.0.0.0 2018/3/2 10:22:37 LeeZheng  新建。
 // ===================================================================
 using Compete.Extensions;
+using Compete.Mis.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -130,7 +131,7 @@ namespace Compete.Mis.MisControls
             var controlType = control == null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             BindingBase binding;
-            if (e.Column.IsReadOnly && controlType == DataControlType.Default && e.Column is DataGridBoundColumn dataGridBoundColumn)
+            if ((dataGrid.IsReadOnly || e.Column.IsReadOnly) && controlType == DataControlType.Default && e.Column is DataGridBoundColumn dataGridBoundColumn)
                 binding = dataGridBoundColumn.Binding;
             else
                 binding = new Binding(e.PropertyName);
@@ -268,7 +269,7 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { LongUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<long>(maximum), GetMaximum<long>(length, precision)) },
-                            { LongUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<long>(minimum), GetMinimum<long>(length, precision)) }
+                            { LongUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<long>(minimum), GetMinimum<long>(length, precision)) },
                         },
                         true);
                 else if (dataType == typeof(int))
@@ -276,7 +277,7 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { IntegerUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<int>(maximum), GetMaximum<int>(length, precision)) },
-                            { IntegerUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<int>(minimum), GetMinimum<int>(length, precision)) }
+                            { IntegerUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<int>(minimum), GetMinimum<int>(length, precision)) },
                         },
                         true);
                 else if (dataType == typeof(short))
@@ -284,7 +285,7 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { ShortUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<short>(maximum), GetMaximum<short>(length, precision)) },
-                            { ShortUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<short>(minimum), GetMinimum<short>(length, precision)) }
+                            { ShortUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<short>(minimum), GetMinimum<short>(length, precision)) },
                         },
                         true);
                 else if (dataType == typeof(byte))
@@ -292,7 +293,7 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { ByteUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<byte>(maximum), GetMaximum<byte>(length, precision)) },
-                            { ByteUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<byte>(minimum), GetMinimum<byte>(length, precision)) }
+                            { ByteUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<byte>(minimum), GetMinimum<byte>(length, precision)) },
                         },
                         true);
                 else if (dataType == typeof(decimal))
@@ -302,7 +303,7 @@ namespace Compete.Mis.MisControls
                             new Dictionary<DependencyProperty, object?>
                             {
                                 { CalculatorUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
-                                { CalculatorUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) }
+                                { CalculatorUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
                             },
                             true);
                     else
@@ -310,7 +311,7 @@ namespace Compete.Mis.MisControls
                             new Dictionary<DependencyProperty, object?>
                             {
                                 { DecimalUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
-                                { DecimalUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) }
+                                { DecimalUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
                             },
                             true);
                 }
@@ -323,7 +324,7 @@ namespace Compete.Mis.MisControls
                                 new Dictionary<DependencyProperty, object?>
                                 {
                                     { TimePicker.MaximumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(maximum) },
-                                    { TimePicker.MinimumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(minimum) }
+                                    { TimePicker.MinimumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(minimum) },
                                 }),
                         _ => CreateColumn(binding, typeof(DateTimePicker), DateTimePicker.ValueProperty,
                                 new Dictionary<DependencyProperty, object?>
@@ -338,7 +339,15 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { TimeSpanUpDown.MaximumProperty, Utils.TypeConvert.ChangeNullableType<TimeSpan>(maximum) },
-                            { TimeSpanUpDown.MinimumProperty, Utils.TypeConvert.ChangeNullableType<TimeSpan>(minimum) }
+                            { TimeSpanUpDown.MinimumProperty, Utils.TypeConvert.ChangeNullableType<TimeSpan>(minimum) },
+                        });
+                else if (dataType == typeof(sbyte))
+                    e.Column = CreateColumn(binding, typeof(EnumComboBox), Selector.SelectedValueProperty,
+                        new Dictionary<DependencyProperty, object?>
+                        {
+                            { EnumComboBox.EnumNameProperty, columnName },
+                            { Selector.SelectedValuePathProperty, nameof(EnumItem.Value) },
+                            { ItemsControl.DisplayMemberPathProperty, nameof(EnumItem.DisplayName) },
                         });
             }
             else

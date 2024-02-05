@@ -25,14 +25,22 @@ namespace Compete.Mis.Plugins
                 }
 
             decimal balance;
+            DataTable table;
             foreach (var pair in Setting.CalculatedColumns)
                 if (data.Tables.Contains(pair.Key))
                 {
                     foreach (var setting in pair.Value)
                     {
-                        balance = 0M;
-                        foreach (DataRow row in data.Tables[pair.Key]!.Rows)
-                            row[setting.BalanceColumn!] = (balance += Convert.ToDecimal(row[setting.PlusColumn!]) - Convert.ToDecimal(row[setting.MinusColumn!]));
+                        table = data.Tables[pair.Key]!;
+                        if (table.Rows.Count == 0)
+                            continue;
+
+                        balance = Convert.ToDecimal(table.Rows[0][setting.BalanceColumn!]);
+                        foreach (DataRow row in table.Rows)
+                        {
+                            balance += Convert.ToDecimal(row[setting.PlusColumn!]) - Convert.ToDecimal(row[setting.MinusColumn!]);
+                            row[setting.BalanceColumn!] = balance;
+                        }
                     }
                 }
         }

@@ -281,6 +281,7 @@ namespace Compete.Mis.Plugins
                 }
             }
         }
+
         private readonly Dictionary<DataColumn, MethodInfo> conditionColumnCalculators = [];
 
         private readonly Dictionary<string, MethodInfo> conditionCalculatorMethodDictionary = [];
@@ -620,7 +621,7 @@ namespace Compete.Mis.Plugins
             return table.Rows.Count > 0 ? table : null;
         }
 
-        private static DataTable RemoveColumns(DataTable table, string[]? columns) => columns == null || columns.LongLength == 0L ? table.Copy() : table.DefaultView.ToTable(true, columns);
+        private static DataTable RemoveColumns(DataTable table, string[]? columns) => columns == null || columns.LongLength == 0L ? table.Copy() : table.DefaultView.ToTable(false, columns);
 
         private static DataTable? GetTable(DataView dataView, string[]? columns, DataViewRowState state)
         {
@@ -669,6 +670,9 @@ namespace Compete.Mis.Plugins
                             data.Add(pair.Key, tableData);
                         }
 
+                        if (Setting.SaveFilters != null && Setting.SaveFilters!.TryGetValue(pair.Key, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                            dataView.RowFilter = filter;
+
                         tableData.AddedTable = RemoveColumns(dataView, tableData.AddedTable, pair.Value.AddedColumns, DataViewRowState.Added);
                         tableData.DeletedTable = RemoveColumns(dataView, tableData.DeletedTable, pair.Value.DeletedColumns, DataViewRowState.Deleted);
                         tableData.ModifiedTable = RemoveColumns(dataView, tableData.ModifiedTable, pair.Value.ModifiedColumns, DataViewRowState.ModifiedCurrent);
@@ -687,15 +691,20 @@ namespace Compete.Mis.Plugins
                 {
                     dataView = new DataView(table)
                     {
-                        RowStateFilter = DataViewRowState.Added | DataViewRowState.ModifiedCurrent
+                        RowStateFilter = Setting.SaveRowStateFilters == null || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
+                            ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
+                            : rowStateFilter,
                     };
+                    
+                    if (Setting.SaveFilters != null && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                        dataView.RowFilter = filter;
+
                     if (Setting.SaveColumns != null && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
-                        dataSet.Tables.Add(dataView.ToTable(true, columns));
+                        dataSet.Tables.Add(dataView.ToTable(false, columns));
                     else
                         dataSet.Tables.Add(dataView.ToTable());
                 }
                 result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", dataSet, ActionId!.Value);
-
             }
 
             if (result.ErrorNo < 0)
