@@ -43,6 +43,17 @@ namespace Compete.Extensions
 
         public static void SetPropertyValue(this object obj, long index, object val) => obj.GetType().GetProperties()[index].SetValue(obj, val);
 
+        public static bool TrySetPropertyValue(this object obj, string name, object val)
+        {
+            if (obj.HasProperty(name))
+            {
+                obj.SetPropertyValue(name, val);
+                return true;
+            }
+
+            return false;
+        }
+
         public static Type? GetPropertyType(this object obj, string name)
         {
             var info = obj.GetType().GetProperty(name);
@@ -102,7 +113,7 @@ namespace Compete.Extensions
                 if (destinationProperty == null)// || nullCopy && destinationProperty.CanRead && destinationProperty.GetValue(destination) != null
                     continue;
 
-                if (destinationProperty.PropertyType.IsAssignableFrom(sourceProperty.PropertyType))
+                if (destinationProperty.PropertyType.ToString() == sourceProperty.PropertyType.ToString() || destinationProperty.PropertyType.IsAssignableFrom(sourceProperty.PropertyType))
                     destinationProperty.SetValue(destination, sourceValue);
                 else if (sourceProperty.PropertyType == typeof(Guid) && destinationProperty == typeof(byte[]))
                     destinationProperty.SetValue(destination, ((Guid)sourceValue).ToByteArray());

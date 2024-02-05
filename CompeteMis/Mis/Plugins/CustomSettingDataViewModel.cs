@@ -1,21 +1,17 @@
-﻿using Compete.Extensions;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO;
+using System.Text.Json;
 
 namespace Compete.Mis.Plugins
 {
-    public abstract class CustomSettingDataViewModel<T> : DataViewModel where T : class, new()
+    public abstract partial class CustomSettingDataViewModel<T> : DataViewModel where T : class, new()
     {
-        protected override void NewSetting(object? setting)
-        {
-            base.NewSetting(setting);
+        [ObservableProperty]
+        private T? _setting;
 
-            //Setting = setting as T;
-            if (setting != null)
-            {
-                Setting = new();
-                setting.DynamicMapTo(Setting);
-            }
-        }
+        [ObservableProperty]
+        private string? _settingFileName;
 
-        public T? Setting { get; set; }
+        partial void OnSettingFileNameChanged(string? value) => Setting = !string.IsNullOrWhiteSpace(value) && File.Exists(value) ? JsonSerializer.Deserialize<T>(File.ReadAllText(value)) : new();
     }
 }

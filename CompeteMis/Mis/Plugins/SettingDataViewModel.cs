@@ -13,7 +13,7 @@ namespace Compete.Mis.Plugins
 {
     public sealed class SettingDataViewModel : SettingDataViewModel<DataPluginSetting> { }
 
-    public abstract class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting, new()
+    public abstract partial class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting, new()
     {
         //public PluginCommandParameter? PluginParameter { get; set; }
 

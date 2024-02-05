@@ -8,12 +8,14 @@ namespace Compete.Mis.Plugins
     {
         public PluginCommandParameter? PluginParameter { get; set; }
 
-        [ObservableProperty]
-        private object? _pluginSetting;
+        //[ObservableProperty]
+        //private object? _pluginSetting;
 
-        partial void OnPluginSettingChanged(object? value) => NewSetting(value);
+        //private string? _pluginSetting
 
-        protected virtual void NewSetting(object? setting) { }
+        //partial void OnPluginSettingChanged(object? value) => NewSetting(value);
+
+        //protected virtual void NewSetting(object? setting) { }
 
         /// <summary>
         /// 获取或设置插件内部权限。

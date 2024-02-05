@@ -29,16 +29,15 @@ namespace Compete.Mis.Frame.ViewModels
         [NotifyCanExecuteChangedFor(nameof(OkCommand))]
         private string? _password;
 
+#if DEBUG || DEBUG_JAVA
         public LoginViewModel()
         {
-#if DEBUG || DEBUG_JAVA
             // 调试时自动输入的租户、用户与口令。
             Tenant = "Test";    // Defualt
             User = "SuperMan";
             Password = "PASSWORD";
-#endif
         }
-
+#endif
 
         [RelayCommand(CanExecute = nameof(CanOk))]
         private void Ok()

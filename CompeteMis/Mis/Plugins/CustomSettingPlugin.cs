@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Compete.Extensions;
+using System.IO;
 using System.Text.Json;
 using System.Windows;
 
@@ -23,8 +24,8 @@ namespace Compete.Mis.Plugins
                 if (viewModel != null)
                 {
                     viewModel.PluginParameter ??= parameter;
-                    viewModel.PluginSetting ??= setting;
                     viewModel.Authorition &= parameter.Authorition;
+                    viewModel.TrySetPropertyValue("SettingFileName", path);
                     uiElement.DataContext ??= viewModel;
                 }
                 //if (viewModel != null && viewModel.Data == null)
