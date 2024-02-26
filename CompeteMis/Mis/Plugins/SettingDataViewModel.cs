@@ -625,11 +625,17 @@ namespace Compete.Mis.Plugins
 
         private static DataTable? GetTable(DataView dataView, string[]? columns, DataViewRowState state)
         {
-            if (columns == null)
-                return null;
+            //if (columns == null)
+            //    return null;
+
+            //dataView.RowStateFilter = state;
+            //var result = columns.LongLength == 1L && columns[0] == "*"
+            //    ? dataView.ToTable()
+            //    : dataView.ToTable(true, columns);
+            //return result.Rows.Count == 0 ? null : result;
 
             dataView.RowStateFilter = state;
-            var result = columns.LongLength == 1L && columns[0] == "*"
+            var result = columns == null || columns.LongLength == 1L && columns[0] == "*"
                 ? dataView.ToTable()
                 : dataView.ToTable(true, columns);
             return result.Rows.Count == 0 ? null : result;

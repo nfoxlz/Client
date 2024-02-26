@@ -1,14 +1,9 @@
-﻿using System.Windows.Threading;
+﻿using Compete.Mis.MisThreading;
 
 namespace Compete.Threading
 {
     internal sealed class WpfApplicationManager : IApplicationManager
     {
-        public void DoEvents()
-        {
-            var frame = new DispatcherFrame(true);
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (object? state) => (state as DispatcherFrame)!.Continue = false, frame);
-            Dispatcher.PushFrame(frame);
-        }
+        public void DoEvents() => ThreadingHelperBase.DoEvents();
     }
 }

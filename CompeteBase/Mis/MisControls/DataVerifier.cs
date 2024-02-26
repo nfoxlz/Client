@@ -238,15 +238,17 @@ namespace Compete.Mis.MisControls
             int index;
             var result = false;
             foreach (DataColumn column in table.Columns)
-                if (Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired])) // 检查数据列是否设置为必须。
+                if (Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]) && Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired])) // 检查数据列是否设置为必须。
                 {
                     index = 0;
                     foreach (DataRow row in table.Rows)
                     {
-                        if (row.RowState == DataRowState.Unchanged || row.RowState == DataRowState.Deleted)
+                        if (row.RowState == DataRowState.Deleted)
+                            continue;
+                        index++;
+                        if (row.RowState == DataRowState.Unchanged)
                             continue;
 
-                        index++;
                         if (IsNull(row[column], column))
                         {
                             builder.Append(index <= 1 ? GlobalCommon.GetMessage("Message.NonnullRuleError", column.Caption) : GlobalCommon.GetMessage("Message.DetailNonnullRuleError", index, column.Caption));

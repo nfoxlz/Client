@@ -82,7 +82,7 @@
     <s:String x:Key="Message.ServiceError">应用服务异常。（服务【{0}】   方法【{1}】）</s:String>
     
     <!--操作错误提示-->
-    <s:String x:Key="Message.DetailNonnullRuleError">第【{0}】行【{1}】为不能为空。</s:String>
+    <s:String x:Key="Message.DetailNonnullRuleError">第【{0}】行【{1}】不能为空。</s:String>
     <s:String x:Key="Message.NonnullRuleError">【{0}】为不能为空。</s:String>
     <s:String x:Key="Message.InboundQuantityError">(【实际入库数量】+【折扣入库数量】)×【入库包装规格】不能大于【未入库数量】。</s:String>
     <s:String x:Key="Message.InboundPieceError">【实际入库件数】+【折扣入库件数】不能大于【未入库件数】。</s:String>

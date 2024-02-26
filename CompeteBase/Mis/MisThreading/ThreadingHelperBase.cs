@@ -22,13 +22,10 @@ namespace Compete.Mis.MisThreading
         /// <summary>
         /// 转让控制权，以便让操作系统处理其它的事件。
         /// </summary>
-        protected static void DoEvents()
+        public static void DoEvents()
         {
             var frame = new DispatcherFrame(true);
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (SendOrPostCallback)delegate (object? arg)
-            {
-                ((DispatcherFrame)arg!).Continue = false;
-            }, frame);
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, (object? state) => (state as DispatcherFrame)!.Continue = false, frame);
             Dispatcher.PushFrame(frame);
         }
 
