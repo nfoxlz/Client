@@ -19,6 +19,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Compete.Mis.MisControls
 {
@@ -79,6 +80,30 @@ namespace Compete.Mis.MisControls
                 return Constants.RequiredBrush;
             else
                 return base.GetTitleForeground(column);
+        }
+
+        private T CreateUpDown<T, N>(string columnName, object? maximum, object? minimum, Binding binding) where T : UpDownBase<N?>, new() where N : struct
+        {
+            T result = new T()
+            {
+                Maximum = Utils.TypeConvert.ChangeNullableType<N>(maximum),
+                Minimum = Utils.TypeConvert.ChangeNullableType<N>(minimum),
+            };
+
+            if (columnName.StartsWith(beginPrefix))
+            {
+                result.ValueChanged += BeginControlChanged;
+                result.Name = columnName;
+            }
+            else if (columnName.StartsWith(endPrefix))
+            {
+                result.ValueChanged += EndControlChanged;
+                result.Name = columnName;
+            }
+
+            result.SetBinding(UpDownBase<N>.ValueProperty, binding);
+
+            return result;
         }
 
         /// <summary>
@@ -202,158 +227,41 @@ namespace Compete.Mis.MisControls
                         result.SetBinding(EntityBox.ValueProperty, binding);
                     }
                     else if (dataType == typeof(long))
-                    {
-                        result = new LongUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<long>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<long>(minimum)
-                        };
+                        result = CreateUpDown<LongUpDown, long>(columnName, maximum, minimum, binding);
+                    //{
+                    //    result = new LongUpDown
+                    //    {
+                    //        Maximum = Utils.TypeConvert.ChangeNullableType<long>(maximum),
+                    //        Minimum = Utils.TypeConvert.ChangeNullableType<long>(minimum)
+                    //    };
 
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((LongUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((LongUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
+                    //    if (columnName.StartsWith(beginPrefix))
+                    //    {
+                    //        ((LongUpDown)result).ValueChanged += BeginControlChanged;
+                    //        result.Name = columnName;
+                    //    }
+                    //    else if (columnName.StartsWith(endPrefix))
+                    //    {
+                    //        ((LongUpDown)result).ValueChanged += EndControlChanged;
+                    //        result.Name = columnName;
+                    //    }
 
-                        result.SetBinding(LongUpDown.ValueProperty, binding);
-                    }
+                    //    result.SetBinding(LongUpDown.ValueProperty, binding);
+                    //}
                     else if (dataType == typeof(int))
-                    {
-                        result = new IntegerUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<int>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<int>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((IntegerUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((IntegerUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(IntegerUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<IntegerUpDown, int>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(short))
-                    {
-                        result = new ShortUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<short>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<short>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((ShortUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((ShortUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(ShortUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<ShortUpDown, short>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(byte))
-                    {
-                        result = new ByteUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<byte>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<byte>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((ByteUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((ByteUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(ByteUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<ByteUpDown, byte>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(double))
-                    {
-                        result = new DoubleUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<double>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<double>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((DoubleUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((DoubleUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(DoubleUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<DoubleUpDown, double>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(float))
-                    {
-                        result = new SingleUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<float>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<float>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((SingleUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((SingleUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(SingleUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<SingleUpDown, float>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(decimal))
-                    {
-                        if (dbType == DbType.Currency)
-                        {
-                            result = new CalculatorUpDown();
-                            result.SetBinding(CalculatorUpDown.ValueProperty, binding);
-                        }
-                        else
-                        {
-                            result = new DecimalUpDown();
-                            result.SetBinding(DecimalUpDown.ValueProperty, binding);
-                        }
-                        var decimalUpDown = (DecimalUpDown)result;
-                        decimalUpDown.Maximum = Utils.TypeConvert.ChangeNullableType<decimal>(maximum);
-                        decimalUpDown.Minimum = Utils.TypeConvert.ChangeNullableType<decimal>(minimum);
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            decimalUpDown.ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            decimalUpDown.ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-                    }
+                        result = dbType == DbType.Currency
+                            ? CreateUpDown<CalculatorUpDown, decimal>(columnName, maximum, minimum, binding)
+                            : CreateUpDown<DecimalUpDown, decimal>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(bool))
                     {
                         result = new CheckBox();
@@ -380,67 +288,32 @@ namespace Compete.Mis.MisControls
 
                                 break;
                             case DbType.Time:
-                                result = new TimePicker
-                                {
-                                    Maximum = Utils.TypeConvert.ChangeNullableType<DateTime>(maximum),
-                                    Minimum = Utils.TypeConvert.ChangeNullableType<DateTime>(minimum)
-                                };
+                                result = CreateUpDown<TimePicker, DateTime>(columnName, maximum, minimum, binding);
+                                //result = new TimePicker
+                                //{
+                                //    Maximum = Utils.TypeConvert.ChangeNullableType<DateTime>(maximum),
+                                //    Minimum = Utils.TypeConvert.ChangeNullableType<DateTime>(minimum)
+                                //};
 
-                                if (columnName.StartsWith(beginPrefix))
-                                {
-                                    ((TimePicker)result).ValueChanged += BeginControlChanged;
-                                    result.Name = columnName;
-                                }
-                                else if (columnName.StartsWith(endPrefix))
-                                {
-                                    ((TimePicker)result).ValueChanged += EndControlChanged;
-                                    result.Name = columnName;
-                                }
+                                //if (columnName.StartsWith(beginPrefix))
+                                //{
+                                //    ((TimePicker)result).ValueChanged += BeginControlChanged;
+                                //    result.Name = columnName;
+                                //}
+                                //else if (columnName.StartsWith(endPrefix))
+                                //{
+                                //    ((TimePicker)result).ValueChanged += EndControlChanged;
+                                //    result.Name = columnName;
+                                //}
 
-                                result.SetBinding(TimePicker.ValueProperty, binding);
+                                //result.SetBinding(TimePicker.ValueProperty, binding);
                                 break;
                             default:
-                                result = new DateTimePicker
-                                {
-                                    Maximum = Utils.TypeConvert.ChangeNullableType<DateTime>(maximum),
-                                    Minimum = Utils.TypeConvert.ChangeNullableType<DateTime>(minimum)
-                                };
-
-                                if (columnName.StartsWith(beginPrefix))
-                                {
-                                    ((DateTimePicker)result).ValueChanged += BeginControlChanged;
-                                    result.Name = columnName;
-                                }
-                                else if (columnName.StartsWith(endPrefix))
-                                {
-                                    ((DateTimePicker)result).ValueChanged += EndControlChanged;
-                                    result.Name = columnName;
-                                }
-
-                                result.SetBinding(DateTimePicker.ValueProperty, binding);
+                                result = CreateUpDown<DateTimePicker, DateTime>(columnName, maximum, minimum, binding);
                                 break;
                         }
                     else if (dataType == typeof(TimeSpan))
-                    {
-                        result = new TimeSpanUpDown
-                        {
-                            Maximum = Utils.TypeConvert.ChangeNullableType<TimeSpan>(maximum),
-                            Minimum = Utils.TypeConvert.ChangeNullableType<TimeSpan>(minimum)
-                        };
-
-                        if (columnName.StartsWith(beginPrefix))
-                        {
-                            ((TimeSpanUpDown)result).ValueChanged += BeginControlChanged;
-                            result.Name = columnName;
-                        }
-                        else if (columnName.StartsWith(endPrefix))
-                        {
-                            ((TimeSpanUpDown)result).ValueChanged += EndControlChanged;
-                            result.Name = columnName;
-                        }
-
-                        result.SetBinding(TimeSpanUpDown.ValueProperty, binding);
-                    }
+                        result = CreateUpDown<TimeSpanUpDown, TimeSpan>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(sbyte))
                     {
                         result = new EnumComboBox
@@ -452,6 +325,12 @@ namespace Compete.Mis.MisControls
                         };
                         result.SetBinding(EnumComboBox.SelectedValueProperty, binding);
                     }
+                    else if (dataType == typeof(ulong))
+                        result = CreateUpDown<ULongUpDown, ulong>(columnName, maximum, minimum, binding);
+                    else if (dataType == typeof(uint))
+                        result = CreateUpDown<UIntegerUpDown, uint>(columnName, maximum, minimum, binding);
+                    else if (dataType == typeof(ushort))
+                        result = CreateUpDown<UShortUpDown, ushort>(columnName, maximum, minimum, binding);
                     else if (dataType == typeof(string) && columnName == "Name" && column.Table!.Columns.Contains("MnemonicCode"))
                     {
                         result = new NameBox();

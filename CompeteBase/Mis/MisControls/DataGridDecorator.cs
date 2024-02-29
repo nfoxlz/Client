@@ -265,82 +265,74 @@ namespace Compete.Mis.MisControls
                     //    }
                 }
                 else if (dataType == typeof(long))
-                    e.Column = CreateColumn(binding, typeof(LongUpDown), LongUpDown.ValueProperty,
-                        new Dictionary<DependencyProperty, object?>
+                    e.Column = CreateUpDownColumn<LongUpDown, long>(binding, new Dictionary<DependencyProperty, object?>
                         {
                             { LongUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<long>(maximum), GetMaximum<long>(length, precision)) },
                             { LongUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<long>(minimum), GetMinimum<long>(length, precision)) },
-                        },
-                        true);
+                        });
+                    //e.Column = CreateColumn(binding, typeof(LongUpDown), LongUpDown.ValueProperty,
+                    //    new Dictionary<DependencyProperty, object?>
+                    //    {
+                    //        { LongUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<long>(maximum), GetMaximum<long>(length, precision)) },
+                    //        { LongUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<long>(minimum), GetMinimum<long>(length, precision)) },
+                    //    },
+                    //    true);
                 else if (dataType == typeof(int))
-                    e.Column = CreateColumn(binding, typeof(IntegerUpDown), IntegerUpDown.ValueProperty,
-                        new Dictionary<DependencyProperty, object?>
+                    e.Column = CreateUpDownColumn<IntegerUpDown, int>(binding, new Dictionary<DependencyProperty, object?>
                         {
                             { IntegerUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<int>(maximum), GetMaximum<int>(length, precision)) },
                             { IntegerUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<int>(minimum), GetMinimum<int>(length, precision)) },
-                        },
-                        true);
+                        });
                 else if (dataType == typeof(short))
-                    e.Column = CreateColumn(binding, typeof(ShortUpDown), ShortUpDown.ValueProperty,
-                        new Dictionary<DependencyProperty, object?>
+                    e.Column = CreateUpDownColumn<ShortUpDown, short>(binding, new Dictionary<DependencyProperty, object?>
                         {
                             { ShortUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<short>(maximum), GetMaximum<short>(length, precision)) },
                             { ShortUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<short>(minimum), GetMinimum<short>(length, precision)) },
-                        },
-                        true);
+                        });
                 else if (dataType == typeof(byte))
-                    e.Column = CreateColumn(binding, typeof(ByteUpDown), ByteUpDown.ValueProperty,
-                        new Dictionary<DependencyProperty, object?>
+                    e.Column = CreateUpDownColumn<ByteUpDown, byte>(binding, new Dictionary<DependencyProperty, object?>
                         {
                             { ByteUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<byte>(maximum), GetMaximum<byte>(length, precision)) },
                             { ByteUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<byte>(minimum), GetMinimum<byte>(length, precision)) },
-                        },
-                        true);
+                        });
                 else if (dataType == typeof(decimal))
                 {
                     if (dbType == DbType.Currency)
-                        e.Column = CreateColumn(binding, typeof(CalculatorUpDown), CalculatorUpDown.ValueProperty,
-                            new Dictionary<DependencyProperty, object?>
-                            {
-                                { CalculatorUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
-                                { CalculatorUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
-                            },
-                            true);
+                        e.Column = CreateUpDownColumn<CalculatorUpDown, decimal>(binding, new Dictionary<DependencyProperty, object?>
+                        {
+                            { CalculatorUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
+                            { CalculatorUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
+                        });
                     else
-                        e.Column = CreateColumn(binding, typeof(DecimalUpDown), DecimalUpDown.ValueProperty,
-                            new Dictionary<DependencyProperty, object?>
-                            {
-                                { DecimalUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
-                                { DecimalUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
-                            },
-                            true);
+                        e.Column = CreateUpDownColumn<DecimalUpDown, decimal>(binding, new Dictionary<DependencyProperty, object?>
+                        {
+                            { DecimalUpDown.MaximumProperty, Utils.MathHelper.Min(Utils.TypeConvert.ChangeNullableType<decimal>(maximum), GetMaximum<decimal>(length, precision)) },
+                            { DecimalUpDown.MinimumProperty, Utils.MathHelper.Max(Utils.TypeConvert.ChangeNullableType<decimal>(minimum), GetMinimum<decimal>(length, precision)) },
+                        });
                 }
                 else if (dataType == typeof(DateTime) || dataType == typeof(DateTimeOffset))
                 {
                     e.Column = dbType switch
                     {
                         DbType.Date => CreateColumn(binding, typeof(DatePicker), DatePicker.SelectedDateProperty),
-                        DbType.Time => CreateColumn(binding, typeof(TimePicker), TimePicker.ValueProperty,
-                                new Dictionary<DependencyProperty, object?>
+                        DbType.Time => CreateUpDownColumn<TimePicker, DateTime>(binding, new Dictionary<DependencyProperty, object?>
                                 {
                                     { TimePicker.MaximumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(maximum) },
                                     { TimePicker.MinimumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(minimum) },
-                                }),
-                        _ => CreateColumn(binding, typeof(DateTimePicker), DateTimePicker.ValueProperty,
-                                new Dictionary<DependencyProperty, object?>
+                                }, false),
+                        _ => CreateUpDownColumn<DateTimePicker, DateTime>(binding, new Dictionary<DependencyProperty, object?>
                                 {
                                     { DateTimePicker.MaximumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(maximum) },
                                     { DateTimePicker.MinimumProperty, Utils.TypeConvert.ChangeNullableType<DateTime>(minimum) },
-                                }),
+                                }, false),
                     };
                 }
                 else if (dataType == typeof(TimeSpan))
-                    e.Column = CreateColumn(binding, typeof(TimeSpanUpDown), TimeSpanUpDown.ValueProperty,
-                        new Dictionary<DependencyProperty, object?>
+                    e.Column = CreateUpDownColumn<TimeSpanUpDown, TimeSpan>(binding, new Dictionary<DependencyProperty, object?>
                         {
                             { TimeSpanUpDown.MaximumProperty, Utils.TypeConvert.ChangeNullableType<TimeSpan>(maximum) },
                             { TimeSpanUpDown.MinimumProperty, Utils.TypeConvert.ChangeNullableType<TimeSpan>(minimum) },
-                        });
+                        }, false);
                 else if (dataType == typeof(sbyte))
                     e.Column = CreateColumn(binding, typeof(EnumComboBox), Selector.SelectedValueProperty,
                         new Dictionary<DependencyProperty, object?>
@@ -464,6 +456,11 @@ namespace Compete.Mis.MisControls
             if (displayIndex >= 0 && displayIndex < dataGrid.Columns.Count)
                 e.Column.DisplayIndex = displayIndex;
         }
+
+        private DataGridTemplateColumn CreateUpDownColumn<T, N>(BindingBase binding, IDictionary<DependencyProperty, object?>? propertyDictionary = null, bool isNumeric = true)
+            where T : Xceed.Wpf.Toolkit.Primitives.UpDownBase<N?> where N : struct
+            => CreateColumn(binding, typeof(T), Xceed.Wpf.Toolkit.Primitives.UpDownBase<N?>.ValueProperty, propertyDictionary, isNumeric);
+
 
         /// <summary>
         /// 创建 <see cref="DataGridTemplateColumn"/> 型的数据列。
