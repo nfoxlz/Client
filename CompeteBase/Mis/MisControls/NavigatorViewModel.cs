@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using Compete.Mis.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Compete.Mis.MisControls
 {
@@ -35,11 +36,36 @@ namespace Compete.Mis.MisControls
             }
         }
 
+        [ObservableProperty]
+        private ICommand? _pageSizeChangingCommand;
+
+        [ObservableProperty]
+        private object? _pageSizeChangingCommandParameter;
+
+        [ObservableProperty]
+        private ICommand? _pageSizeChangedCommand;
+
+        [ObservableProperty]
+        private object? _pageSizeChangedCommandParameter;
+
+        [ObservableProperty]
+        private ICommand? _currentPageNoChangingCommand;
+
+        [ObservableProperty]
+        private object? _currentPageNoChangingCommandParameter;
+
+        [ObservableProperty]
+        private ICommand? _currentPageNoChangedCommand;
+
+        [ObservableProperty]
+        private object? _currentPageNoChangedCommandParameter;
+
         /// <summary>
         /// 获取或设置一个值，该值指示记录总数。
         /// </summary>
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(MaxPageNo))]
+        [NotifyPropertyChangedFor(nameof(MaxPageNo), nameof(CurrentPageNo))]
+        [NotifyCanExecuteChangedFor(nameof(FirstCommand), nameof(PreviousCommand), nameof(NextCommand), nameof(LastCommand))]
         private ulong _recordCount;
 
         private ushort _pageSize = Constants.DefaultNavigatorPageSize;
@@ -54,20 +80,35 @@ namespace Compete.Mis.MisControls
             {
                 if (value > 0U)
                 {
-                    if (PageSizeChangingFunc?.Invoke(_pageSize, value) == true)
-                        return;
-
                     if (_pageSize == value)
                         return;
 
+                    if (PageSizeChangingFunc?.Invoke(_pageSize, value) == true)
+                        return;
+
+                    PageSizeChangingCommand?.Execute(PageSizeChangingCommandParameter);
+
                     var oldValue = _pageSize;
                     _pageSize = value;
-                    if (CurrentPageNo > MaxPageNo)
-                        CurrentPageNo = MaxPageNo;
-                    this.NotifyPropertyChanged(p => p.MaxPageNo);
+                    NotifyPropertyChanged();
 
-                    if (oldValue != _pageSize)
-                        PageSizeChangedAction?.Invoke(oldValue, _pageSize);
+                    PageSizeChangedAction?.Invoke(oldValue, _pageSize);
+
+                    if (PageSizeChangedCommand is null)
+                    {
+                        if (PageSizeChangedAction is null)
+                        {
+                            CurrentPageNo = CurrentPageNo * (oldValue - 1UL) / _pageSize + 1UL;
+                            //if (CurrentPageNo > MaxPageNo)
+                            //    CurrentPageNo = MaxPageNo;
+                            this.NotifyPropertyChanged(p => p.CurrentPageNo);
+                        }
+                    }
+                    else
+                        PageSizeChangedCommand?.Execute(PageSizeChangedCommandParameter);
+
+                    OnPropertyChanged(nameof(MaxPageNo));
+                    NotifyButtonCommand();
                 }
             }
         }
@@ -82,29 +123,39 @@ namespace Compete.Mis.MisControls
             get => _currentPageNo;
             set
             {
-                if (value > MaxPageNo)
+                if (_currentPageNo == value || value > MaxPageNo)
                     return;
 
                 if (CurrentPageNoChangingFunc?.Invoke(_currentPageNo, value) == true)
                     return;
 
-                if (_currentPageNo == value)
-                    return;
+                CurrentPageNoChangingCommand?.Execute(CurrentPageNoChangingCommandParameter);
 
                 var oldValue = _currentPageNo;
                 _currentPageNo = value;
                 NotifyPropertyChanged();
 
-                if (oldValue != _currentPageNo)
-                    CurrentPageNoChangedAction?.Invoke(oldValue, _currentPageNo);
+                CurrentPageNoChangedAction?.Invoke(oldValue, _currentPageNo);
+
+                CurrentPageNoChangedCommand?.Execute(CurrentPageNoChangedCommandParameter);
+
+                NotifyButtonCommand();
             }
+        }
+
+        private void NotifyButtonCommand()
+        {
+            FirstCommand.NotifyCanExecuteChanged();
+            PreviousCommand.NotifyCanExecuteChanged();
+            NextCommand.NotifyCanExecuteChanged();
+            LastCommand.NotifyCanExecuteChanged();
         }
 
         [ObservableProperty]
         private IEnumerable<ushort> _pageCollection = Constants.DefaultNavigatorPageCollection;
 
         [RelayCommand(CanExecute = nameof(CanPrevious))]
-        private void First() => CurrentPageNo = 1L;
+        private void First() => CurrentPageNo = 1UL;
 
         [RelayCommand(CanExecute = nameof(CanPrevious))]
         private void Previous() => CurrentPageNo--;
@@ -115,7 +166,7 @@ namespace Compete.Mis.MisControls
         [RelayCommand(CanExecute = nameof(CanNext))]
         private void Last() => CurrentPageNo = MaxPageNo;
 
-        private bool CanPrevious() => CurrentPageNo > 1L;
+        private bool CanPrevious() => CurrentPageNo > 1UL;
 
         private bool CanNext() => CurrentPageNo < MaxPageNo;
         

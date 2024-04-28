@@ -82,9 +82,9 @@ namespace Compete.Mis.MisControls
                 return base.GetTitleForeground(column);
         }
 
-        private T CreateUpDown<T, N>(string columnName, object? maximum, object? minimum, Binding binding) where T : UpDownBase<N?>, new() where N : struct
+        private static T CreateUpDown<T, N>(string columnName, object? maximum, object? minimum, Binding binding) where T : UpDownBase<N?>, new() where N : struct
         {
-            T result = new T()
+            T result = new()
             {
                 Maximum = Utils.TypeConvert.ChangeNullableType<N>(maximum),
                 Minimum = Utils.TypeConvert.ChangeNullableType<N>(minimum),

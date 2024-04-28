@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Compete.Mis.Frame.Services.WebApi
 {
@@ -10,6 +11,11 @@ namespace Compete.Mis.Frame.Services.WebApi
             try
             {
                 return base.Invoke(targetMethod, args);
+            }
+            catch(Exception exception)
+            {
+                MisControls.MessageDialog.Exception(exception);
+                throw;
             }
             finally
             {

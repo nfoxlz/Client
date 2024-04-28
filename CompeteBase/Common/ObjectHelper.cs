@@ -12,13 +12,28 @@ namespace Compete.Common
     {
         private const short maxRecursion = 20;
 
-        private static readonly ICollection<ObjectHelper> helpers = new HashSet<ObjectHelper>();
+        //private static readonly ICollection<ObjectHelper> helpers = new HashSet<ObjectHelper>();
+        private static readonly ICollection<ObjectHelper> helpers = [];
 
-        public static ObjectHelper Default { get; private set; } = new ();
+        public static ObjectHelper Default { get; private set; } = new();
+
+        public static IDictionary<string, Assembly> AssemblyDictionary { get; } = new Dictionary<string, Assembly>();
+
+        static ObjectHelper() => AddAssembly(typeof(ObjectHelper));
+
+        public static void AddAssembly<T>() => AddAssembly(typeof(T));
+
+        public static void AddAssembly(Type type)
+        {
+            var name = string.Format("{0}.dll", type.Assembly.GetName().Name!);
+            if (!AssemblyDictionary.ContainsKey(name))
+                AssemblyDictionary.Add(name, type.Assembly);
+        }
 
         private AssemblyLoadContext loadContext = new(null, true);
 
-        private readonly ICollection<string> paths = new HashSet<string>();
+        //private readonly ICollection<string> paths = new HashSet<string>();
+        private readonly ICollection<string> paths = [];
 
         private short recursiveCount = 0;
 
@@ -81,6 +96,9 @@ namespace Compete.Common
 
         public Assembly? LoadAssembly(string path)
         {
+            if (AssemblyDictionary.ContainsKey(path))
+                return AssemblyDictionary[path];
+
             var assemblyPath = path;
             if (!File.Exists(assemblyPath))
             {

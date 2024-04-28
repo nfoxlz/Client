@@ -36,5 +36,15 @@ namespace UITemplate
             var xaml = XamlWriter.Save(new Bill());
             MessageBox.Show(xaml);
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            TestNavigator.PageSize = 20;
+
+            var a = TestNavigator.RecordCount;
+            MessageBox.Show(a.ToString());
+
+            //TestNavigator.RecordCount = 80;
+        }
     }
 }

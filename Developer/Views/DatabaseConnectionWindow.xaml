@@ -1,0 +1,18 @@
+﻿<Window x:Class="Compete.Mis.Developer.Views.DatabaseConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Compete.Mis.Developer.Views"
+        mc:Ignorable="d"
+        Title="Database Connection" Height="130" Width="600" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="28,13,0,0" Text="Provider name" VerticalAlignment="Top"/>
+        <TextBox Margin="117,10,10,0" Text="{Binding ConnectionSetting.ProviderName}" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,39,0,0" Text="Connection string" VerticalAlignment="Top"/>
+        <TextBox Margin="117,36,10,0" Text="{Binding ConnectionSetting.ConnectionString}" VerticalAlignment="Top"/>
+        <Button Content="Test" HorizontalAlignment="Right" Margin="0,62,180,0" VerticalAlignment="Top" Width="80" IsDefault="True" Command="{Binding TestCommand}"/>
+        <Button Content="OK" HorizontalAlignment="Right" Margin="0,62,95,0" VerticalAlignment="Top" Width="80" IsDefault="True" Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=.}"/>
+        <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,62,10,0" VerticalAlignment="Top" Width="80" IsCancel="True"/>
+    </Grid>
+</Window>

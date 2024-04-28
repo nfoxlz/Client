@@ -9,6 +9,9 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="{DynamicResource LoginPage.Login}" WindowHeight="360" WindowWidth="640" WindowTitle="登录" Height="360" Width="640">
+    <Page.Background>
+        <ImageBrush ImageSource="/Assets/Images/Login.png"/>
+    </Page.Background>
     <Page.DataContext>
         <vm:LoginViewModel/>
     </Page.DataContext>

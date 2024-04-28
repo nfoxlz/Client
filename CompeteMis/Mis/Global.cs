@@ -15,7 +15,7 @@ namespace Compete.Mis
         public static Frame.Services.WebApi.WebApiHelper ServiceHelper { get; }
             = new Frame.Services.WebApi.WebApiHelper(ConfigurationManager.AppSettings["WebApiBaseAddress"] ?? Constants.DefaultBaseAddress, Constants.SignPassword);
 
-        private static string settingsPath = ConfigurationManager.AppSettings["SettingsPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings");
+        private static readonly string settingsPath = ConfigurationManager.AppSettings["SettingsPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings");
 
         public static void Initialize()
         {
@@ -24,6 +24,8 @@ namespace Compete.Mis
             {
                 Scripts.ScriptBuilder.GetType(Scripts.ScriptTemplates.CalculatorTemplate, string.Empty, "Compete.Scripts.Calculator", "CSharp");
             });
+
+            Common.ObjectHelper.AddAssembly(typeof(Global));
 
             Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
 

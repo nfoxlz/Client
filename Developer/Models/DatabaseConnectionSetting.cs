@@ -15,11 +15,13 @@ namespace Compete.Mis.Developer.Models
     /// </summary>
     internal class DatabaseConnectionSetting
     {
-        public string? AssemblyName { get; set; }
+        //public string? AssemblyName { get; set; }
 
-        public string? ConnectionFactory { get; set; }
+        //public string? ConnectionFactory { get; set; }
 
-        public string? ConnectionString { get; set; }
+        public string? ProviderName { get; set; } = "Npgsql";
+
+        public string? ConnectionString { get; set; } = "Host=localhost;Database=business;Username=postgres;Password=postgres;";
 
     }
 }

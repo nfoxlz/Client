@@ -69,6 +69,7 @@
     <s:String x:Key="MainWindow.DatabaseConnectionMenu">数据库连接</s:String>
     <s:String x:Key="MainWindow.SqlGeneraterMenu">SQL生成器</s:String>
     <s:String x:Key="MainWindow.MemoryDataSetMenu">内存数据集</s:String>
+    <s:String x:Key="MainWindow.GenerateMnemonicCodeMenu">生成助记码</s:String>
 
     <s:String x:Key="MainWindow.ToolsMenu">工具(_T)</s:String>
     <s:String x:Key="MainWindow.RegularMenu">正则表达式(_R)</s:String>

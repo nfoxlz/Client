@@ -16,6 +16,6 @@ namespace Compete.Mis.Developer.Models
 
         public ICollection<DataColumnSetting> CustomColumnSettings { get; set; } = new ObservableCollection<DataColumnSetting>();
 
-        public DatabaseConnectionSetting? ConnectionSetting { get; set; }
+        public DatabaseConnectionSetting? ConnectionSetting { get; set; } = new DatabaseConnectionSetting();
     }
 }

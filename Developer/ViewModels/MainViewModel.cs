@@ -23,12 +23,11 @@ namespace Compete.Mis.Developer.ViewModels
 
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ImportDataModelCommand), nameof(ShowDataModelCommand), nameof(SqlGeneraterCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ImportDataModelCommand), nameof(ShowDataModelCommand), nameof(SqlGeneraterCommand), nameof(DatabaseConnectionOptionsCommand), nameof(GenerateMnemonicCodeCommand))]
         private Models.ProjectSetting? _projectSetting;
 
         [ObservableProperty]
         private string? _projectPath;
-
 
         [RelayCommand]
         private void NewProject()
@@ -145,10 +144,32 @@ namespace Compete.Mis.Developer.ViewModels
         private void ShowDataModel() => ShowDocument<DataGrid>("数据模型").ItemsSource = ProjectSetting!.Model.ColumnSettings;
 
         [RelayCommand(CanExecute = nameof(HasProjectSetting))]
+        private void DatabaseConnectionOptions()
+        {
+            DatabaseConnectionViewModel vm = new()
+            {
+                ConnectionSetting = ProjectSetting!.ConnectionSetting!
+            };
+            Views.DatabaseConnectionWindow window = new()
+            {
+                DataContext = vm
+            };
+            if (window.ShowDialog() == true)
+                ProjectSetting.ConnectionSetting = vm.ConnectionSetting;
+        }
+
+        [RelayCommand(CanExecute = nameof(HasProjectSetting))]
         private void SqlGenerater()
         {
             var generater = ShowDocument<Views.SqlGenerater>("SQL生成器");
             ((SqlGeneraterViewModel)generater.DataContext).SetProjectSetting(ProjectSetting!);
+        }
+
+        [RelayCommand(CanExecute = nameof(HasProjectSetting))]
+        private void GenerateMnemonicCode()
+        {
+            var generater = ShowDocument<Views.MnemonicCodeGenerater>("助记码生成器");
+            ((MnemonicCodeGeneraterViewModel)generater.DataContext).SetDatabaseSetting(ProjectSetting!.ConnectionSetting!);
         }
 
         private bool HasProjectSetting() => ProjectSetting != null;

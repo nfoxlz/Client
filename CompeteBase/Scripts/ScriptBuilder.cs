@@ -56,8 +56,8 @@ namespace Compete.Scripts
 
         private Compilation CreateCompilation(string? assemblyName) => Language.ToUpper() switch
         {
-            "CSHARP" or "CS" or "C#" => CSharpCompilation.Create(assemblyName, new[] { CSharpSyntaxTree.ParseText(Sources) }, references, cSharpCompilationOptions),
-            "VISUALBASIC" or "VB" => VisualBasicCompilation.Create(assemblyName, new[] { VisualBasicSyntaxTree.ParseText(Sources) }, references, visualBasicCompilationOptions),
+            "CSHARP" or "CS" or "C#" => CSharpCompilation.Create(assemblyName, [CSharpSyntaxTree.ParseText(Sources)], references, cSharpCompilationOptions),
+            "VISUALBASIC" or "VB" => VisualBasicCompilation.Create(assemblyName, [VisualBasicSyntaxTree.ParseText(Sources)], references, visualBasicCompilationOptions),
             _ => throw new PlatformNotSupportedException(),
         };
 

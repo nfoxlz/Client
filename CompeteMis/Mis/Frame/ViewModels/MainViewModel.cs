@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Compete.Mis.Frame.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -225,7 +226,10 @@ namespace Compete.Mis.Frame.ViewModels
 #endif
 
         [RelayCommand]
-        private static void About() => (new Views.AboutBox()).ShowDialog();
+        private static void About()
+        {
+            (new Views.AboutBox()).ShowDialog();
+        }
 
         [RelayCommand]
         private static void ModifyPassword()

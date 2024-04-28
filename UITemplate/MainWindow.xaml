@@ -4,9 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:controls="clr-namespace:Compete.Mis.MisControls;assembly=CompeteBase"
         xmlns:local="clr-namespace:UITemplate"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="193"/>
@@ -15,7 +19,10 @@
         <ComboBox HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120">
             <s:String>Bill</s:String>
         </ComboBox>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="58,36,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+        <controls:Navigator x:Name="TestNavigator" Margin="10,115,609,0" VerticalAlignment="Top" CurrentPageNo="{Binding CurrentPageNo,Mode=OneWayToSource}" PageSize="{Binding PageSize,Mode=OneWayToSource}" RecordCount="{Binding RecordCount,Mode=TwoWay}"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Command="{Binding TestCommand}"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="58,36,0,0" VerticalAlignment="Top" Command="{Binding Test1Command}"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="138,36,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="253,104,0,0" TextWrapping="Wrap" Text="{Binding RecordCount}" VerticalAlignment="Top"/>
     </Grid>
 </Window>

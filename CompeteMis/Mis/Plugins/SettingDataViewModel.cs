@@ -371,6 +371,8 @@ namespace Compete.Mis.Plugins
                     data = result.Data!;
                     RecordCount = result.Count;
                     CurrentPageNo = result.PageNo;
+                    //OnPropertyChanged(nameof(RecordCount));
+                    //OnPropertyChanged(nameof(CurrentPageNo));
                 }
                 else
                     data = GlobalCommon.DataProvider!.Query(PluginParameter!.Path, (name ?? Setting.DataLoadName)!, parameters);

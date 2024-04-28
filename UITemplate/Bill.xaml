@@ -9,7 +9,17 @@
     <Grid>
         <TextBlock Margin="10,10,10,0" Text="TextBlock" VerticalAlignment="Top" TextAlignment="Center" FontSize="24"/>
         <DatePicker Name="mainDatePicker" Margin="10,45,318,380" CalendarOpened="DatePicker_CalendarOpened" CalendarClosed="MainDatePicker_CalendarClosed"/>
-        <DatePickerTextBox Margin="10,75,318,350"/>
+        <DatePickerTextBox Margin="10,75,318,350" Text="{Binding aaa, Mode=TwoWay}"/>
+        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,105,10,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn>
+                    <DataGridTextColumn.HeaderTemplate>
+                        <DataTemplate>
+                        </DataTemplate>
+                    </DataGridTextColumn.HeaderTemplate>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <!--<DocumentViewer/>-->
 

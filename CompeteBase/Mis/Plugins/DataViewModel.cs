@@ -455,9 +455,21 @@ namespace Compete.Mis.Plugins
         //{
         //}
 
+
+        //partial void OnDataChanged(DataSet? oldValue, DataSet? newValue)
+        //{
+        //    if (oldValue is not null)
+        //    {
+        //    }
+
+        //    if (newValue is not null)
+        //    {
+        //    }
+        //}
+
         partial void OnDataChanged(DataSet? value)
         {
-            if (value != null)
+            if (value is not null)
                 MasterData = CollectionViewSource.GetDefaultView(value.Tables[0]) as BindingListCollectionView;      // 获取主数据视图。
         }
 

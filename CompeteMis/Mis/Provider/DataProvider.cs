@@ -13,9 +13,9 @@ namespace Compete.Mis.Provider
 
         public Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30)
 #if JAVA_LANGUAGE
-            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters)).ToDataResult();    // Java
+            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters), currentPageNo, pageSize).ToDataResult();    // Java
 #else
-            => service.PagingQuery(path, name, parameters).ToDataResult();
+            => service.PagingQuery(path, name, parameters, currentPageNo, pageSize).ToDataResult();
 #endif
 
 #if JAVA_LANGUAGE

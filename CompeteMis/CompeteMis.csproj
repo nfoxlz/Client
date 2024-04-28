@@ -2,14 +2,17 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Compete</RootNamespace>
     <ApplicationIcon>Compete.ico</ApplicationIcon>
 	<TieredPGO>true</TieredPGO>
 	<Configurations>Debug;Release;Debug-Java;Release-Java</Configurations>
-	<!--<PublishAot>true</PublishAot>-->
+	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+	<AnalysisLevel>latest</AnalysisLevel>
+	<!--<PublishAot>true</PublishAot>
+	<PublishTrimmed>false</PublishTrimmed>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|AnyCPU'">
@@ -18,6 +21,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|AnyCPU'">
     <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +31,8 @@
     <None Remove="Assets\Images\Paste.png" />
     <None Remove="Assets\Images\Redo.png" />
     <None Remove="Assets\Images\Undo.png" />
+    <None Remove="Mis\Frame\Views\Background.png" />
+    <None Remove="Mis\Frame\Views\Login.png" />
     <None Remove="SplashScreen.png" />
   </ItemGroup>
 
@@ -60,6 +66,7 @@
     <Resource Include="Assets\Images\Undo.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\Images\Login.png" />
   </ItemGroup>
 
   <ItemGroup>

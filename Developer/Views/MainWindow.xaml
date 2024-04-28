@@ -89,10 +89,11 @@
             <MenuItem Header="{DynamicResource MainWindow.DatabaseMenu}">
                 <MenuItem Command="{Binding ImportDataModelCommand}" Header="{DynamicResource MainWindow.ImportDataModelMenu}"/>
                 <MenuItem Command="{Binding ShowDataModelCommand}" Header="{DynamicResource MainWindow.ShowDataModelMenu}"/>
-                <MenuItem Command="{Binding DatabaseConnectionOptions}" Header="{DynamicResource MainWindow.DatabaseConnectionMenu}"/>
+                <MenuItem Command="{Binding DatabaseConnectionOptionsCommand}" Header="{DynamicResource MainWindow.DatabaseConnectionMenu}"/>
                 <MenuItem Command="{Binding SqlGeneraterCommand}" Header="{DynamicResource MainWindow.SqlGeneraterMenu}"/>
                 <Separator/>
                 <MenuItem Command="{Binding MemoryDataSet}" Header="{DynamicResource MainWindow.MemoryDataSetMenu}"/>
+                <MenuItem Command="{Binding GenerateMnemonicCodeCommand}" Header="{DynamicResource MainWindow.GenerateMnemonicCodeMenu}"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource MainWindow.ToolsMenu}">
                 <MenuItem Command="{Binding Regular}" Header="{DynamicResource MainWindow.RegularMenu}"/>
