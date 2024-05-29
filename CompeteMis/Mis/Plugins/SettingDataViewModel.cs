@@ -21,104 +21,141 @@ namespace Compete.Mis.Plugins
 
         protected override bool Initializing()
         {
-            if (string.IsNullOrWhiteSpace(PluginParameter!.Title))
-                PluginParameter.Title = Setting?.Title ?? string.Empty;
-
             var basePath = Path.Combine(GlobalCommon.PluginPath, PluginParameter!.Path);
-            Compile(basePath, Scripts.ScriptTemplates.CalculatorTemplate, Scripts.ScriptTemplates.CalculatorMethodTemplate, "Compete.Scripts.ConditionCalculator", Setting?.ConditionCalculateScriptFileNames, conditionCalculatorMethodDictionary);
-            Compile(basePath, Scripts.ScriptTemplates.VerifyTemplate, Scripts.ScriptTemplates.VerifyMethodTemplate, "Compete.Scripts.ConditionVerifier", Setting?.ConditionVerifyScriptFileNames, conditionVerifierMethodDictionary);
 
-            // 生成条件数据表。
-            var conditionData = Setting?.ConditionMemoryDataSettings == null ? null : MemoryData.DataCreator.Create("ConditionTable", Setting.ConditionMemoryDataSettings);
-            if (Setting?.ConditionMemoryData != null)
+            if (Setting != null)
             {
-                var data = MemoryData.DataCreator.Create(Setting.ConditionMemoryData);
-                if (conditionData == null)
-                    conditionData = data;
-                else
-                    conditionData.Merge(data);
-            }
+                if (!string.IsNullOrWhiteSpace(Setting.InitializingScriptFileName))
+                    CompileFile(basePath, Setting.InitializingScriptFileName, Scripts.ScriptTemplates.BeforeTemplate, Scripts.ScriptTemplates.InitializingMethodClassName)?.Invoke(null, [this]);
 
-            if (conditionData != null)
-            {
-                if (Setting?.ConditionDataColumnSettings != null)
-                    MemoryData.DataCreator.SetColumns(conditionData, Setting.ConditionDataColumnSettings);
+                if (string.IsNullOrWhiteSpace(PluginParameter!.Title))
+                    PluginParameter.Title = Setting.Title ?? string.Empty;
 
-                ConditionTable = conditionData;
-                ConditionData?.AddNew();
-                ConditionData?.CommitNew();
-                if (Setting?.QueryParameters != null)
+                Compile(basePath, Scripts.ScriptTemplates.CalculatorTemplate, Scripts.ScriptTemplates.CalculatorMethodTemplate, "Compete.Scripts.ConditionCalculator", Setting.ConditionCalculateScriptFileNames, conditionCalculatorMethodDictionary);
+                Compile(basePath, Scripts.ScriptTemplates.VerifyTemplate, Scripts.ScriptTemplates.VerifyMethodTemplate, "Compete.Scripts.ConditionVerifier", Setting.ConditionVerifyScriptFileNames, conditionVerifierMethodDictionary);
+
+                // 生成条件数据表。
+                var conditionData = null == Setting.ConditionMemoryDataSettings ? null : MemoryData.DataCreator.Create("ConditionTable", Setting.ConditionMemoryDataSettings);
+                if (null != Setting.ConditionMemoryData)
                 {
-                    var columns = ConditionTable.Columns;
-                    var rows = ConditionTable.Rows[0];
-                    foreach (var param in Setting.QueryParameters)
-                        if (columns.Contains(param.Key))
-                            rows[param.Key] = param.Value;
-                }
-
-                if (Setting?.ConditionRequiredColumns != null)
-                    SetBooleanProperty(ConditionTable, Setting.ConditionRequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
-            }
-
-            // 生成汇总数据表。
-            if (Setting?.TotalSettings != null)
-            {
-                var totalTable = new DataTable();
-                DataColumn column;
-                foreach (var setting in Setting.TotalSettings)
-                {
-                    if (setting.NumberType == NumberType.Number)
-                        column = new DataColumn($"{setting.TableName}_{setting.Name}", typeof(decimal)) { DefaultValue = 0M };
+                    var data = MemoryData.DataCreator.Create(Setting.ConditionMemoryData);
+                    if (null == conditionData)
+                        conditionData = data;
                     else
-                        column = new DataColumn($"{setting.TableName}_{setting.Name}", typeof(string)) { DefaultValue = string.Empty };
-
-                    column.Caption = setting.Caption;
-                    if (!string.IsNullOrWhiteSpace(setting.Format))
-                        column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Format] = setting.Format;
-                    totalTable.Columns.Add(column);
+                        conditionData.Merge(data);
                 }
-                totalTable.Rows.Add(totalTable.NewRow());
-                TotalTable = totalTable;
-            }
 
-            Compile(basePath, Scripts.ScriptTemplates.CalculatorTemplate, Scripts.ScriptTemplates.CalculatorMethodTemplate, "Compete.Scripts.Calculator", Setting?.ColumnCalculateScriptFileNames, calculatorMethodDictionary);
-            Compile(basePath, Scripts.ScriptTemplates.VerifyTemplate, Scripts.ScriptTemplates.VerifyMethodTemplate, "Compete.Scripts.Verifier", Setting?.ColumnVerifyScriptFileNames, verifierMethodDictionary);
-
-            if (Setting?.VerifyScriptFileName != null)
-            {
-                var assemblyFileName = Scripts.ScriptBuilder.GetAssemblyFileName(basePath, Scripts.ScriptTemplates.VerifyMethodClassName);
-                bool isCompile = false;
-                var scriptFileName = Path.Combine(basePath, Setting.VerifyScriptFileName);
-                if (File.Exists(assemblyFileName))
+                if (null != conditionData)
                 {
-                    if (File.Exists(scriptFileName)
-                        && (new FileInfo(assemblyFileName)).LastWriteTime < (new FileInfo(Path.Combine(basePath, Setting.VerifyScriptFileName)).LastWriteTime))
-                        isCompile = true;
-                }
-                else if (File.Exists(scriptFileName))
-                    isCompile = true;
+                    if (null != Setting.ConditionEditableColumns)
+                        foreach (DataColumn column in conditionData.Columns)
+                            foreach (var columnName in Setting.ConditionEditableColumns)
+                                if (column.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                                    column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly] = false;
 
-                Type? type = null;
-                if (isCompile)
+                    if (null != Setting.ConditionDataColumnSettings)
+                        MemoryData.DataCreator.SetColumns(conditionData, Setting.ConditionDataColumnSettings);
+
+                    ConditionTable = conditionData;
+                    ConditionData?.AddNew();
+                    ConditionData?.CommitNew();
+                    var columns = ConditionTable.Columns;
+                    var row = ConditionTable.Rows[0];
+
+                    if (null != Setting.QueryParameters)
+                        foreach (var param in Setting.QueryParameters)
+                            if (columns.Contains(param.Key))
+                                row[param.Key] = param.Value;
+
+                    if (null != PluginParameter?.Data)
+                        foreach (var param in PluginParameter.Data)
+                            if (columns.Contains(param.Key))
+                                row[param.Key] = param.Value;
+
+                    if (null != Setting.ConditionRequiredColumns)
+                        SetBooleanProperty(ConditionTable, Setting.ConditionRequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
+                }
+
+                // 生成汇总数据表。
+                if (null != Setting.TotalSettings)
                 {
-                    var language = Path.GetExtension(scriptFileName).Replace(".", string.Empty);
-                    if (string.IsNullOrWhiteSpace(language))
-                        language = "cs";
-                    type = Scripts.ScriptBuilder.GetType(basePath, Scripts.ScriptTemplates.VerifyethodTemplate, File.ReadAllText(scriptFileName), Scripts.ScriptTemplates.VerifyMethodClassName, language);
-                }
-                else if (File.Exists(assemblyFileName))
-                    type = Assembly.Load(File.ReadAllBytes(assemblyFileName)).GetType(Scripts.ScriptTemplates.VerifyMethodClassName);
+                    var totalTable = new DataTable();
+                    DataColumn column;
+                    foreach (var setting in Setting.TotalSettings)
+                    {
+                        if (setting.NumberType == NumberType.Number)
+                            column = new DataColumn($"{setting.TableName}_{setting.Name}", typeof(decimal)) { DefaultValue = 0M };
+                        else
+                            column = new DataColumn($"{setting.TableName}_{setting.Name}", typeof(string)) { DefaultValue = string.Empty };
 
-                if (type != null)
-                    VerifyMethod = type.GetMethod("Verify");
+                        column.Caption = setting.Caption;
+                        if (!string.IsNullOrWhiteSpace(setting.Format))
+                            column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Format] = setting.Format;
+                        totalTable.Columns.Add(column);
+                    }
+                    totalTable.Rows.Add(totalTable.NewRow());
+                    TotalTable = totalTable;
+                }
+
+                Compile(basePath, Scripts.ScriptTemplates.CalculatorTemplate, Scripts.ScriptTemplates.CalculatorMethodTemplate, "Compete.Scripts.Calculator", Setting.ColumnCalculateScriptFileNames, calculatorMethodDictionary);
+                Compile(basePath, Scripts.ScriptTemplates.VerifyTemplate, Scripts.ScriptTemplates.VerifyMethodTemplate, "Compete.Scripts.Verifier", Setting.ColumnVerifyScriptFileNames, verifierMethodDictionary);
+
+                if (Setting.VerifyScriptFileName != null)
+                    verifyMethod = CompileFile(basePath, Setting.VerifyScriptFileName, Scripts.ScriptTemplates.VerifierTemplate, Scripts.ScriptTemplates.VerifyMethodClassName);
+                //{
+                //    var assemblyFileName = Scripts.ScriptBuilder.GetAssemblyFileName(basePath, Scripts.ScriptTemplates.VerifyMethodClassName);
+                //    var scriptFileName = Path.Combine(basePath, Setting.VerifyScriptFileName);
+                //    Type? type = null;
+                //    if (File.Exists(assemblyFileName)
+                //        ? File.Exists(scriptFileName) && (new FileInfo(assemblyFileName)).LastWriteTime < (new FileInfo(Path.Combine(basePath, Setting.VerifyScriptFileName)).LastWriteTime)
+                //        : true)
+                //    {
+                //        var language = Path.GetExtension(scriptFileName).Replace(".", string.Empty);
+                //        if (string.IsNullOrWhiteSpace(language))
+                //            language = "cs";
+                //        type = Scripts.ScriptBuilder.GetType(basePath, Scripts.ScriptTemplates.VerifyethodTemplate, File.ReadAllText(scriptFileName), Scripts.ScriptTemplates.VerifyMethodClassName, language);
+                //    }
+                //    else if (File.Exists(assemblyFileName))
+                //        type = Assembly.Load(File.ReadAllBytes(assemblyFileName)).GetType(Scripts.ScriptTemplates.VerifyMethodClassName);
+
+                //    if (type != null)
+                //        VerifyMethod = type.GetMethod("Verify");
+                //}
+
+                if (Setting.QueringScriptFileName != null)
+                    queringMethod = CompileFile(basePath, Setting.QueringScriptFileName, Scripts.ScriptTemplates.BeforeTemplate, Scripts.ScriptTemplates.QueringMethodClassName);
+
+                if (Setting.QueriedScriptFileName != null)
+                    queriedMethod = CompileFile(basePath, Setting.QueriedScriptFileName, Scripts.ScriptTemplates.AfterTemplate, Scripts.ScriptTemplates.QueriedMethodClassName);
             }
 
             return base.Initializing();
         }
 
-        private static void Compile(string basePath, string template, string methodTemplate, string className, IDictionary<string, string>? scriptFileNames, Dictionary<string, MethodInfo> methodDictionary, string language = "CSharp")
+        private static MethodInfo? CompileFile(string basePath, string scriptFileName, string template, string className)
         {
-            if (scriptFileNames == null)
+            var assemblyFileName = Scripts.ScriptBuilder.GetAssemblyFileName(basePath, className);
+            var path = Path.Combine(basePath, scriptFileName);
+            if (!File.Exists(assemblyFileName) && !File.Exists(path))
+                return null;
+
+            Type? type;
+            if (!File.Exists(assemblyFileName) || File.Exists(path) && (new FileInfo(assemblyFileName)).LastWriteTime < (new FileInfo(path)).LastWriteTime)
+            {
+                var language = Path.GetExtension(scriptFileName).Replace(".", string.Empty);
+                if (string.IsNullOrWhiteSpace(language))
+                    language = Scripts.ScriptBuilder.DefaultLanguage;
+                type = Scripts.ScriptBuilder.GetType(basePath, string.Format(template, Path.GetFileNameWithoutExtension(scriptFileName)), File.ReadAllText(path), className, language);
+            }
+            else
+                type = Assembly.Load(File.ReadAllBytes(assemblyFileName)).GetType(className);
+
+            return type?.GetMethod(Path.GetFileNameWithoutExtension(path));
+        }
+
+        private static void Compile(string basePath, string template, string methodTemplate, string className, IDictionary<string, string>? scriptFileNames, Dictionary<string, MethodInfo> methodDictionary, string language = Scripts.ScriptBuilder.DefaultLanguage)
+        {
+            if (null == scriptFileNames)
                 return;
 
             string path;
@@ -190,7 +227,7 @@ namespace Compete.Mis.Plugins
 
         private static void Compile(string basePath, string template, string methodTemplate, string className, IDictionary<string, IDictionary<string, string>>? scriptFileNames, Dictionary<string, Dictionary<string, MethodInfo>> methodDictionary, string language = "CSharp")
         {
-            if (scriptFileNames == null)
+            if (null == scriptFileNames)
                 return;
 
             string path;
@@ -298,7 +335,11 @@ namespace Compete.Mis.Plugins
 
         private readonly Dictionary<string, Dictionary<string, MethodInfo>> verifierMethodDictionary = [];
 
-        private MethodInfo? VerifyMethod;
+        private MethodInfo? queringMethod;
+
+        private MethodInfo? queriedMethod;
+
+        private MethodInfo? verifyMethod;
 
         private static void SetBooleanProperty(DataTable table, IEnumerable<string> columns, MemoryData.ExtendedPropertyNames propertyName, bool propertyValue = true)
         {
@@ -309,7 +350,7 @@ namespace Compete.Mis.Plugins
 
         private static void SetBooleanProperty(DataSet data, IDictionary<string, IEnumerable<string>>? columns, MemoryData.ExtendedPropertyNames propertyName, bool propertyValue = true)
         {
-            if (columns == null)
+            if (null == columns)
                 return;
 
             foreach (var pair in columns)
@@ -323,46 +364,64 @@ namespace Compete.Mis.Plugins
 
         protected override void QueryData(string? name)
         {
-            var mainData = Setting?.MemoryDataSettings == null ? null : MemoryData.DataCreator.Create(Setting.MemoryDataSettings);
+            var mainData = null == Setting?.MemoryDataSettings ? null : MemoryData.DataCreator.Create(Setting.MemoryDataSettings);
 
             if (Setting?.MemoryData != null)
             {
                 var data = MemoryData.DataCreator.Create(Setting.MemoryData);
-                if (mainData == null)
+                if (null == mainData)
                     mainData = data;
                 else
                     mainData.Merge(data);
             }
 
+            if (Setting?.IsMergePluginParameter == true && PluginParameter?.Data != null)
+            {
+                mainData ??= new DataSet();
+
+                if (0 == mainData.Tables.Count)
+                    mainData.Tables.Add(PluginParameter.Data.ToTable());
+                else
+                {
+                    if (mainData.Tables[0].Rows.Count == 0)
+                        mainData.Tables[0].Rows.Add(mainData.Tables[0].NewRow());
+
+                    var row = mainData.Tables[0].Rows[0];
+                    foreach (DataColumn column in mainData.Tables[0].Columns)
+                        if (PluginParameter.Data.TryGetValue(column.ColumnName, out object? val))
+                            row[column] = val;
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(Setting!.DataLoadName))
             {
-                IDictionary<string, object>? parameters = ConditionTable == null || ConditionTable.Rows.Count == 0 ? null : ConditionTable.Rows[0].ToDictionary(Setting!.QueryConditionColumns);
+                IDictionary<string, object>? parameters = null == ConditionTable || 0 == ConditionTable.Rows.Count ? null : ConditionTable.Rows[0].ToDictionary(Setting!.QueryConditionColumns);
 
-                if (Setting!.QueryParameters != null)
+                if (null != Setting!.QueryParameters)
                 {
                     var queryParameters = Setting.QueryParameters.ClearNull();
                     if (queryParameters.Count > 0)
-                        if (parameters == null)
+                        if (null == parameters)
                             parameters = queryParameters;
                         else
                             parameters.Merge(queryParameters);
                 }
 
-                if (parameters != null && Setting.QueryConditionExcludedColumns != null)
+                if (null != parameters && null != Setting.QueryConditionExcludedColumns)
                     foreach (var column in Setting.QueryConditionExcludedColumns)
                         parameters.Remove(column);
 
                 // 清除空实体
-                if (parameters != null)
+                if (null != parameters)
                     foreach(var pair in parameters)
-                        if (pair.Key.EndsWith("_Id", StringComparison.OrdinalIgnoreCase) && long.TryParse(pair.Value.ToString(), out long value) && value == 0L)
+                        if (pair.Key.EndsWith("_Id", StringComparison.OrdinalIgnoreCase) && long.TryParse(pair.Value.ToString(), out long value) && 0L == value)
                             parameters.Remove(pair.Key);
 
-                if (PluginParameter?.Data != null)
-                    if (parameters == null)
-                        parameters = PluginParameter?.Data;
-                    else
-                        parameters.Merge(PluginParameter.Data);
+                //if (null != PluginParameter?.Data)
+                //    if (null == parameters)
+                //        parameters = PluginParameter?.Data;
+                //    else
+                //        parameters.Merge(PluginParameter.Data);
 
                 DataSet data;
                 if (Setting.IsPagingQuery)
@@ -377,26 +436,26 @@ namespace Compete.Mis.Plugins
                 else
                     data = GlobalCommon.DataProvider!.Query(PluginParameter!.Path, (name ?? Setting.DataLoadName)!, parameters);
 
-                if (mainData == null)
+                if (null == mainData)
                     mainData = data;
                 else
                     mainData.Merge(data);
             }
 
-            if (mainData != null)
+            if (null != mainData)
             {
                 ProcessData(mainData);
 
-                if (Setting?.AdditionalDataColumns != null)
+                if (null != Setting?.AdditionalDataColumns)
                     MemoryData.DataCreator.AddColumns(mainData, Setting.AdditionalDataColumns);
 
-                if (Setting?.AdditionalDataColumnSettings != null)
+                if (null != Setting?.AdditionalDataColumnSettings)
                     MemoryData.DataCreator.AddColumns(mainData, Setting.AdditionalDataColumnSettings);
 
-                if (Setting?.DataColumnSettings != null)
+                if (null != Setting?.DataColumnSettings)
                     MemoryData.DataCreator.SetColumns(mainData, Setting.DataColumnSettings);
 
-                if (Setting?.ColumnDisplayIndexes != null)
+                if (null != Setting?.ColumnDisplayIndexes)
                 {
                     DataTable table;
                     foreach (var pair in Setting.ColumnDisplayIndexes)
@@ -413,14 +472,11 @@ namespace Compete.Mis.Plugins
                 SetBooleanProperty(mainData, Setting?.ReadOnlyColumns, MemoryData.ExtendedPropertyNames.IsReadOnly);
                 SetBooleanProperty(mainData, Setting?.RequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
 
-                if (Setting?.EditableColumns != null)
+                if (null != Setting?.EditableColumns)
                 {
-                    DataColumnCollection columns;
                     bool isReadOnly;
                     foreach (var pair in Setting.EditableColumns)
                         if (mainData.Tables.Contains(pair.Key))
-                        {
-                            columns = mainData.Tables[pair.Key]!.Columns;
                             foreach (DataColumn column in mainData.Tables[pair.Key]!.Columns)
                             {
                                 isReadOnly = true;
@@ -434,10 +490,9 @@ namespace Compete.Mis.Plugins
                                 if (isReadOnly)
                                     column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly] = true;
                             }
-                        }
                 }
 
-                if (Setting?.InvisibleIdTables != null)
+                if (null != Setting?.InvisibleIdTables)
                     foreach(var tableNname in Setting.InvisibleIdTables)
                         foreach (DataColumn column in mainData.Tables[tableNname]!.Columns)
                             if (column.ColumnName.EndsWith("_Id", StringComparison.OrdinalIgnoreCase))
@@ -445,12 +500,23 @@ namespace Compete.Mis.Plugins
                                     = (column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible] as bool? ?? true)
                                     && !(bool)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]!;
 
-                if (mainData.Tables.Count > 0)
+                if (null != Setting?.UniqueColumns)
+                    foreach (var pair in Setting.UniqueColumns)
+                        if (mainData.Tables.Contains(pair.Key))
+                            foreach (DataColumn column in mainData.Tables[pair.Key]!.Columns)
+                                foreach (var columnName in pair.Value)
+                                    if (column.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        column.Unique = true;
+                                        break;
+                                    }
+
+                if (0 < mainData.Tables.Count)
                 {
-                    if (Setting!.IsAddMaster && mainData.Tables[0].Rows.Count == 0)
+                    if (Setting!.IsAddMaster && 0 == mainData.Tables[0].Rows.Count)
                         mainData.Tables[0].Rows.Add(mainData.Tables[0].NewRow());
 
-                    if (calculatorMethodDictionary.Count > 0)
+                    if (0 < calculatorMethodDictionary.Count)
                     {
                         columnCalculators.Clear();
                         foreach (DataTable table in mainData.Tables)
@@ -463,7 +529,7 @@ namespace Compete.Mis.Plugins
                             }
                     }
 
-                    if (verifierMethodDictionary.Count > 0)
+                    if (0 < verifierMethodDictionary.Count)
                     {
                         columnVerifiers.Clear();
                         foreach (DataTable table in mainData.Tables)
@@ -476,7 +542,7 @@ namespace Compete.Mis.Plugins
                             }
                     }
 
-                    if (Setting?.TotalSettings != null)
+                    if (null != Setting?.TotalSettings)
                         foreach (DataTable table in mainData.Tables)
                         {
                             table.RowChanged += Table_RowChanged_Total;
@@ -485,22 +551,27 @@ namespace Compete.Mis.Plugins
                 }
             }
 
+            if (true == (bool?)queringMethod?.Invoke(null, [this, mainData]))
+                return;
+
             Data = mainData;
+
+            queriedMethod?.Invoke(null, [this, mainData]);
         }
 
         protected override void ConditionTableChanged(DataTable? oldValue, DataTable? newValue)
         {
-            if (oldValue != null)
+            if (null != oldValue)
             {
                 oldValue.ColumnChanging -= ConditionTable_ColumnChanging;
                 oldValue.ColumnChanged -= ConditionTable_ColumnChanged;
             }
 
-            if (newValue != null)
+            if (null != newValue)
             {
                 var columns = newValue.Columns;
 
-                if (conditionVerifierMethodDictionary.Count > 0)
+                if (0 < conditionVerifierMethodDictionary.Count)
                 {
                     conditionColumnVerifiers.Clear();
                     foreach (DataColumn column in columns)
@@ -510,7 +581,7 @@ namespace Compete.Mis.Plugins
                     newValue.ColumnChanging += ConditionTable_ColumnChanging;
                 }
 
-                if (conditionCalculatorMethodDictionary.Count > 0)
+                if (0 < conditionCalculatorMethodDictionary.Count)
                 {
                     conditionColumnCalculators.Clear();
                     foreach (DataColumn column in columns)
@@ -526,7 +597,7 @@ namespace Compete.Mis.Plugins
 
         private static void ExecuteVerifier(DataColumnChangeEventArgs e, Dictionary<DataColumn, MethodInfo> methodDictionary)
         {
-            if (e.Column == null || !methodDictionary.TryGetValue(e.Column, out MethodInfo? verifier))
+            if (null == e.Column || !methodDictionary.TryGetValue(e.Column, out MethodInfo? verifier))
                 return;
 
             var message = verifier.Invoke(null, [e.Row, e.ProposedValue])?.ToString();
@@ -540,7 +611,7 @@ namespace Compete.Mis.Plugins
 
         private void ExecuteCalculator(DataColumnChangeEventArgs e, Dictionary<DataColumn, MethodInfo> methodDictionary)
         {
-            if (isEditting || e.Column == null || !methodDictionary.TryGetValue(e.Column, out MethodInfo? calculator))
+            if (isEditting || null == e.Column || !methodDictionary.TryGetValue(e.Column, out MethodInfo? calculator))
                 return;
 
             isEditting = true;
@@ -593,7 +664,7 @@ namespace Compete.Mis.Plugins
         {
             base.OnQueried(e);
 
-            if (Setting!.IsAddMaster && MasterData?.Count == 0)
+            if (Setting!.IsAddMaster && 0 == MasterData?.Count)
                 MasterData.AddNew();
 
             if (TotalTable != null)
@@ -608,10 +679,10 @@ namespace Compete.Mis.Plugins
 
         private static DataTable? RemoveColumns(DataView dataView, DataTable? table, string[]? columns, DataViewRowState state)
         {
-            if (columns == null)
-                return table?.Rows.Count > 0 ? table : null;
+            if (null == columns)
+                return 0 < table?.Rows.Count ? table : null;
 
-            if (table == null)
+            if (null == table)
             {
                 dataView.RowStateFilter = state;
                 table = dataView.ToTable();
@@ -620,14 +691,40 @@ namespace Compete.Mis.Plugins
             foreach (var column in columns)
                 table.Columns.Remove(column);
 
-            return table.Rows.Count > 0 ? table : null;
+            return 0 < table.Rows.Count ? table : null;
         }
 
-        private static DataTable RemoveColumns(DataTable table, string[]? columns) => columns == null || columns.LongLength == 0L ? table.Copy() : table.DefaultView.ToTable(false, columns);
+        private const string ConditionPrefix = "Condition_";
+
+        private void MergeConditionTable(ref DataSet dataSet)
+        {
+            if (0 == dataSet.Tables.Count)
+                dataSet.Tables.Add(new DataTable());
+
+            foreach (var column in Setting!.SaveConditionColumns!)
+            {
+                var columnName = ConditionPrefix + column;
+                if (!dataSet.Tables[0].Columns.Contains(columnName))
+                {
+                    var dataColumn = ConditionTable!.Columns[column];
+                    dataSet.Tables[0].Columns.Add(new DataColumn(columnName, dataColumn!.DataType));
+                }
+            }
+
+            if (0 == dataSet.Tables[0].Rows.Count)
+                dataSet.Tables[0].Rows.Add(dataSet.Tables[0].NewRow());
+
+            var conditionRow = ConditionTable!.Rows[0];
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+                foreach (var column in Setting.SaveConditionColumns)
+                    row[ConditionPrefix + column] = conditionRow[column];
+        }
+
+        private static DataTable RemoveColumns(DataTable table, string[]? columns) => null == columns || 0L == columns.LongLength ? table.Copy() : table.DefaultView.ToTable(false, columns);
 
         private static DataTable? GetTable(DataView dataView, string[]? columns, DataViewRowState state)
         {
-            //if (columns == null)
+            //if (null == columns)
             //    return null;
 
             //dataView.RowStateFilter = state;
@@ -637,7 +734,7 @@ namespace Compete.Mis.Plugins
             //return result.Rows.Count == 0 ? null : result;
 
             dataView.RowStateFilter = state;
-            var result = columns == null || columns.LongLength == 1L && columns[0] == "*"
+            var result = null == columns || 1L == columns.LongLength && "*" == columns[0]
                 ? dataView.ToTable()
                 : dataView.ToTable(true, columns);
             return result.Rows.Count == 0 ? null : result;
@@ -653,7 +750,7 @@ namespace Compete.Mis.Plugins
                 SplitData? tableData;
                 var data = new Dictionary<string, SplitData>();
 
-                if (Setting.DifferentiatedSaveColumns != null)
+                if (null != Setting.DifferentiatedSaveColumns)
                     foreach (var pair in Setting.DifferentiatedSaveColumns)
                     {
                         tableData = new SplitData();
@@ -668,7 +765,7 @@ namespace Compete.Mis.Plugins
                         data.Add(pair.Key, tableData);
                     }
 
-                if (Setting.DifferentiatedSaveRemoveColumns != null)
+                if (null != Setting.DifferentiatedSaveRemoveColumns)
                     foreach(var pair in Setting.DifferentiatedSaveRemoveColumns)
                     {
                         dataView = new DataView(Data!.Tables[pair.Key]);
@@ -678,7 +775,7 @@ namespace Compete.Mis.Plugins
                             data.Add(pair.Key, tableData);
                         }
 
-                        if (Setting.SaveFilters != null && Setting.SaveFilters!.TryGetValue(pair.Key, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                        if (null != Setting.SaveFilters && Setting.SaveFilters!.TryGetValue(pair.Key, out var filter) && !string.IsNullOrWhiteSpace(filter))
                             dataView.RowFilter = filter;
 
                         tableData.AddedTable = RemoveColumns(dataView, tableData.AddedTable, pair.Value.AddedColumns, DataViewRowState.Added);
@@ -692,30 +789,38 @@ namespace Compete.Mis.Plugins
             else
             {
                 var dataSet = new DataSet();
-                if (Setting.IsMergeConditionData && ConditionTable != null)
+                if (Setting.IsMergeConditionData && !Setting.IsMergeConditionTable && null != ConditionTable)
                     dataSet.Tables.Add(RemoveColumns(ConditionTable, Setting.SaveConditionColumns));
 
                 foreach (DataTable table in Data!.Tables)
                 {
-                    dataView = new DataView(table)
-                    {
-                        RowStateFilter = Setting.SaveRowStateFilters == null || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
-                            ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
-                            : rowStateFilter,
-                    };
+                    dataView = null != Setting.UnmodifiedSaveTables && (from tableName in Setting.UnmodifiedSaveTables
+                                                                    where tableName == table.TableName
+                                                                    select tableName).LongCount() > 0L
+                                                                    ? new DataView(table)
+                                                                    : new DataView(table)
+                                                                    {
+                                                                        RowStateFilter = null == Setting.SaveRowStateFilters || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
+                                                                            ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
+                                                                            : rowStateFilter,
+                                                                    };
                     
-                    if (Setting.SaveFilters != null && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                    if (null != Setting.SaveFilters && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
                         dataView.RowFilter = filter;
 
-                    if (Setting.SaveColumns != null && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
+                    if (null != Setting.SaveColumns && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
                         dataSet.Tables.Add(dataView.ToTable(false, columns));
                     else
                         dataSet.Tables.Add(dataView.ToTable());
                 }
+
+                if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && null != ConditionTable)
+                    MergeConditionTable(ref dataSet);
+
                 result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", dataSet, ActionId!.Value);
             }
 
-            if (result.ErrorNo < 0)
+            if (0 > result.ErrorNo || !string.IsNullOrWhiteSpace(result.Message))
             {
                 ShowMessage(result);
 
@@ -727,12 +832,12 @@ namespace Compete.Mis.Plugins
 
         protected override bool Verify()
         {
-            if (Data == null || Data.Tables.Count == 0 || Setting!.IsMergeConditionData && !VerifyConditionTable())
+            if (null == Data || 0 == Data.Tables.Count || Setting!.IsMergeConditionData && !VerifyConditionTable())
                 return false;
 
             var hasError = false;
             var builder = new StringBuilder();
-            if (Setting.RequiredTables != null)
+            if (null != Setting.RequiredTables)
                 foreach (var pair in Setting.RequiredTables)
                     if ((!Data.Tables.Contains(pair.Key) || !(from row in Data.Tables[pair.Key]!.AsEnumerable()
                                                                 where row.RowState != DataRowState.Unchanged
@@ -748,9 +853,9 @@ namespace Compete.Mis.Plugins
                         //return false;
                     }
 
-            if (VerifyMethod != null)
+            if (null != verifyMethod)
             {
-                var message = VerifyMethod.Invoke(null, [Data!])?.ToString();
+                var message = verifyMethod.Invoke(null, [Data!])?.ToString();
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     builder.Append(GlobalCommon.GetMessage(message));
@@ -774,8 +879,18 @@ namespace Compete.Mis.Plugins
         protected override bool ExecuteSaveSql(string name)
         {
             var dataSet = new DataSet();
+            if (MasterData?.CurrentItem is DataRowView currentItem)
+            {
+                var table = RemoveColumns((new DataRow[] { currentItem.Row }).CopyToDataTable(), Setting?.SaveColumns?[Data!.Tables[0].TableName]);
+                table.TableName = Data!.Tables[0].TableName;
+                dataSet.Tables.Add(table);
+            }
+
             if (Setting!.IsMergeConditionData && ConditionTable != null)
-                dataSet.Tables.Add(RemoveColumns(ConditionTable, Setting.SaveConditionColumns));
+                if (Setting.IsMergeConditionTable && dataSet.Tables.Count > 0)
+                    MergeConditionTable(ref dataSet);
+                else
+                    dataSet.Tables.Add(RemoveColumns(ConditionTable, Setting.SaveConditionColumns));
 
             var result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name, dataSet, ActionId!.Value);    // Setting?.DataSaveName ?? 
 
@@ -794,17 +909,20 @@ namespace Compete.Mis.Plugins
 
         private void ShowMessage(Common.Result result)
         {
-            if (string.IsNullOrWhiteSpace(result.Message))
-            {
-                if (Setting?.ErrorDictionary != null && Setting.ErrorDictionary.TryGetValue(result.ErrorNo, out string? message))
-                    MessageText = message;
-                else if (GlobalCommon.ErrorDictionary != null && GlobalCommon.ErrorDictionary.TryGetValue(result.ErrorNo, out string? globalMessage))
-                    MessageText = globalMessage;
-            }
-            else
-                MessageText = result.Message;
+            string errorMessage = Setting?.ErrorDictionary != null && Setting.ErrorDictionary.TryGetValue(result.ErrorNo, out string? message) ? message
+                : GlobalCommon.ErrorDictionary != null && GlobalCommon.ErrorDictionary.TryGetValue(result.ErrorNo, out string? globalMessage) ? globalMessage
+                : string.Empty;
 
-            MisControls.MessageDialog.Warning(MessageText ?? string.Empty);
+            MessageText = string.IsNullOrWhiteSpace(errorMessage)
+                ? string.IsNullOrWhiteSpace(result.Message)
+                ? string.Empty
+                : result.Message
+                : string.Format(errorMessage, result.Message ?? string.Empty);
+
+            if (0 == result.ErrorNo)
+                MisControls.MessageDialog.Information(MessageText);
+            else
+                MisControls.MessageDialog.Warning(MessageText);
         }
 
         protected override FlowDocument? GetDocument()
@@ -833,14 +951,14 @@ namespace Compete.Mis.Plugins
 
         //    //window.Show();
 
-        //    return Setting?.PrintDocumentFileName == null || !File.Exists(Setting.PrintDocumentFileName) ? null :(FlowDocument) XamlReader.Parse(File.ReadAllText(Setting.PrintDocumentFileName));
+        //    return null == Setting?.PrintDocumentFileName || !File.Exists(Setting.PrintDocumentFileName) ? null :(FlowDocument) XamlReader.Parse(File.ReadAllText(Setting.PrintDocumentFileName));
         //}
 
 
         protected override PluginCommandParameter GetRunParameter(PluginCommandParameter parameter)
         {
             var currentItem = MasterData?.CurrentItem as DataRowView;
-            if (Setting?.RunColumns == null)
+            if (null == Setting?.RunColumns)
                 parameter.Data = currentItem?.Row.ToDictionary();
             else
             {

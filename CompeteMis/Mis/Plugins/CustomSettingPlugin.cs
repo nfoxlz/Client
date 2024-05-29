@@ -20,7 +20,7 @@ namespace Compete.Mis.Plugins
             {
                 //uiElement.DataContext is PluginViewModel viewModel;
 
-                var viewModel = uiElement.DataContext is PluginViewModel model ? model : uiElement.DataContext == null ? (CustomSettingDataViewModel<T>)(uiElement.DataContext = CreateViewModel()) : null;
+                var viewModel = uiElement.DataContext is PluginViewModel model ? model : null == uiElement.DataContext ? (CustomSettingDataViewModel<T>)(uiElement.DataContext = CreateViewModel()) : null;
                 if (viewModel != null)
                 {
                     viewModel.PluginParameter ??= parameter;
@@ -28,7 +28,7 @@ namespace Compete.Mis.Plugins
                     viewModel.TrySetPropertyValue("SettingFileName", path);
                     uiElement.DataContext ??= viewModel;
                 }
-                //if (viewModel != null && viewModel.Data == null)
+                //if (null != viewModel && null == viewModel.Data)
                 //    viewModel.Data = GlobalCommon.DataProvider!.Query(basePath, setting.LoadName, setting.QueryParameters);
             }
 

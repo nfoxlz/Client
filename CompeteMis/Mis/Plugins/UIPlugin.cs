@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
 using System.Windows.Markup;
@@ -21,7 +22,12 @@ namespace Compete.Mis.Plugins
             {
                 case PluginUIType.Window:
                 case PluginUIType.Dialog:
-                    Window window = (ui as Window) ?? new Window() { Title = title, Content = ui, };
+                    Window window = (ui as Window) ?? new Window()
+                    {
+                        Title = title,
+                        Content = ui,
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    };
                     if (uIType == PluginUIType.Window)
                         window.Show();
                     else
@@ -46,7 +52,7 @@ namespace Compete.Mis.Plugins
             using var factory = GlobalCommon.CreateLoggerFactory();
             var logger = factory.CreateLogger<UIPlugin>();
 
-            if (parameter == null)
+            if (null == parameter)
             {
                 logger.LogWarning("参数为空。");
                 return;

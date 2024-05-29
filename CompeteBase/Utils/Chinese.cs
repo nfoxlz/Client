@@ -7,8 +7,10 @@
 // -------------------------------------------------------------------
 // 1.0.0.0 2018/3/5 10:42:25 LeeZheng  新建。
 // ===================================================================
+using Compete.Mis;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Compete.Utils
@@ -255,55 +257,80 @@ namespace Compete.Utils
         /// <summary>
         /// 大写数字。
         /// </summary>
-        private static readonly IList<char> numeralList = new List<char> { '零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖' };
+        //private static readonly char[] numeralList = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+
+        ///// <summary>
+        ///// 转换为大写数字。
+        ///// </summary>
+        ///// <param name="numerals">原始数字。</param>
+        ///// <returns>转换后的大写数字。</returns>
+        //public static string ConvertNumerals(decimal numerals)
+        //{
+        //    var builder = new StringBuilder();
+
+        //    if (numerals < decimal.Zero)   // 负数处理。
+        //        builder.Append('负');
+
+        //    foreach (var numeral in Math.Abs(numerals).ToString())
+        //        builder.Append(numeral == '.' ? '点' : numeralList[numeral - 48]);
+        //    return builder.ToString();
+        //}
+
+        [DllImport("CompeteLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr convertNumerals(double numerals, ushort digit);
 
         /// <summary>
         /// 转换为大写数字。
         /// </summary>
         /// <param name="numerals">原始数字。</param>
+        /// <param name="digit">位数。</param>
         /// <returns>转换后的大写数字。</returns>
-        public static string ConvertNumerals(decimal numerals)
-        {
-            var builder = new StringBuilder();
+        public static string ConvertNumerals(double numerals, ushort digit = 2) => GlobalCommon.ConvertString(convertNumerals(numerals, digit));
 
-            if (numerals < decimal.Zero)   // 负数处理。
-                builder.Append('负');
-
-            foreach (var numeral in Math.Abs(numerals).ToString())
-                builder.Append(numeral == '.' ? '点' : numeralList[numeral - 48]);
-            return builder.ToString();
-        }
+        public static string ConvertNumerals(decimal numerals, ushort digit = 2) => ConvertNumerals(Convert.ToDouble(numerals), digit);
 
         /// <summary>
         /// 大写金额数位。
         /// </summary>
-        private static readonly IList<char> digitList = new List<char> { '佰', '拾', '秭', '仟', '佰', '拾', '垓', '仟', '佰', '拾', '京', '仟', '佰', '拾', '兆', '仟', '佰', '拾', '亿', '仟', '佰', '拾', '万', '仟', '佰', '拾', '元', '角', '分' };
+        //private static readonly IList<char> digitList = ['佰', '拾', '秭', '仟', '佰', '拾', '垓', '仟', '佰', '拾', '京', '仟', '佰', '拾', '兆', '仟', '佰', '拾', '亿', '仟', '佰', '拾', '万', '仟', '佰', '拾', '元', '角', '分'];
 
-        /// <summary>
-        /// 转换为大写金额。
-        /// </summary>
-        /// <param name="amount">原始金额。</param>
-        /// <returns>转换后的大写金额。</returns>
-        public static string ConvertAmount(decimal amount)
-        {
-            var builder = new StringBuilder();
-            //builder.Append('¥');
-            builder.Append('￥');    // 添加封头。
+        ///// <summary>
+        ///// 转换为大写金额。
+        ///// </summary>
+        ///// <param name="amount">原始金额。</param>
+        ///// <returns>转换后的大写金额。</returns>
+        //public static string ConvertAmount(decimal amount)
+        //{
+        //    var builder = new StringBuilder();
+        //    //builder.Append('¥');
+        //    builder.Append('￥');    // 添加封头。
 
-            if (amount < decimal.Zero)        // 负数处理。
-                builder.Append('负');
+        //    if (amount < decimal.Zero)        // 负数处理。
+        //        builder.Append('负');
 
-            var numerals = Math.Round(Math.Abs(amount) * 100M).ToString();
+        //    var numerals = Math.Round(Math.Abs(amount) * 100M).ToString();
 
-            var digit = digitList.Count - numerals.Length;
-            foreach (var numeral in numerals)
-            {
-                builder.Append(numeralList[numeral - 48]);  // 添加数字。
-                builder.Append(digitList[digit]);           // 添加数位。
-                digit++;
-            }
+        //    var digit = digitList.Count - numerals.Length;
+        //    foreach (var numeral in numerals)
+        //    {
+        //        builder.Append(numeralList[numeral - 48]);  // 添加数字。
+        //        builder.Append(digitList[digit]);           // 添加数位。
+        //        digit++;
+        //    }
 
-            return builder.ToString();
-        }
+        //    return builder.ToString();
+        //}
+
+        [DllImport("CompeteLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr convertAmount(double amount);
+
+        ///// <summary>
+        ///// 转换为大写金额。
+        ///// </summary>
+        ///// <param name="amount">原始金额。</param>
+        ///// <returns>转换后的大写金额。</returns>
+        public static string ConvertAmount(double amount) => GlobalCommon.ConvertString(convertAmount(amount));
+
+        public static string ConvertAmount(decimal amount) => ConvertAmount(Convert.ToDouble(amount));
     }
 }

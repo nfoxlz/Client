@@ -30,7 +30,7 @@ namespace Compete.Extensions
             var result = new Dictionary<string, object>();
 
             foreach (DataColumn column in row.Table.Columns)
-                if (row[column] != DBNull.Value && (columns == null || (from columnName in columns
+                if (row[column] != DBNull.Value && (null == columns || (from columnName in columns
                                                                         where column.ColumnName == columnName
                                                                         select columnName).Any()))
                     result.Add(column.ColumnName, row[column]);
@@ -86,7 +86,7 @@ namespace Compete.Extensions
             var result = new List<object>();
 
             var dataColumns = row.Table.Columns;
-            if (columns == null)
+            if (null == columns)
                 foreach (DataColumn column in dataColumns)
                     result.Add(row[column]);
             else

@@ -86,7 +86,8 @@ namespace Compete.Mis.MisControls
                     if (PageSizeChangingFunc?.Invoke(_pageSize, value) == true)
                         return;
 
-                    PageSizeChangingCommand?.Execute(PageSizeChangingCommandParameter);
+                    if (PageSizeChangingCommand?.CanExecute(PageSizeChangingCommandParameter) == true)
+                        PageSizeChangingCommand?.Execute(PageSizeChangingCommandParameter);
 
                     var oldValue = _pageSize;
                     _pageSize = value;
@@ -104,7 +105,7 @@ namespace Compete.Mis.MisControls
                             this.NotifyPropertyChanged(p => p.CurrentPageNo);
                         }
                     }
-                    else
+                    else if (PageSizeChangingCommand?.CanExecute(PageSizeChangingCommandParameter) == true)
                         PageSizeChangedCommand?.Execute(PageSizeChangedCommandParameter);
 
                     OnPropertyChanged(nameof(MaxPageNo));
@@ -129,7 +130,8 @@ namespace Compete.Mis.MisControls
                 if (CurrentPageNoChangingFunc?.Invoke(_currentPageNo, value) == true)
                     return;
 
-                CurrentPageNoChangingCommand?.Execute(CurrentPageNoChangingCommandParameter);
+                if (CurrentPageNoChangingCommand?.CanExecute(CurrentPageNoChangingCommand) == true)
+                    CurrentPageNoChangingCommand?.Execute(CurrentPageNoChangingCommand);
 
                 var oldValue = _currentPageNo;
                 _currentPageNo = value;
@@ -137,7 +139,8 @@ namespace Compete.Mis.MisControls
 
                 CurrentPageNoChangedAction?.Invoke(oldValue, _currentPageNo);
 
-                CurrentPageNoChangedCommand?.Execute(CurrentPageNoChangedCommandParameter);
+                if (CurrentPageNoChangedCommand?.CanExecute(CurrentPageNoChangedCommandParameter) == true)
+                    CurrentPageNoChangedCommand?.Execute(CurrentPageNoChangedCommandParameter);
 
                 NotifyButtonCommand();
             }

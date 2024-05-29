@@ -11,7 +11,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Xml.Linq;
 
 namespace Compete.Mis.Plugins
 {
@@ -33,6 +32,8 @@ namespace Compete.Mis.Plugins
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MasterData))]
         [NotifyPropertyChangedFor(nameof(TotalTable))]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SaveCloseCommand))]
         private DataSet? _data = null;
 
         [ObservableProperty]
@@ -58,6 +59,16 @@ namespace Compete.Mis.Plugins
                 element.IsEnabled = isEnabled;
         }
 
+        [RelayCommand]
+        private void Cancel()
+        {
+            (View as Window)?.Close();
+
+            if (PluginParameter?.BackAction != null)
+                PluginParameter.BackAction(false);
+        }
+
+
         private ulong runCount = 0UL;
 
         private readonly object runCountLock = new();
@@ -67,7 +78,7 @@ namespace Compete.Mis.Plugins
             Cursor? cursor = null;
             lock (runCountLock)
             {
-                if (runCount == 0UL)
+                if (0UL == runCount)
                 {
                     SetViewEnabled(false);
                     cursor = ViewHelper.BeginProcess();
@@ -89,7 +100,7 @@ namespace Compete.Mis.Plugins
                 lock (runCountLock)
                 {
                     runCount--;
-                    if (runCount == 0UL)
+                    if (0UL == runCount)
                     {
                         ViewHelper.EndProcess(cursor);
                         SetViewEnabled(true);
@@ -99,30 +110,34 @@ namespace Compete.Mis.Plugins
         }
         protected abstract void QueryData(string? name);
 
+        protected override Action<bool>? BackAction
+        {
+            get => (isSucceed) =>
+            {
+                if (isSucceed && CanQuery())
+                    Query();
+            };
+        }
+
         public event EventHandler<EventArgs>? Queried;
 
         protected virtual void OnQueried(EventArgs e) => Volatile.Read(ref Queried)?.Invoke(this, e);
 
         public bool HasQueryAuthorition { get => HasAuthorition(ReserveAuthorition.Query); }
 
+        private void SaveCommandNotifyCanExecuteChanged()
+        {
+            SaveCommand.NotifyCanExecuteChanged();
+            SaveCloseCommand.NotifyCanExecuteChanged();
+        }
+
         [RelayCommand(CanExecute = nameof(CanQuery))]
-        private void Query(string? name) => RunBackground(() =>
+        private void Query(string? name = null) => RunBackground(() =>
         {
             ConditionData?.CommitEdit();
 
             QueryData(name);
-            if (Data != null)
-            {
-                Data.AcceptChanges();
-
-                foreach (DataTable table in Data.Tables)
-                {
-                    table.RowChanged += Table_RowChanged;
-                    table.RowDeleted += Table_RowChanged;
-                }
-                //if (MasterData != null)
-                //    MasterData.CurrentChanged += DataViewModel_CurrentChanged;
-            }
+            Data?.AcceptChanges();
 
             ActionId = Guid.NewGuid();
 
@@ -130,7 +145,7 @@ namespace Compete.Mis.Plugins
 
             OnQueried(new EventArgs());
 
-            SaveCommand.NotifyCanExecuteChanged();
+            SaveCommandNotifyCanExecuteChanged();
         });
 
 
@@ -169,14 +184,14 @@ namespace Compete.Mis.Plugins
         {
             MasterData!.AddNew();
             MasterData.CommitNew();
-            SaveCommand.NotifyCanExecuteChanged();
+            SaveCommandNotifyCanExecuteChanged();
         }
 
         public bool HasAddAuthorition { get => HasAuthorition(ReserveAuthorition.Add); }
 
         private bool CanAdd()
         {
-            if (!HasAddAuthorition || MasterData == null)// && MasterData.CanAddNew;
+            if (!HasAddAuthorition || null == MasterData)// && MasterData.CanAddNew;
                 return false;
 
             foreach (var item in MasterData)
@@ -190,19 +205,17 @@ namespace Compete.Mis.Plugins
         private void Delete()
         {
             MasterData!.Remove(MasterData.CurrentItem);
-            SaveCommand.NotifyCanExecuteChanged();
+            SaveCommandNotifyCanExecuteChanged();
         }
 
         public bool HasDeleteAuthorition { get => HasAuthorition(ReserveAuthorition.Delete); }
 
         private bool CanDelete() => HasDeleteAuthorition && MasterData != null && MasterData.CurrentItem != null && MasterData.CurrentItem.GetType().ToString() != "MS.Internal.NamedObject";// && MasterData.CanRemove;
 
-        //private void Table_TableNewRow(object sender, DataTableNewRowEventArgs e) => SaveCommand.NotifyCanExecuteChanged();
-
         private void Table_RowChanged(object sender, DataRowChangeEventArgs e)
         {
-            SaveCommand.NotifyCanExecuteChanged();
-            NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(Data));
+            SaveCommandNotifyCanExecuteChanged();
         }
 
         private void NotifyCanExecuteChanged()
@@ -245,11 +258,39 @@ namespace Compete.Mis.Plugins
             }
         });
 
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private void SaveClose(string? name) => RunBackground(() =>
+        {
+            if (isPaused)
+                return;
+
+            lock (pausedLock)
+                if (isPaused)
+                    return;
+                else
+                    isPaused = true;
+
+            try
+            {
+                if (SaveData(name))
+                    return;
+
+                (View as Window)?.Close();
+
+                if (PluginParameter?.BackAction != null)
+                    PluginParameter.BackAction(true);
+            }
+            finally
+            {
+                isPaused = false;
+            }
+        });
+
         public bool HasSaveAuthorition { get => HasAuthorition(ReserveAuthorition.Save); }
 
         private bool VerifyData()
         {
-            if (Data == null || !Data.HasChanges() || isPaused)
+            if (null == Data || !Data.HasChanges() || isPaused)
                 return false;
 
             var builder = new StringBuilder();
@@ -300,6 +341,20 @@ namespace Compete.Mis.Plugins
 
         private bool CanDirectModify() => HasDirectModifyAuthorition && CanDirectExecuteSql;
 
+        [RelayCommand(CanExecute = nameof(CanDirectAddChild))]
+        private void DirectAddChild(string? name) => DirectExecuteSaveSql(name ?? "addChild");
+
+        public bool HasDirectAddChildAuthorition { get => HasAuthorition(ReserveAuthorition.DirectAddChild); }
+
+        private bool CanDirectAddChild() => HasDirectAddChildAuthorition && CanDirectExecuteSql;
+
+        [RelayCommand(CanExecute = nameof(CanDirectDeleteChild))]
+        private void DirectDeleteChild(string? name) => DirectExecuteSaveSql(name ?? "deleteChild");
+
+        public bool HasDirectDeleteChildAuthorition { get => HasAuthorition(ReserveAuthorition.DirectDeleteChild); }
+
+        private bool CanDirectDeleteChild() => HasDirectDeleteChildAuthorition && CanDirectExecuteSql;
+
         private void DirectExecuteSaveSql(string name) => RunBackground(() =>
         {
             if (isPaused)
@@ -317,7 +372,7 @@ namespace Compete.Mis.Plugins
                     return;
 
                 if (CanQuery())
-                    Query(null);
+                    Query();
             }
             finally
             {
@@ -331,7 +386,7 @@ namespace Compete.Mis.Plugins
 
         protected bool VerifyConditionTable()
         {
-            if (ConditionTable == null)
+            if (null == ConditionTable)
                 return false;
 
             if (ConditionTable.Verify(out string dataErrorText))
@@ -348,18 +403,9 @@ namespace Compete.Mis.Plugins
         private FlowDocument? GetDataFlowDocument()
         {
             var document = GetDocument();
-            if (document == null)
+            if (null == document)
                 return null;
 
-            //var data = new DataSet();
-
-            //if (Data != null)
-            //    data.Merge(Data);
-
-            //if (ConditionTable != null)
-            //    data.Merge(ConditionTable);
-
-            //document.DataContext = data;
             document.DataContext = this;
 
             return document;
@@ -373,7 +419,7 @@ namespace Compete.Mis.Plugins
         private void Print()
         {
             var document = GetDataFlowDocument();
-            if (document == null)
+            if (null == document)
                 return;
 
             var viewer = new DocumentViewer();
@@ -384,21 +430,8 @@ namespace Compete.Mis.Plugins
         [RelayCommand(CanExecute = nameof(CanPrint))]
         private void PrintPreview()
         {
-            //var doc = (FlowDocument)XamlReader.Parse(File.ReadAllText("D:/Projects/CompeteMIS/tmp/TestFlowDocument.xaml"));
-            ////var paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
-            ////paginator.PageSize = new Size(595, 842);
-            ////doc.ColumnWidth = double.PositiveInfinity;
-
-            //var window = new Print.PrintPreviewWindow();
-
-            ////Dispatcher.CurrentDispatcher.BeginInvoke(new PrintHelper.LoadXpsMethod(PrintHelper.LoadXps), DispatcherPriority.ApplicationIdle, window.documentViewer, doc);
-            //Dispatcher.CurrentDispatcher.BeginInvoke(Print.PrintHelper.LoadXps, DispatcherPriority.ApplicationIdle, window.documentViewer, doc);
-            ////PrintHelper.LoadXps(doc, window.docViewer);
-
-            //window.Show();
-
             var document = GetDataFlowDocument();
-            if (document == null)
+            if (null == document)
                 return;
 
             var window = new Print.PrintPreviewWindow();
@@ -432,45 +465,30 @@ namespace Compete.Mis.Plugins
             QueryCommand.NotifyCanExecuteChanged();
         }
 
-        //partial void OnDataChanging(DataSet? oldValue, DataSet? newValue)
-        //{
-        //    if (oldValue != null)
-        //        foreach (DataTable table in oldValue.Tables)
-        //        {
-        //            table.ColumnChanging -= Table_ColumnChanging;
-        //            table.RowChanging -= Table_RowChanging;
-        //            table.RowChanged -= Table_RowChanged;
-        //        }
-        //}
-
-        //private void Table_ColumnChanging(object sender, DataColumnChangeEventArgs e)
-        //{
-        //}
-
-        //private void Table_RowChanging(object sender, DataRowChangeEventArgs e)
-        //{
-        //}
-
-        //private void Table_RowChanged(object sender, DataRowChangeEventArgs e)
-        //{
-        //}
-
-
-        //partial void OnDataChanged(DataSet? oldValue, DataSet? newValue)
-        //{
-        //    if (oldValue is not null)
-        //    {
-        //    }
-
-        //    if (newValue is not null)
-        //    {
-        //    }
-        //}
-
-        partial void OnDataChanged(DataSet? value)
+        partial void OnDataChanged(DataSet? oldValue, DataSet? newValue)
         {
-            if (value is not null)
-                MasterData = CollectionViewSource.GetDefaultView(value.Tables[0]) as BindingListCollectionView;      // 获取主数据视图。
+            if (oldValue is not null)
+                foreach (DataTable table in oldValue.Tables)
+                {
+                    table.ColumnChanged -= Table_ColumnChanged;
+                    table.RowDeleted -= Table_RowChanged;
+                }
+
+            if (newValue is not null)
+            {
+                MasterData = CollectionViewSource.GetDefaultView(newValue.Tables[0]) as BindingListCollectionView;      // 获取主数据视图。
+                foreach (DataTable table in newValue.Tables)
+                {
+                    table.ColumnChanged += Table_ColumnChanged;
+                    table.RowDeleted += Table_RowChanged;
+                }
+            }
+        }
+
+        private void Table_ColumnChanged(object sender, DataColumnChangeEventArgs e)
+        {
+            e.Row.EndEdit();
+            SaveCommandNotifyCanExecuteChanged();
         }
 
         partial void OnConditionTableChanged(DataTable? oldValue, DataTable? newValue)
@@ -499,8 +517,11 @@ namespace Compete.Mis.Plugins
             DirectAddCommand.NotifyCanExecuteChanged();
             DirectDeleteCommand.NotifyCanExecuteChanged();
             DirectModifyCommand.NotifyCanExecuteChanged();
+
+            DirectAddChildCommand.NotifyCanExecuteChanged();
+            DirectDeleteChildCommand.NotifyCanExecuteChanged();
         }
 
-        public override bool HasRunAuthorition => base.HasRunAuthorition && MasterData?.CurrentItem != null;
+        protected override bool CanRun(PluginCommandParameter parameter) => base.CanRun(parameter) && (parameter?.RequiredCurrentItem == false || MasterData?.CurrentItem != null);
     }
 }

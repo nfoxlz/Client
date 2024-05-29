@@ -7,10 +7,13 @@
 // -------------------------------------------------------------
 // 1.0.0.0 2018/3/8 14:30:00 LeeZheng  新建。
 // =============================================================
+using Compete.MemoryData;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Windows.Input;
 
 namespace Compete.Extensions
 {
@@ -187,6 +190,20 @@ namespace Compete.Extensions
                 else
                     return (enumerable as IEnumerable<object>)?.FirstOrDefault();
             }
+        }
+
+        public static DataTable ToTable<TValue>(this IDictionary<string, TValue> dictionary, string tableName = "Master")
+        {
+            var table = DataCreator.Create(tableName, dictionary.Keys);
+
+            var row = table.NewRow();
+
+            foreach (var pair in dictionary)
+                row[pair.Key] = pair.Value;
+
+            table.Rows.Add(row);
+
+            return table;
         }
     }
 }

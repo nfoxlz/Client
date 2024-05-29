@@ -16,13 +16,17 @@ namespace Compete.Scripts
     /// </summary>
     public static class ScriptTemplates
     {
-        public static IEnumerable<string> DataReferencedAssemblies { get; private set; } = new List<string> { "System.dll", "System.Core.dll", "System.Data.dll" };
+        public static IEnumerable<string> DataReferencedAssemblies { get; private set; } = ["System.dll", "System.Core.dll", "System.Data.dll"];
 
         public const string DataColumnChangingTemplate = @"using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
 
 namespace Compete.Scripts
 {{
@@ -49,7 +53,14 @@ namespace Compete.Scripts
 //    }}
 //}}";
         public const string CalculatorTemplate = @"using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
 
 namespace Compete.Scripts
 {{
@@ -65,7 +76,14 @@ namespace Compete.Scripts
         }}";
 
         public const string VerifyTemplate = @"using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
 
 namespace Compete.Scripts
 {{
@@ -80,7 +98,15 @@ namespace Compete.Scripts
             {1};
         }}";
 
-        public const string FormatTemplate = @"using System.Data;
+        public const string FormatTemplate = @"using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
 
 namespace Compete.Scripts
 {{
@@ -106,18 +132,70 @@ namespace Compete.Scripts
 
         public const string VerifyMethodClassName = "Compete.Scripts.SaveVerifier";
 
-        public const string VerifyethodTemplate = @"using System;
+        public const string VerifierTemplate = @"using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
 
 namespace Compete.Scripts
-{{
-    public static class SaveVerifier
-    {{
-        public static string Verify(DataSet data)
-        {{
-            {0}
-        }}
-    }}
-}}";
+{{{{
+    public static class {{0}}
+    {{{{
+        public static string {0}(DataSet data)
+        {{{{
+            {{1}}
+        }}}}
+    }}}}
+}}}}";
+
+        public const string BeforeTemplate = @"using System;
+using System.Data;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
+
+namespace Compete.Scripts
+{{{{
+    public static class {{0}}
+    {{{{
+        public static bool {0}(object vm, DataSet? data = null)
+        {{{{
+            {{1}}
+        }}}}
+    }}}}
+}}}}";
+
+        public const string AfterTemplate = @"using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
+
+namespace Compete.Scripts
+{{{{
+    public static class {{0}}
+    {{{{
+        public static void {0}(object vm, DataSet? data = null)
+        {{{{
+            {{1}}
+        }}}}
+    }}}}
+}}}}";
+
+        public const string InitializingMethodClassName = "Compete.Scripts.InitializingClass";
+
+        public const string QueringMethodClassName = "Compete.Scripts.QueringClass";
+
+        public const string QueriedMethodClassName = "Compete.Scripts.QueriedClass";
     }
 }

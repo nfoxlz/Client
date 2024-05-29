@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Runtime.Caching;
+using System.Runtime.InteropServices;
 using System.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
 using Xceed.Wpf.Toolkit;
@@ -21,6 +22,8 @@ namespace Compete.Mis
         public static Models.Entity? CurrentUser { get; set; }
 
         public static MisControls.IEntityDataProvider? EntityDataProvider { get; set; }
+
+        public static IDictionary<string, MisControls.TreeEntitySetting>? TreeEntitySettingDictionary { get; set; }
 
         public static IDictionary<int, string>? ErrorDictionary { get; set; }
 
@@ -83,5 +86,17 @@ namespace Compete.Mis
         public static MemoryData.IServerDateTimeProvider? ServerDateTimeProvider { get; set; }
 
         public static Plugins.IDataProvider? DataProvider { get; set; }
+
+        public static Utils.IConfiguration? GlobalConfiguration { get; set; }
+
+        [DllImport("CompeteLib.dll", EntryPoint = "releaseString", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void ReleaseString(IntPtr str);
+
+        public static string ConvertString(IntPtr str)
+        {
+            var result = Marshal.PtrToStringAnsi(str)!;
+            ReleaseString(str);
+            return result;
+        }
     }
 }

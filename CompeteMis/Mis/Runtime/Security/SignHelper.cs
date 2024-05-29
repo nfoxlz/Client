@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace Compete.Mis.Runtime.Security
 {
-    internal sealed class SignHelper
+    internal sealed class SignHelper(string password)
     {
-        private readonly string password;
+        private readonly string password = password;
 
-        public SignHelper(string password) => this.password = password;
-
-        private void AddAdditionalParameters(ICollection<string> parameterList)
+        private void AddAdditionalParameters(List<string> parameterList)
         {
             parameterList.Add(string.Format("timestamp={0}", DateTime.Now.ToString("yyyyMMdd")));
             parameterList.Add(string.Format("password={0}", password));
@@ -17,10 +15,10 @@ namespace Compete.Mis.Runtime.Security
 
         public IDictionary<string, object?>? GenerateSignParameter(IDictionary<string, object?>? parameters)
         {
-            if (parameters == null)
+            if (null == parameters)
                 return null;
 
-            IDictionary<string, object?> result = new Dictionary<string, object?>(parameters);
+            var result = new Dictionary<string, object?>(parameters);
             var parameterList = new List<string>();
             foreach (var parameter in parameters)
                 parameterList.Add(string.Format("{0}={1}", parameter.Key, parameter.Value));
@@ -32,7 +30,7 @@ namespace Compete.Mis.Runtime.Security
 
         //public IDictionary<string, object>? GenerateSignParameter(object? parameters)
         //{
-        //    if (parameters == null)
+        //    if (null == parameters)
         //        return null;
 
         //    var parameterList = new List<string>();
@@ -64,7 +62,7 @@ namespace Compete.Mis.Runtime.Security
 
         public bool Verify(IDictionary<string, object> parameters)
         {
-            if (parameters == null)
+            if (null == parameters)
                 return true;
 
             var parameterList = new List<string>();
@@ -72,7 +70,7 @@ namespace Compete.Mis.Runtime.Security
             string? sign = null;
             foreach (var parameter in parameters)
             {
-                if (parameter.Value != null)
+                if (null != parameter.Value)
                     continue;
 
                 if (parameter.Key == Constants.SignParameterName)
@@ -83,7 +81,7 @@ namespace Compete.Mis.Runtime.Security
 
             AddAdditionalParameters(parameterList);
 
-            return sign == null || PasswordHelper.Verify(string.Join("&", parameterList), sign);
+            return null == sign || PasswordHelper.Verify(string.Join("&", parameterList), sign);
         }
 
         public bool Verify(string data, string sign) =>

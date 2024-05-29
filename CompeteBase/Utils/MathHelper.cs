@@ -18,10 +18,10 @@ namespace Compete.Utils
     {
         private static T? Compete<T>(T? val1, T? val2, Func<T, T, T> func) where T : struct
         {
-            if (val1 == null)
+            if (null == val1)
                 return val2;
 
-            if (val2 == null)
+            if (null == val2)
                 return val1;
 
             return func(val1.Value, val2.Value);

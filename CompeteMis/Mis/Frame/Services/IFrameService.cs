@@ -11,13 +11,18 @@ namespace Compete.Mis.Frame.Services
 
 #if JAVA_LANGUAGE
         long GetServerDateTime();   // Java
+
+        long GetAccountingDate();
 #else
         DateTime GetServerDateTime();
-#endif
 
+        DateTime GetAccountingDate();
+#endif
 
 #if DEBUG
         void ClearCache();
 #endif
+
+        IDictionary<string, string> GetConfigurations();
     }
 }

@@ -9,5 +9,7 @@ namespace Compete.MemoryData
         DateTime GetServerDate() => GetServerDateTime().Date;
 
         TimeSpan GetServerTime() => GetServerDateTime().TimeOfDay;
+
+        DateTime GetAccountingDate();
     }
 }

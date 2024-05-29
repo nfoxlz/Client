@@ -153,7 +153,7 @@ namespace Compete.Mis.MisControls
             var isRequired = !e.Column.IsReadOnly && column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.IsRequired) && Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired]);
 
             var control = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Control];
-            var controlType = control == null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
+            var controlType = null == control ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             BindingBase binding;
             if ((dataGrid.IsReadOnly || e.Column.IsReadOnly) && controlType == DataControlType.Default && e.Column is DataGridBoundColumn dataGridBoundColumn)
@@ -215,8 +215,17 @@ namespace Compete.Mis.MisControls
                     switch (controlType)
                     {
                         case DataControlType.EntityBox:         // 实体框。
-                            e.Column = CreateColumn(binding, typeof(EntityTextBlock), EntityTextBlock.ValueProperty,
-                                EntityTextBlock.GeneratePropertyDictionary(column, parameters), false, true);
+                            var entityName = columnName[..^3];
+                            if (GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting))
+                            {
+                                var dropertyDictionary = AbstractEntityTextBlock.GeneratePropertyDictionary(column, parameters);
+                                dropertyDictionary.Add(TreeEntityTextBlock.LevelLengthProperty, treeEntitySetting.LevelLength);
+                                dropertyDictionary.Add(TreeEntityTextBlock.LevelPathProperty, treeEntitySetting.LevelPath ?? entityName + "_Code");
+                                e.Column = CreateColumn(binding, typeof(TreeEntityTextBlock), AbstractEntityTextBlock.ValueProperty, dropertyDictionary, false, true);
+                            }
+                            else
+                                e.Column = CreateColumn(binding, typeof(EntityTextBlock), AbstractEntityTextBlock.ValueProperty,
+                                    AbstractEntityTextBlock.GeneratePropertyDictionary(column, parameters), false, true);
                             break;
                         case DataControlType.SinglechoiceBox:   // 单选框。
                             e.Column = CreateColumn(binding, typeof(SinglechoiceBox), ChoiceBox.ValueProperty,
@@ -261,14 +270,29 @@ namespace Compete.Mis.MisControls
                 {
                     var showFormat = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.ShowFormat]?.ToString();// ?? string.Format(formatString, columnName[..^3]);   // 绑定格式。
 
-                    var propertyDictionary = EntityBox.GenerateGridPropertyDictionary(column, parameters);
-                    propertyDictionary.Add(EntityBox.IsRequiredProperty, isRequired);
-                    propertyDictionary.Add(EntityBox.FormatProperty, showFormat);
+                    var propertyDictionary = AbstractEntityBox.GenerateGridPropertyDictionary(column, parameters);
+                    propertyDictionary.Add(AbstractEntityBox.IsRequiredProperty, isRequired);
+                    propertyDictionary.Add(AbstractEntityBox.FormatProperty, showFormat);
 
-                    var displayPropertyDictionary = EntityTextBlock.GenerateGridPropertyDictionary(column, parameters);
-                    displayPropertyDictionary.Add(EntityTextBlock.FormatProperty, showFormat);
+                    var displayPropertyDictionary = AbstractEntityTextBlock.GenerateGridPropertyDictionary(column, parameters);
+                    displayPropertyDictionary.Add(AbstractEntityTextBlock.FormatProperty, showFormat);
 
-                    e.Column = CreateColumn(binding, typeof(EntityBox), EntityBox.ValueProperty,
+                    var entityName = columnName[..^3];
+                    if (GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting))
+                    {
+                        propertyDictionary.Add(TreeEntityBox.LevelLengthProperty, treeEntitySetting.LevelLength);
+                        propertyDictionary.Add(TreeEntityBox.LevelPathProperty, treeEntitySetting.LevelPath ?? entityName + "_Code");
+
+                        displayPropertyDictionary.Add(TreeEntityTextBlock.LevelLengthProperty, treeEntitySetting.LevelLength);
+                        displayPropertyDictionary.Add(TreeEntityTextBlock.LevelPathProperty, treeEntitySetting.LevelPath ?? entityName + "_Code");
+
+                        e.Column = CreateColumn(binding, typeof(TreeEntityBox), AbstractEntityBox.ValueProperty,
+                        propertyDictionary,
+                        false, false,
+                        displayPropertyDictionary);
+                    }
+                    else
+                        e.Column = CreateColumn(binding, typeof(EntityBox), AbstractEntityBox.ValueProperty,
                         propertyDictionary,
                         false, false,
                         displayPropertyDictionary);
@@ -283,10 +307,10 @@ namespace Compete.Mis.MisControls
                     //    }
                     //new Dictionary<DependencyProperty, object>
                     //    {
-                    //        { EntityTextBlock.ValuePathProperty, "Id" },
-                    //        { EntityTextBlock.DisplayPathProperty, "Name" },
-                    //        { EntityTextBlock.FormatProperty, showFormat ?? defaultFormat },
-                    //        { EntityTextBlock.ServiceParameterProperty, columnName.Substring(0, columnName.Length - 2) }
+                    //        { AbstractEntityTextBlock.ValuePathProperty, "Id" },
+                    //        { AbstractEntityTextBlock.DisplayPathProperty, "Name" },
+                    //        { AbstractEntityTextBlock.FormatProperty, showFormat ?? defaultFormat },
+                    //        { AbstractEntityTextBlock.ServiceParameterProperty, columnName.Substring(0, columnName.Length - 2) }
                     //    }
                 }
                 else if (dataType == typeof(long))
@@ -374,9 +398,33 @@ namespace Compete.Mis.MisControls
                 switch (controlType)
                 {
                     case DataControlType.EntityBox:         // 实体框。
-                        e.Column = CreateColumn(binding, typeof(EntityBox), EntityBox.ValueProperty,
-                            EntityBox.GeneratePropertyDictionary(column, parameters),
-                            false, false, EntityTextBlock.GeneratePropertyDictionary(column, parameters));
+                        var entityName = columnName[..^3];
+                        var showFormat = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.ShowFormat]?.ToString();// ?? string.Format(formatString, columnName[..^3]);   // 绑定格式。
+
+                        var propertyDictionary = AbstractEntityBox.GenerateGridPropertyDictionary(column, parameters);
+                        propertyDictionary.Add(AbstractEntityBox.IsRequiredProperty, isRequired);
+                        propertyDictionary.Add(AbstractEntityBox.FormatProperty, showFormat);
+
+                        var displayPropertyDictionary = AbstractEntityTextBlock.GenerateGridPropertyDictionary(column, parameters);
+                        displayPropertyDictionary.Add(AbstractEntityTextBlock.FormatProperty, showFormat);
+
+                        if (GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting))
+                        {
+                            propertyDictionary.Add(TreeEntityBox.LevelLengthProperty, treeEntitySetting.LevelLength);
+                            propertyDictionary.Add(TreeEntityBox.LevelPathProperty, treeEntitySetting.LevelPath ?? entityName + "_Code");
+
+                            displayPropertyDictionary.Add(TreeEntityTextBlock.LevelLengthProperty, treeEntitySetting.LevelLength);
+                            displayPropertyDictionary.Add(TreeEntityTextBlock.LevelPathProperty, treeEntitySetting.LevelPath ?? entityName + "_Code");
+
+                            e.Column = CreateColumn(binding, typeof(TreeEntityBox), AbstractEntityBox.ValueProperty,
+                                propertyDictionary,
+                                false, false,
+                                displayPropertyDictionary);
+                        }
+                        else
+                            e.Column = CreateColumn(binding, typeof(EntityBox), AbstractEntityBox.ValueProperty,
+                                propertyDictionary,
+                                false, false, displayPropertyDictionary);
                         break;
                     case DataControlType.SinglechoiceBox:   // 单选框。
                         var enumName = column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.Parameters) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters] != null
@@ -520,7 +568,14 @@ namespace Compete.Mis.MisControls
             else if (editType == typeof(EntityBox))
             {
                 cellFactory = new FrameworkElementFactory(typeof(EntityTextBlock));
-                cellFactory.SetBinding(EntityTextBlock.ValueProperty, binding);
+                cellFactory.SetBinding(AbstractEntityTextBlock.ValueProperty, binding);
+
+                //binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            }
+            else if (editType == typeof(TreeEntityBox))
+            {
+                cellFactory = new FrameworkElementFactory(typeof(TreeEntityTextBlock));
+                cellFactory.SetBinding(AbstractEntityTextBlock.ValueProperty, binding);
 
                 //binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             }

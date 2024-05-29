@@ -49,7 +49,7 @@ namespace Compete.Mis.MisControls
             Children.Clear();
             itemDictionary.Clear();
 
-            if (ItemData == null)
+            if (null == ItemData)
                 return;
 
             // 设置项目。

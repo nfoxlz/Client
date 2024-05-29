@@ -1,9 +1,7 @@
 ﻿using Compete.Extensions;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Text.Json;
 
@@ -36,13 +34,13 @@ namespace Compete.MemoryData
         {
             var columns = e.Row.Table.Columns;
             foreach (DataColumn column in columns)
-                if ((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]! != SystemVariables.None)
+                if (column.ExtendedProperties.Contains(ExtendedPropertyNames.DefaultSystemValue) && (SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]! != SystemVariables.None)
                     e.Row[column] = CreateSystemVariable((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]!);
         }
 
         private static void SetColumnProperties(DataColumn column, DataColumnSetting setting)
         {
-            if (!column.AllowDBNull && setting.DefaultValue == null && setting.DefaultSystemValue == SystemVariables.None)
+            if (!column.AllowDBNull && null == setting.DefaultValue && SystemVariables.None == setting.DefaultSystemValue)
             {
                 if (column.DataType == typeof(string))
                     column.DefaultValue = string.Empty;
@@ -53,15 +51,15 @@ namespace Compete.MemoryData
                 else if (column.DataType == typeof(Guid))
                     column.DefaultValue = default;
                 else
-                    column.DefaultValue = setting.DefaultValue == null ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
+                    column.DefaultValue = null == setting.DefaultValue ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
             }
             else
-                column.DefaultValue = setting.DefaultValue == null ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
+                column.DefaultValue = null == setting.DefaultValue ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
         }
 
         private static object GetMaxValue(Type type, object? maxValue)
         {
-            if (maxValue == null)
+            if (null == maxValue)
             {
                 if (type == typeof(decimal))
                     return decimal.MaxValue;
@@ -100,7 +98,7 @@ namespace Compete.MemoryData
 
         private static object? GetMinValue(Type type, object? minValue)
         {
-            if (minValue == null)
+            if (null == minValue)
             {
                 if (type == typeof(decimal))
                     return decimal.MinValue;
@@ -185,7 +183,7 @@ namespace Compete.MemoryData
             var columnSetting = (from setting in GlobalDataColumnSettings
                                  where setting.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase)
                                  select setting).FirstOrDefault();
-            return columnSetting == null ? new DataColumn(columnName) : CreateColumn(columnSetting);
+            return null == columnSetting ? new DataColumn(columnName) : CreateColumn(columnSetting);
         }
 
 
@@ -211,7 +209,7 @@ namespace Compete.MemoryData
                 var columnSetting = (from setting in GlobalDataColumnSettings
                                      where setting.ColumnName.Equals(column, StringComparison.OrdinalIgnoreCase)
                                      select setting).FirstOrDefault();
-                if (columnSetting == null)
+                if (null == columnSetting)
                     result.Columns.Add(column);
                 else
                 {
@@ -494,6 +492,8 @@ namespace Compete.MemoryData
                     return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDate();
                 case SystemVariables.ServerTime:
                     return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerTime();
+                case SystemVariables.AccountingDate:
+                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetAccountingDate();
                 case SystemVariables.CurrentApplication:
                     return Mis.GlobalCommon.ApplicationNo;
                 case SystemVariables.CurrentClientSide:

@@ -1,13 +1,14 @@
-﻿<UserControl x:Class="Compete.Mis.MisControls.EntityBox"
+﻿<UserControl x:Class="Compete.Mis.MisControls.AbstractEntityBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Compete.Mis.MisControls"
              mc:Ignorable="d" 
              d:DesignHeight="22" d:DesignWidth="600">
     <DockPanel>
         <Button Name="SelectButton" Content="..." DockPanel.Dock="Right" Width="22"/>
-        <Button Name="ClearButton" Content="C" DockPanel.Dock="Right" Width="22"/>
+        <Button Name="ClearButton" Content="{DynamicResource ClearButton}" DockPanel.Dock="Right" Width="22"/>
         <TextBox Name="DisplayTextBox" IsReadOnly="True"/>
     </DockPanel>
 </UserControl>

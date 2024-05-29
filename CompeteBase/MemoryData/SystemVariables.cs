@@ -146,5 +146,10 @@
         /// 前一月份。
         /// </summary>
         PreviousMonth,
+
+        /// <summary>
+        /// 记账日期。
+        /// </summary>
+        AccountingDate,
     }
 }

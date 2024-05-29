@@ -10,6 +10,6 @@ namespace Compete.Mis.Frame.Services.ServiceModels
 
         public ulong PageNo { get; set; }
 
-        public Models.PagingDataQueryResult ToDataResult() => new() { Data = Data == null ? null : MemoryData.DataCreator.Create(Data!), Count = Count, PageNo = PageNo };
+        public Models.PagingDataQueryResult ToDataResult() => new() { Data = null == Data ? null : MemoryData.DataCreator.Create(Data!), Count = Count, PageNo = PageNo };
     }
 }

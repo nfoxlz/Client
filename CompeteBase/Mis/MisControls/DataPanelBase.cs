@@ -10,8 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -106,18 +104,20 @@ namespace Compete.Mis.MisControls
             if (source is CollectionView collectionView)
                 source = collectionView.SourceCollection;
 
-            DataColumnCollection columns;
-
-            if (source is DataTable table)
-                columns = table.Columns;
-            else if (source is DataView view)
-                columns = view.Table!.Columns;
-            else if (source is DataRowView rowView)
-                columns = rowView.DataView.Table!.Columns;
-            else if (source is DataRow row)
-                columns = row.Table.Columns;
-            else
+            DataColumnCollection? columns = Utils.DataHelper.GetColumns(source);
+            if (null == columns)
                 return;
+
+            //if (source is DataTable table)
+            //    columns = table.Columns;
+            //else if (source is DataView view)
+            //    columns = view.Table!.Columns;
+            //else if (source is DataRowView rowView)
+            //    columns = rowView.DataView.Table!.Columns;
+            //else if (source is DataRow row)
+            //    columns = row.Table.Columns;
+            //else
+            //    return;
 
             TitleWidth = 0D;
             foreach (DataColumn column in columns)
@@ -173,7 +173,7 @@ namespace Compete.Mis.MisControls
 
                 // 生成编辑或显示控件。
                 element = CreateElement(column);
-                if (element == null)
+                if (null == element)
                     continue;
                 element.Margin = new Thickness(TitleWidth, top, 0D, 0D);
                 element.VerticalAlignment = VerticalAlignment.Top;
@@ -198,14 +198,15 @@ namespace Compete.Mis.MisControls
             var binding = new Binding(column.ColumnName)
             {
                 Source = ItemsSource ?? DataContext,
-                Mode = column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]) ? BindingMode.OneWay : BindingMode.TwoWay
+                Mode = column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]) ? BindingMode.OneWay : BindingMode.TwoWay,
+                //UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
             };  // 创建数据绑定。
 
             var dataType = column.DataType;
             var format = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Format]?.ToString();   // 绑定格式。
             if (!string.IsNullOrWhiteSpace(format))
                 binding.StringFormat = format;
-            else if (dataType == typeof(DateTime) || dataType == typeof(DateTimeOffset))
+            else if (typeof(DateTime) == dataType || typeof(DateTimeOffset) == dataType)
                 binding.StringFormat = dateTimeStringFormat;
 
             return binding;

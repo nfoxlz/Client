@@ -26,7 +26,7 @@ namespace Compete.Mis.MisControls
                 return;
 
             var source = DataSource ?? DataContext;
-            if (source == null)
+            if (null == source)
                 return;
 
             if (source is not DataView view)

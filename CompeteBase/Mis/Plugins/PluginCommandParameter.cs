@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Compete.Mis.Plugins
 {
@@ -13,5 +14,9 @@ namespace Compete.Mis.Plugins
         public long Authorition { get; set; } = -1L;
 
         public IDictionary<string, object>? Data { get; set; }
+
+        public Action<bool>? BackAction { get; set; }
+
+        public bool RequiredCurrentItem { get; set; }
     }
 }

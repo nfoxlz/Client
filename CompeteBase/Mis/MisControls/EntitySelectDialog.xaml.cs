@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace Compete.Mis.MisControls
 {
@@ -12,6 +13,8 @@ namespace Compete.Mis.MisControls
             InitializeComponent();
 
             //_ = new DataGridDecorator(MainDataGrid);    // 生成DataGrid装饰器。
+
+            //Background = Brushes.GreenYellow
         }
     }
 }

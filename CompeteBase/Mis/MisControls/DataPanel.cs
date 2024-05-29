@@ -74,7 +74,7 @@ namespace Compete.Mis.MisControls
 
         protected override Brush? GetTitleForeground(DataColumn column)
         {
-            if (column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]))
+            if (IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]))
                 return Constants.ReadOnlyBrush;
             else if (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsRequired]))
                 return Constants.RequiredBrush;
@@ -101,7 +101,7 @@ namespace Compete.Mis.MisControls
                 result.Name = columnName;
             }
 
-            result.SetBinding(UpDownBase<N>.ValueProperty, binding);
+            result.SetBinding(UpDownBase<N?>.ValueProperty, binding);
 
             return result;
         }
@@ -119,13 +119,13 @@ namespace Compete.Mis.MisControls
             var binding = GetBinding(column);
 
             var control = column.ExtendedProperties[ExtendedPropertyNames.Control];
-            var controlType = control == null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
+            var controlType = null == control ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             FrameworkElement? result;
             var columnName = column.ColumnName;
             var dataType = column.DataType;
             var type = column.ExtendedProperties[ExtendedPropertyNames.DataType];
-            var dbType = type == null ? DbType.String : type.ToString()!.ToEnum<DbType>();
+            var dbType = null == type ? DbType.String : type.ToString()!.ToEnum<DbType>();
             var parameters = DataControlHelper.ConvertParameters((string)column.ExtendedProperties[ExtendedPropertyNames.Parameters]!);
 
             if (isReadOnly) // 只读处理。
@@ -133,28 +133,40 @@ namespace Compete.Mis.MisControls
                 binding.Mode = BindingMode.OneWay;
 
                 // 生成显示控件。
-                if (controlType == DataControlType.Default)
+                if (DataControlType.Default == controlType)
                 {
                     //result = new TextBlock();
                     //result.SetBinding(TextBlock.TextProperty, binding);
-                    if ((dataType == typeof(long) || dataType == typeof(Guid)) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
+                    if ((typeof(long) == dataType || typeof(Guid) == dataType) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
                     {
                         var entityName = columnName[..^3];
-                        result = new EntityBox
-                        {
-                            IsReadOnly = true,
-                            ValuePath = parameters == null ? columnName : parameters["ValuePath"],
-                            DisplayPath = parameters == null ? $"{entityName}_Name" : parameters["DisplayPath"],
-                            ServiceParameter = parameters == null ? entityName : parameters["ServiceParameter"]
-                        };
-                        result.SetBinding(EntityBox.ValueProperty, binding);
+                        result = GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting)
+                            ? new TreeEntityBox
+                            {
+                                IsReadOnly = true,
+                                EntityName = treeEntitySetting.DisplayName ?? entityName,
+                                ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
+                                LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                            }
+                            : new EntityBox
+                            {
+                                IsReadOnly = true,
+                                EntityName = entityName,
+                                ValuePath = null == parameters ? columnName : parameters["ValuePath"],
+                                DisplayPath = null == parameters ? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"]
+                            };
+                        result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                     }
                     else
                     {
                         result = new TextBox() { IsReadOnly = true };
                         if (dataType.IsNumeric())
                             ((TextBox)result).TextAlignment = TextAlignment.Right;
-                        else if (dbType == DbType.Date)
+                        else if (DbType.Date == dbType)
                             binding.StringFormat = "yyyy年M月d日";
 
                         result.SetBinding(TextBox.TextProperty, binding);
@@ -165,14 +177,26 @@ namespace Compete.Mis.MisControls
                     {
                         case DataControlType.EntityBox:         // 实体框。
                             var entityBoxName = columnName.EndsWith("_Id") ? columnName[..^3] : columnName;
-                            result = new EntityBox
-                            {
-                                IsReadOnly = true,
-                                ValuePath = parameters == null ? columnName : parameters["ValuePath"],
-                                DisplayPath = parameters == null ? $"{entityBoxName}_Name" : parameters["DisplayPath"],
-                                ServiceParameter = parameters == null ? entityBoxName : parameters["ServiceParameter"]
-                            };
-                            result.SetBinding(EntityBox.ValueProperty, binding);
+                            result = GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityBoxName, out var treeEntitySetting)
+                                ? new TreeEntityBox
+                                {
+                                    IsReadOnly = true,
+                                    EntityName = treeEntitySetting.DisplayName ?? entityBoxName,
+                                    ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                    DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityBoxName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = null == parameters ? entityBoxName : parameters["ServiceParameter"],
+                                    LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                    LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                }
+                                : new EntityBox
+                                {
+                                    IsReadOnly = true,
+                                    EntityName = entityBoxName,
+                                    ValuePath = null == parameters ? columnName : parameters["ValuePath"],
+                                    DisplayPath = null == parameters ? $"{entityBoxName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = null == parameters ? entityBoxName : parameters["ServiceParameter"]
+                                };
+                            result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                             break;
                         case DataControlType.SinglechoiceBox:   // 单选框。
                             result = new SinglechoiceBox
@@ -196,7 +220,7 @@ namespace Compete.Mis.MisControls
                     }
             }
             else
-            {
+            {   // 可写
                 var maximum = column.ExtendedProperties[ExtendedPropertyNames.Maximum]; // 最大值。
                 var minimum = column.ExtendedProperties[ExtendedPropertyNames.Minimum]; // 最小值。
 
@@ -211,22 +235,37 @@ namespace Compete.Mis.MisControls
                         ErrorText = string.Format(column.ExtendedProperties[ExtendedPropertyNames.ErrorText]!.ToString()!, column.Caption)
                     });
 
-                if (controlType == DataControlType.Default)
+                if (DataControlType.Default == controlType)
                 {
                     // 生成编辑控件。
-                    if ((dataType == typeof(long) || dataType == typeof(Guid)) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
+                    if ((typeof(long) == dataType || typeof(Guid) == dataType) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
                     {
-                        result = new EntityBox
-                        {
-                            IsRequired = isRequired,
-                            EntityName = column.Caption,
-                            ValuePath = columnName,
-                            DisplayPath = $"{columnName[..^3]}_Name",
-                            ServiceParameter = parameters == null ? columnName[..^3] : parameters["ServiceParameter"]
-                        };
-                        result.SetBinding(EntityBox.ValueProperty, binding);
+                        var entityName = columnName[..^3];
+                        result = GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting)
+                            ? new TreeEntityBox
+                            {
+                                IsRequired = isRequired,
+                                EntityName = treeEntitySetting.DisplayName ?? entityName,
+                                ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
+                                LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                            }
+                            : new EntityBox
+                            {
+                                IsRequired = isRequired,
+                                EntityName = column.Caption,
+                                ValuePath = columnName,
+                                DisplayPath = $"{entityName}_Name",
+                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"]
+                            };
+                        var showFormat = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.ShowFormat]?.ToString();
+                        if (!string.IsNullOrEmpty(showFormat))
+                            ((AbstractEntityBox)result).Format = showFormat;
+                        result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                     }
-                    else if (dataType == typeof(long))
+                    else if (typeof(long) == dataType)
                         result = CreateUpDown<LongUpDown, long>(columnName, maximum, minimum, binding);
                     //{
                     //    result = new LongUpDown
@@ -248,26 +287,26 @@ namespace Compete.Mis.MisControls
 
                     //    result.SetBinding(LongUpDown.ValueProperty, binding);
                     //}
-                    else if (dataType == typeof(int))
+                    else if (typeof(int) == dataType)
                         result = CreateUpDown<IntegerUpDown, int>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(short))
+                    else if (typeof(short) == dataType)
                         result = CreateUpDown<ShortUpDown, short>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(byte))
+                    else if (typeof(byte) == dataType)
                         result = CreateUpDown<ByteUpDown, byte>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(double))
+                    else if (typeof(double) == dataType)
                         result = CreateUpDown<DoubleUpDown, double>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(float))
+                    else if (typeof(float) == dataType)
                         result = CreateUpDown<SingleUpDown, float>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(decimal))
-                        result = dbType == DbType.Currency
+                    else if (typeof(decimal) == dataType)
+                        result = DbType.Currency == dbType
                             ? CreateUpDown<CalculatorUpDown, decimal>(columnName, maximum, minimum, binding)
                             : CreateUpDown<DecimalUpDown, decimal>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(bool))
+                    else if (typeof(bool) == dataType)
                     {
                         result = new CheckBox();
                         result.SetBinding(ToggleButton.IsCheckedProperty, binding);
                     }
-                    else if (dataType == typeof(DateTime) || dataType == typeof(DateTimeOffset))
+                    else if (typeof(DateTime) == dataType || typeof(DateTimeOffset) == dataType)
                         switch (dbType)
                         {
                             case DbType.Date:
@@ -312,9 +351,9 @@ namespace Compete.Mis.MisControls
                                 result = CreateUpDown<DateTimePicker, DateTime>(columnName, maximum, minimum, binding);
                                 break;
                         }
-                    else if (dataType == typeof(TimeSpan))
+                    else if (typeof(TimeSpan) == dataType)
                         result = CreateUpDown<TimeSpanUpDown, TimeSpan>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(sbyte))
+                    else if (typeof(sbyte) == dataType)
                     {
                         result = new EnumComboBox
                         {
@@ -325,13 +364,13 @@ namespace Compete.Mis.MisControls
                         };
                         result.SetBinding(EnumComboBox.SelectedValueProperty, binding);
                     }
-                    else if (dataType == typeof(ulong))
+                    else if (typeof(ulong) == dataType)
                         result = CreateUpDown<ULongUpDown, ulong>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(uint))
+                    else if (typeof(uint) == dataType)
                         result = CreateUpDown<UIntegerUpDown, uint>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(ushort))
+                    else if (typeof(ushort) == dataType)
                         result = CreateUpDown<UShortUpDown, ushort>(columnName, maximum, minimum, binding);
-                    else if (dataType == typeof(string) && columnName == "Name" && column.Table!.Columns.Contains("MnemonicCode"))
+                    else if (typeof(string) == dataType && "Name" == columnName && column.Table!.Columns.Contains("MnemonicCode"))
                     {
                         result = new NameBox();
                         if (column.MaxLength >= 0)
@@ -361,15 +400,27 @@ namespace Compete.Mis.MisControls
                     switch (controlType)
                     {
                         case DataControlType.EntityBox:         // 实体框。
-                            result = new EntityBox
-                            {
-                                EntityName = column.Caption,
-                                ValuePath = parameters == null ? "Id" : parameters["ValuePath"],
-                                DisplayPath = parameters == null ? "Name" : parameters["DisplayPath"],
-                                ServiceParameter = parameters == null ? columnName.EndsWith("_Id") ? columnName[..^3] : columnName : parameters["ServiceParameter"],
-                                IsRequired = isRequired
-                            };
-                            result.SetBinding(EntityBox.ValueProperty, binding);
+                            var entityName = columnName.EndsWith("_Id") ? columnName[..^3] : columnName;
+                            result = GlobalCommon.TreeEntitySettingDictionary!.TryGetValue(entityName, out var treeEntitySetting)
+                                ? new TreeEntityBox
+                                {
+                                    IsReadOnly = true,
+                                    EntityName = treeEntitySetting.DisplayName ?? entityName,
+                                    ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                    DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
+                                    LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                    LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                }
+                                : new EntityBox
+                                {
+                                    EntityName = column.Caption,
+                                    ValuePath = null == parameters ? entityName + "_Id" : parameters["ValuePath"],
+                                    DisplayPath = null == parameters ? entityName + "_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
+                                    IsRequired = isRequired
+                                };
+                            result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                             break;
                         case DataControlType.SinglechoiceBox:   // 单选框。
                             result = new SinglechoiceBox
@@ -389,6 +440,8 @@ namespace Compete.Mis.MisControls
                             result = null;
                             break;
                     }
+
+                //result.fo
             }
 
             if (result is ChoiceBox choiceBox && choiceBox.ItemData.Count > 3)
@@ -410,7 +463,7 @@ namespace Compete.Mis.MisControls
             Debug.Assert(name.StartsWith(prefix), $"范围开始控件名【{name}】不是以【{prefix}】开始。");
 
             var endControl = ((FrameworkElement)(frameworkElement).Parent).FindName($"{related}{name.Remove(5)}");
-            if (endControl == null)
+            if (null == endControl)
                 return;
 
             var beginValue = sender!.GetPropertyValue("Value") as IComparable;

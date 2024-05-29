@@ -6,10 +6,10 @@
         xmlns:behaviour="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:Compete.Mis.MisControls"
         mc:Ignorable="d"
-        Title="EntitySelectDialog" Height="450" Width="800" WindowStartupLocation="CenterScreen" Icon="/CompeteBase;component/Assets/Images/Select.png">
-    <Window.DataContext>
+        Title="EntitySelectDialog" Height="488" Width="868" WindowStartupLocation="CenterScreen" Icon="/CompeteBase;component/Assets/Images/Select.png">
+    <!--<Window.DataContext>
         <local:EntitySelectViewModel/>
-    </Window.DataContext>
+    </Window.DataContext>-->
     <Grid>
         <local:EnhancedDataGrid x:Name="MainDataGrid" Margin="0,0,0,39" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding MasterData}" SelectedItem="{Binding SelectedItem}" ColumnWidth="Auto">
             <behaviour:Interaction.Triggers>
@@ -17,6 +17,15 @@
                     <behaviour:InvokeCommandAction Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
                 </behaviour:EventTrigger>
             </behaviour:Interaction.Triggers>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Is_Leaf}" Value="False">
+                            <Setter Property="Background" Value="LightGoldenrodYellow"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
         </local:EnhancedDataGrid>
         <local:Navigator Margin="10,0,0,11" VerticalAlignment="Bottom" CurrentPageNo="{Binding CurrentPageNo,Mode=OneWayToSource}" PageSize="{Binding PageSize,Mode=TwoWay}" RecordCount="{Binding RecordCount}" CurrentPageNoChangedCommand="{Binding Refresh}" PageSizeChangedCommand="{Binding Refresh}"/>
         <TextBlock HorizontalAlignment="Left" Margin="220,0,0,17" TextWrapping="Wrap" Text="{DynamicResource EntitySelectDialog.FilterTextBlock}" VerticalAlignment="Bottom"/>

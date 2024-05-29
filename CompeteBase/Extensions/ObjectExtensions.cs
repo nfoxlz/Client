@@ -57,7 +57,7 @@ namespace Compete.Extensions
         public static Type? GetPropertyType(this object obj, string name)
         {
             var info = obj.GetType().GetProperty(name);
-            if (info == null)
+            if (null == info)
                 return null;
             else
                 return info.PropertyType;
@@ -104,13 +104,13 @@ namespace Compete.Extensions
             foreach (var sourceProperty in sourceProperties)
             {
                 sourceValue = sourceProperty.GetValue(source);
-                if (sourceValue == null)
+                if (null == sourceValue)
                     continue;
 
                 var destinationProperty = (from property in destinationProperties
                                            where property.Name == sourceProperty.Name
                                            select property).FirstOrDefault();
-                if (destinationProperty == null)// || nullCopy && destinationProperty.CanRead && destinationProperty.GetValue(destination) != null
+                if (null == destinationProperty)// || nullCopy && null != destinationProperty.CanRead && destinationProperty.GetValue(destination)
                     continue;
 
                 if (destinationProperty.PropertyType.ToString() == sourceProperty.PropertyType.ToString() || destinationProperty.PropertyType.IsAssignableFrom(sourceProperty.PropertyType))

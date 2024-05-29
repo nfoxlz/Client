@@ -13,6 +13,8 @@ namespace Compete.Mis.Plugins
 
         public IEnumerable<MemoryData.DataColumnSetting>? ConditionDataColumnSettings { get; set; }
 
+        public string[]? ConditionEditableColumns { get; set; }
+
         public string[]? QueryConditionColumns { get; set; }
 
         public string[]? QueryConditionExcludedColumns { get; set; }
@@ -26,6 +28,8 @@ namespace Compete.Mis.Plugins
         //public string? MemoryDataName { get; set; }
 
         public IDictionary<string, Models.SimpleData>? MemoryData { get; set; }
+
+        public bool IsMergePluginParameter { get; set; }
 
         //public string? DataSettingsName { get; set; }
 
@@ -53,11 +57,15 @@ namespace Compete.Mis.Plugins
 
         public IDictionary<string, IEnumerable<string>>? RequiredColumns { get; set; }
 
+        public IDictionary<string, IEnumerable<string>>? UniqueColumns { get; set; }
+
         public IEnumerable<string>? InvisibleIdTables { get; set; }
 
         public IDictionary<string, object?>? QueryParameters { get; set; }
 
         public IEnumerable<TotalSetting>? TotalSettings { get; set; }
+
+        public string? InitializingScriptFileName { get; set; }
 
         public IDictionary<string, string>? ConditionCalculateScriptFileNames { get; set; }
 
@@ -79,17 +87,25 @@ namespace Compete.Mis.Plugins
 
         public string[]? SaveConditionColumns { get; set; }
 
+        public bool IsMergeConditionTable { get;set; }
+
         public IDictionary<string, string[]>? SaveColumns { get; set; }
 
         public IDictionary<string, string>? RequiredTables { get; set; }
 
         public string? VerifyScriptFileName { get; set; } = "Verify.cs";
 
+        public string? QueringScriptFileName { get; set; } = "Quering.cs";
+
+        public string? QueriedScriptFileName { get; set; } = "Queried.cs";
+
         public bool IsDifferentiated { get; set; }
 
         public IDictionary<string, SaveDataSetting>? DifferentiatedSaveColumns { get; set; }
 
         public IDictionary<string, SaveDataSetting>? DifferentiatedSaveRemoveColumns { get; set; }
+
+        public IEnumerable<string>? UnmodifiedSaveTables { get; set; }
 
         public string[]? RunColumns { get; set; }
 

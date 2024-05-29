@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Windows;
 
 namespace Compete.Mis.Plugins
@@ -52,17 +52,20 @@ namespace Compete.Mis.Plugins
 
         protected virtual PluginCommandParameter GetRunParameter(PluginCommandParameter parameter) => parameter;
 
+        protected virtual Action<bool>? BackAction { get; }
+
         [RelayCommand(CanExecute = nameof(CanRun))]
         private void Run(PluginCommandParameter parameter)
         {
             var commandParameter = GetRunParameter(parameter);
             commandParameter.Authorition &= Authorition;
+            commandParameter.BackAction = BackAction;
             var command = PluginHelper.CreateCommand(commandParameter)!;
             command.Execute(parameter);
         }
 
-        public virtual bool HasRunAuthorition { get => HasAuthorition(ReserveAuthorition.Run); }
+        public bool HasRunAuthorition { get => HasAuthorition(ReserveAuthorition.Run); }
 
-        private bool CanRun() => HasRunAuthorition;
+        protected virtual bool CanRun(PluginCommandParameter parameter) => HasRunAuthorition;
     }
 }

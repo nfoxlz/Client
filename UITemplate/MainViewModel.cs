@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,26 @@ namespace UITemplate
         {
             RecordCount = 100UL;
             //OnPropertyChanged(nameof(RecordCount));
+
+            DataSet data = new DataSet();
+
+            if (0L < (from row in data.Tables["Master"]!.AsEnumerable()
+                      where !DBNull.Value.Equals(row["Debit_Amount"]) && 0M == (decimal)row["Debit_Amount"] && 0M == (decimal)row["Debit_Amount"]
+                      select row).LongCount())
+                ;
+
+            var debitSum = (from row in data.Tables["Master"]!.AsEnumerable()
+                            select (decimal)row["Debit_Amount"]).Sum();
+            if (debitSum == 0M)
+            {
+            }
+
+            if (debitSum != (from row in data.Tables["Master"]!.AsEnumerable()
+                             select (decimal)row["Credit_Amount"]).Sum())
+            {
+            }
+
+
         }
     }
 }

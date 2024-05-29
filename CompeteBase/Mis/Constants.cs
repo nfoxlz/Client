@@ -9,7 +9,7 @@ namespace Compete.Mis
 
         public const string NavigatorMaxPageNoFormat = "/{0}";
 
-        public static readonly ushort[] DefaultNavigatorPageCollection = [10, 30, 50, 100, 200];
+        public static readonly ushort[] DefaultNavigatorPageCollection = [10, 20, 30, 50, 100, 200];
 
         public static readonly Brush RequiredBrush;
 

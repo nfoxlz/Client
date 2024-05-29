@@ -34,7 +34,7 @@ namespace Compete.Mis.Frame.Services.WebApi
 #endif
 
             Dictionary<string, object?>? parameters;
-            if (args == null)
+            if (null == args)
                 parameters = null;
             else
             {

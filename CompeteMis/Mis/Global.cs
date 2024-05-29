@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Compete.Utils;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
@@ -38,15 +39,30 @@ namespace Compete.Mis
             path = Path.Combine(settingsPath, "errors.json");
             if (File.Exists(path))
                 GlobalCommon.ErrorDictionary = JsonSerializer.Deserialize<IDictionary<int, string>>(File.ReadAllText(path));
+            path = Path.Combine(settingsPath, "treeEntity.json");
+            GlobalCommon.TreeEntitySettingDictionary = File.Exists(path) ? JsonSerializer.Deserialize<IDictionary<string, MisControls.TreeEntitySetting>>(File.ReadAllText(path)) : new Dictionary<string, MisControls.TreeEntitySetting>();
             GlobalCommon.ServerDateTimeProvider = new Provider.DateTimeProvider();
             GlobalCommon.DataProvider = new Provider.DataProvider();
             GlobalCommon.EntityDataProvider = new Provider.EntityDataProvider();
 
             Plugins.PluginHelper.DefaultCommand = new Plugins.SettingPlugin();
+
         }
 
         private static readonly Enums.IEumnDataProvider provider = new Provider.EumnDataProvider();
 
-        public static void LoginedInitialize() => Enums.EnumHelper.Initialize(provider);
+        public static void LoginedInitialize()
+        {
+            Enums.EnumHelper.Initialize(provider);
+            GlobalCommon.GlobalConfiguration = new ConfigurationByService();
+
+            if (!GlobalCommon.TreeEntitySettingDictionary!.ContainsKey(Constants.EntityAccount))
+                GlobalCommon.TreeEntitySettingDictionary.Add(Constants.EntityAccount,
+                    new MisControls.TreeEntitySetting
+                    {
+                        DisplayName = "科目",
+                        LevelLength = GlobalCommon.GlobalConfiguration!.GetConfig<string>(ConfigurationNames.AccountStructure),
+                    });
+        }
     }
 }

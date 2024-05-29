@@ -1,18 +1,8 @@
-﻿// ===================================================================
-// Compete Management Information System
-// ===================================================================
-// 版权所有 © Compete software studio 2018 保留所有权利。
-// -------------------------------------------------------------------
-// 版本    日期时间            作者     说明
-// -------------------------------------------------------------------
-// 1.0.0.0 2018/3/12 8:36:57 LeeZheng 新建。
-//==============================================================
-using Compete.Extensions;
+﻿using Compete.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Windows;
@@ -23,11 +13,11 @@ using System.Windows.Input;
 namespace Compete.Mis.MisControls
 {
     /// <summary>
-    /// EntityBox.xaml 的交互逻辑
+    /// AbstractEntityBox.xaml 的交互逻辑
     /// </summary>
-    public partial class EntityBox : UserControl
+    public abstract partial class AbstractEntityBox : UserControl
     {
-        private MethodInfo? formatMethod;
+        protected MethodInfo? formatMethod;
 
         /// <summary>
         /// 获取选择命令。
@@ -35,11 +25,8 @@ namespace Compete.Mis.MisControls
         public ICommand Select { get; private set; } = new RoutedUICommand();
 
         public ICommand Clear { get; private set; } = new RoutedUICommand();
-
-        /// <summary>
-        /// 初始化 <see cref="EntityBox"/> 类的新实例。
-        /// </summary>
-        public EntityBox()
+        
+        public AbstractEntityBox()
         {
             InitializeComponent();
 
@@ -49,10 +36,10 @@ namespace Compete.Mis.MisControls
             CommandBindings.Add(new CommandBinding(Clear, ClearCommandHandler));
         }
 
-        private DataRow? GetSourceRow()
+        protected DataRow? GetSourceRow()
         {
             var bindingExpression = GetBindingExpression(ValueProperty);
-            if (bindingExpression == null)
+            if (null == bindingExpression)
                 return null;
 
             var source = bindingExpression.ResolvedSource ?? bindingExpression.ParentBinding.Source;
@@ -60,17 +47,20 @@ namespace Compete.Mis.MisControls
             if (source is BindingListCollectionView collectionView)
                 source = collectionView.CurrentItem ?? collectionView.SourceCollection;
 
-            if (source is DataView view)
-                return view.Count > 0 ? view[0].Row : null;
-            else if (source is DataTable table)
-                return table.Rows.Count > 0 ? table.Rows[0] : null;
-            else if (source is DataRowView rowView)
-                return rowView.Row;
-            else if (source is DataRow row)
-                return row;
+            return Utils.DataHelper.GetRow(source);
+            //if (source is DataView view)
+            //    return view.Count > 0 ? view[0].Row : null;
+            //else if (source is DataTable table)
+            //    return table.Rows.Count > 0 ? table.Rows[0] : null;
+            //else if (source is DataRowView rowView)
+            //    return rowView.Row;
+            //else if (source is DataRow row)
+            //    return row;
 
-            return null;
+            //return null;
         }
+
+        protected abstract object? SelectData();
 
         /// <summary>
         /// Select 命令的Executed事件的处理程序。 
@@ -83,24 +73,20 @@ namespace Compete.Mis.MisControls
 
             try
             {
-                var dialog = new EntitySelectDialog() { Title = GlobalCommon.GetMessage("EntitySelectDialog.Title", EntityName) };
+                var selectedItem = SelectData();
+                if (selectedItem == null)
+                    return;
 
-                var viewModel = (EntitySelectViewModel)dialog.DataContext;
-                viewModel.Conditions = GetSourceRow()?.ToDictionary();
-                //viewModel.FilterFormat = FilterFormat ?? "(Code LIKE '{0}%' OR Name LIKE '%{0}%' OR MnemonicCode LIKE '%{0}%' OR Barcode = '{0}')";
-                viewModel.ServiceParameter = ServiceParameter;
-                viewModel.IsRequired = IsRequired;
-                viewModel.QueryData();
-
-                _ = new DataGridDecorator(dialog.MainDataGrid);    // 生成DataGrid装饰器。
-
-                if (dialog.ShowDialog() == true)
-                    if (viewModel.SelectedItem is DataRowView view)
-                        SetEntityValue(view.Row);
-                    else if (viewModel.SelectedItem is DataRow row)
-                        SetEntityValue(row);
-                    else
-                        SetEntityValue(viewModel.SelectedItem);
+                if (selectedItem is DataRowView view)
+                    SetEntityValue(view.Row);
+                else if (selectedItem is DataRow row)
+                    SetEntityValue(row);
+                else
+                    SetEntityValue(selectedItem);
+            }
+            catch(Exception exception)
+            {
+                MessageDialog.Exception(exception);
             }
             finally
             {
@@ -118,6 +104,10 @@ namespace Compete.Mis.MisControls
             isSetValue = true;
             if (Value is long)
                 Value = 0L;
+            else if(Value is ulong)
+                Value = 0UL;
+            else if (Value is Guid)
+                Value = Guid.Empty;
             else
                 Value = DBNull.Value;
             isSetValue = false;
@@ -139,15 +129,21 @@ namespace Compete.Mis.MisControls
         private void SetEntityValue(object? item)
         {
             isSetValue = true;
-            if (item == null)
+            if (null == item)
                 Value = DBNull.Value;
             else if (item.HasProperty(ValuePath))
                 Value = item.GetPropertyValue(ValuePath);
             else if (item.HasProperty("Id"))
                 Value = item.GetPropertyValue("Id");
+            else
+            {
+                var idName = EntityName + "_Id";
+                if (item.HasProperty(idName))
+                    Value = item.GetPropertyValue(idName);
+            }
             isSetValue = false;
 
-            if (item == null)
+            if (null == item)
                 DisplayTextBox.Text = string.Empty;
             else if (item.HasProperty(DisplayPath))
                 DisplayTextBox.Text = item.GetPropertyValue(DisplayPath)!.ToString();
@@ -169,13 +165,13 @@ namespace Compete.Mis.MisControls
             {
                 var sourceRow = GetSourceRow();
                 if (sourceRow != null)
-                    row.CopyTo(sourceRow, omittedColumns.Merge(new string[] { string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath, string.IsNullOrWhiteSpace(DisplayPath) ? "Name" : DisplayPath }));
+                    row.CopyTo(sourceRow, omittedColumns.Merge([string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath, string.IsNullOrWhiteSpace(DisplayPath) ? "Name" : DisplayPath]));
             }
 
             var columns = row.Table.Columns;
 
             if (!string.IsNullOrWhiteSpace(Format))
-                DisplayTextBox.Text = formatMethod?.Invoke(null, new object[] { row })?.ToString();
+                DisplayTextBox.Text = formatMethod?.Invoke(null, [row])?.ToString();
             else if (columns.Contains(DisplayPath))
                 DisplayTextBox.Text = row[DisplayPath].ToString();
 
@@ -184,19 +180,28 @@ namespace Compete.Mis.MisControls
                 Value = row[ValuePath];
             else if (columns.Contains("Id"))
                 Value = row["Id"];
+            else
+            {
+                var idName = EntityName + "_Id";
+                if (columns.Contains(idName))
+                    Value = row[idName];
+            }
             isSetValue = false;
 
             if (IsCopySameName && Tag is TagData { Data: DataGrid grid })
             {
                 if (!grid.CommitEdit(DataGridEditingUnit.Row, true))
+                {
+                    grid.CancelEdit();
                     throw new Exceptions.PlatformException(GlobalCommon.GetMessage("Exception.DataCannotSubmit"));
+                }
                 grid.Items.Refresh();
 
                 if (grid is EnhancedDataGrid enhancedDataGrid)
                     enhancedDataGrid.IsEditing = false;
             }
 
-            if (Value == null || Value is long longVal && longVal == 0L || Value is Guid guidVal && guidVal == Guid.Empty || Value is string stringVal && string.IsNullOrWhiteSpace(stringVal))
+            if (null == Value || Value is long longVal && longVal == 0L || Value is Guid guidVal && Guid.Empty == guidVal || Value is string stringVal && string.IsNullOrWhiteSpace(stringVal))
                 DisplayTextBox.Text = string.Empty;
 
             //var columns = row.Table.Columns;
@@ -248,36 +253,35 @@ namespace Compete.Mis.MisControls
             set { SetValue(ValueProperty, value); }
         }
 
+        protected abstract string? GetDisplay(DataTable entities);
+
         /// <summary>
         /// 标识 Value 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register(nameof(Value), typeof(object), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(Value), typeof(object), typeof(AbstractEntityBox), new PropertyMetadata((d, e) =>
             {
-                var entityBox = (EntityBox)d;
-                if (entityBox.isSetValue || entityBox.Value != null && entityBox.Value.Equals(entityBox.oldValue) || string.IsNullOrWhiteSpace(entityBox.ServiceParameter) || string.IsNullOrWhiteSpace(entityBox.DisplayPath))
+                var abstractEntityBox = (AbstractEntityBox)d;
+                if (abstractEntityBox.isSetValue || abstractEntityBox.Value != null && abstractEntityBox.Value.Equals(abstractEntityBox.oldValue) || string.IsNullOrWhiteSpace(abstractEntityBox.ServiceParameter) || string.IsNullOrWhiteSpace(abstractEntityBox.DisplayPath))
                     return;
 
                 // 取得需要从UI线程向新线程传递的数据。
-                var serviceParameter = entityBox.ServiceParameter;  // 服务参数。
-                var entityBoxValue = entityBox.Value;               // 控件的值。
+                var entityBoxValue = abstractEntityBox.Value;               // 控件的值。
 
-                if (entityBoxValue == null || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && val == 0L)
+                if (null == entityBoxValue || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && 0L == val)
                 {
-                    entityBox.DisplayTextBox.Text = string.Empty;
+                    abstractEntityBox.DisplayTextBox.Text = string.Empty;
                     return;
                 }
 
-                var entity = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(serviceParameter, entityBoxValue), "Query");
-                if (entity == null || entity.Rows.Count == 0 || !entity.Columns.Contains(entityBox.DisplayPath))
+                var parameter = abstractEntityBox.ServiceParameter;
+                var entities = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(parameter, entityBoxValue), "Query");
+                if (null == entities || entities.Rows.Count == 0 || !entities.Columns.Contains(abstractEntityBox.DisplayPath))
                     return;
 
-                if (string.IsNullOrWhiteSpace(entityBox.Format) || entityBox.formatMethod == null)
-                    entityBox.DisplayTextBox.Text = entity.Rows[0][entityBox.DisplayPath].ToString();
-                else
-                    entityBox.DisplayTextBox.Text = entityBox.formatMethod?.Invoke(null, new object[] { entity.Rows[0] })?.ToString();
+                abstractEntityBox.DisplayTextBox.Text = abstractEntityBox.GetDisplay(entities);
 
-                entityBox.oldValue = entityBox.Value;
+                abstractEntityBox.oldValue = abstractEntityBox.Value;
             }));
 
         private object? oldValue;
@@ -295,7 +299,7 @@ namespace Compete.Mis.MisControls
         /// 标识 ValuePath 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ValuePathProperty =
-            DependencyProperty.Register(nameof(ValuePath), typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(ValuePath), typeof(string), typeof(AbstractEntityBox));
 
         /// <summary>
         /// 获取或设置源对象上的值的路径，以用作对象的可视表示形式。
@@ -310,7 +314,7 @@ namespace Compete.Mis.MisControls
         /// 标识 DisplayPath 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty DisplayPathProperty =
-            DependencyProperty.Register(nameof(DisplayPath), typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(DisplayPath), typeof(string), typeof(AbstractEntityBox));
 
         /// <summary>
         /// 获取或设置实体的名称。
@@ -325,7 +329,7 @@ namespace Compete.Mis.MisControls
         /// 标识 EntityName 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty EntityNameProperty =
-            DependencyProperty.Register(nameof(EntityName), typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(EntityName), typeof(string), typeof(AbstractEntityBox));
 
         /// <summary>
         /// 获取或设置服务参数。
@@ -340,17 +344,17 @@ namespace Compete.Mis.MisControls
         /// 标识 ServiceParameter 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty ServiceParameterProperty =
-            DependencyProperty.Register(nameof(ServiceParameter), typeof(string), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(ServiceParameter), typeof(string), typeof(AbstractEntityBox), new PropertyMetadata((d, e) =>
             {
-                var entityBox = (EntityBox)d;
-                var path = Path.ChangeExtension(Path.Combine(Utils.PathHelper.PluginPath, "EntitySelector", entityBox.ServiceParameter), "json");
+                var abstractEntityBox = (AbstractEntityBox)d;
+                var path = Path.ChangeExtension(Path.Combine(Utils.PathHelper.PluginPath, "EntitySelector", abstractEntityBox.ServiceParameter), "json");
                 if (File.Exists(path))
                 {
                     var setting = JsonSerializer.Deserialize<EntitySelectorSetting>(File.ReadAllText(path));
-                    if (string.IsNullOrWhiteSpace(entityBox.Format) && !string.IsNullOrWhiteSpace(setting?.Format))
-                        entityBox.Format = setting.Format;
-                    if (string.IsNullOrWhiteSpace(entityBox.FilterFormat) && !string.IsNullOrWhiteSpace(setting?.FilterFormat))
-                        entityBox.FilterFormat = setting.FilterFormat;
+                    if (string.IsNullOrWhiteSpace(abstractEntityBox.Format) && !string.IsNullOrWhiteSpace(setting?.Format))
+                        abstractEntityBox.Format = setting.Format;
+                    if (string.IsNullOrWhiteSpace(abstractEntityBox.FilterFormat) && !string.IsNullOrWhiteSpace(setting?.FilterFormat))
+                        abstractEntityBox.FilterFormat = setting.FilterFormat;
                 }
             }));
 
@@ -367,11 +371,11 @@ namespace Compete.Mis.MisControls
         /// 标识 IsReadOnly 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
-            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(IsReadOnly), typeof(bool), typeof(AbstractEntityBox), new PropertyMetadata((d, e) =>
             {
-                var entityBox = (EntityBox)d;
-                entityBox.SelectButton.Visibility = entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
-                entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+                var abstractEntityBox = (AbstractEntityBox)d;
+                abstractEntityBox.SelectButton.Visibility = abstractEntityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+                abstractEntityBox.ClearButton.Visibility = abstractEntityBox.IsRequired || abstractEntityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
             }));
 
         /// <summary>
@@ -385,10 +389,10 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for IsRequired.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsRequiredProperty =
-            DependencyProperty.Register(nameof(IsRequired), typeof(bool), typeof(EntityBox), new PropertyMetadata(false, (d, e) =>
+            DependencyProperty.Register(nameof(IsRequired), typeof(bool), typeof(AbstractEntityBox), new PropertyMetadata(false, (d, e) =>
             {
-                var entityBox = (EntityBox)d;
-                entityBox.ClearButton.Visibility = entityBox.IsRequired || entityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
+                var abstractEntityBox = (AbstractEntityBox)d;
+                abstractEntityBox.ClearButton.Visibility = abstractEntityBox.IsRequired || abstractEntityBox.IsReadOnly ? Visibility.Collapsed : Visibility.Visible;
             }));
 
         /// <summary>
@@ -404,7 +408,7 @@ namespace Compete.Mis.MisControls
         /// 标识 IsCopySameName 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsCopySameNameProperty =
-            DependencyProperty.Register(nameof(IsCopySameName), typeof(bool), typeof(EntityBox), new PropertyMetadata(true));
+            DependencyProperty.Register(nameof(IsCopySameName), typeof(bool), typeof(AbstractEntityBox), new PropertyMetadata(true));
 
         public string Format
         {
@@ -414,11 +418,11 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Format.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FormatProperty =
-            DependencyProperty.Register(nameof(Format), typeof(string), typeof(EntityBox), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(Format), typeof(string), typeof(AbstractEntityBox), new PropertyMetadata((d, e) =>
             {
-                var entityBox = (EntityBox)d;
-                if (!string.IsNullOrWhiteSpace(entityBox.Format))
-                    entityBox.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, entityBox.Format, "Compete.Mis.Scripts.Formater", "GetString");
+                var abstractEntityBox = (AbstractEntityBox)d;
+                if (!string.IsNullOrWhiteSpace(abstractEntityBox.Format))
+                    abstractEntityBox.formatMethod = Scripts.ScriptBuilder.GetMethod(Scripts.ScriptTemplates.FormatTemplate, abstractEntityBox.Format, "Compete.Mis.Scripts.Formater", "GetString");
             }));
 
         public string FilterFormat
@@ -429,7 +433,7 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for FilterFormat.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilterFormatProperty =
-            DependencyProperty.Register(nameof(FilterFormat), typeof(string), typeof(EntityBox));
+            DependencyProperty.Register(nameof(FilterFormat), typeof(string), typeof(AbstractEntityBox));
 
         #endregion 依赖属性
 
@@ -440,7 +444,7 @@ namespace Compete.Mis.MisControls
                 entityName = "Operator";
             return entityName;
         }
-        
+
         public static IDictionary<DependencyProperty, object?> GeneratePropertyDictionary(DataColumn column, IDictionary<string, string> parameters)
         {
             var entityName = GetEntityName(column.ColumnName);
@@ -448,9 +452,9 @@ namespace Compete.Mis.MisControls
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, parameters == null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters == null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, parameters == null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, null == parameters || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, null == parameters || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
 
@@ -461,9 +465,9 @@ namespace Compete.Mis.MisControls
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, parameters == null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters == null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Code" : displayPath },
-                { ServiceParameterProperty, parameters == null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, null == parameters || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, null == parameters || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
     }

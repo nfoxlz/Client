@@ -96,8 +96,8 @@ namespace Compete.Common
 
         public Assembly? LoadAssembly(string path)
         {
-            if (AssemblyDictionary.ContainsKey(path))
-                return AssemblyDictionary[path];
+            if (AssemblyDictionary.TryGetValue(path, out Assembly? value))
+                return value;
 
             var assemblyPath = path;
             if (!File.Exists(assemblyPath))
@@ -157,7 +157,7 @@ namespace Compete.Common
         public object? CreateInstance(string path, string typeName)
         {
             var assembly = LoadAssembly(path);
-            return assembly == null ? null : CreateInstance(assembly, typeName);
+            return null == assembly ? null : CreateInstance(assembly, typeName);
         }
 
         public Type? GetType(string path, string typeName) => LoadAssembly(path)?.GetType(typeName);

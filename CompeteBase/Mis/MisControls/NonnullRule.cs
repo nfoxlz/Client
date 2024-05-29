@@ -30,7 +30,7 @@ namespace Compete.Mis.MisControls
         /// <param name="cultureInfo">要在此规则中使用的区域性。</param>
         /// <returns>验证结果。</returns>
         public override ValidationResult Validate(object value, CultureInfo cultureInfo) =>
-            value == null || value == DBNull.Value || (value is string && string.IsNullOrWhiteSpace(value as string)) || (value is Guid guid && guid == Guid.Empty)
+            null == value || DBNull.Value == value || (value is string && string.IsNullOrWhiteSpace(value as string)) || (value is Guid guid && Guid.Empty == guid)
                 ? new ValidationResult(false, GlobalCommon.GetMessage("NonnullRuleError", DisplayName))
                 : new ValidationResult(true, null);// || string.IsNullOrWhiteSpace(value.ToString())
     }

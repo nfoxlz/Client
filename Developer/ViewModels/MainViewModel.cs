@@ -108,7 +108,7 @@ namespace Compete.Mis.Developer.ViewModels
                     break;
                 }
 
-            if (document == null)
+            if (null == document)
             {
                 document = new LayoutDocument() { Title = title, Content = Activator.CreateInstance<T>() };
                 pane.Children.Add(document);                                            // 添加新的文档。
@@ -124,13 +124,13 @@ namespace Compete.Mis.Developer.ViewModels
         {
             var dialog = new OpenFileDialog { Filter = "PowerDesigner文件|*.pdm|全部文件|*.*" };
 
-            if (dialog.ShowDialog() == true)
+            if (true == dialog.ShowDialog())
             {
                 //ProjectSetting.ColumnSettings.Clear();
 
-                //if (Global.ProjectSetting.EntityInfos == null)
+                //if (null == Global.ProjectSetting.EntityInfos)
                 //    Global.ProjectSetting.EntityInfos = new ObservableCollection<Models.DbTable>();
-                //if (Global.ColumnInfos == null)
+                //if (null == Global.ColumnInfos)
                 //    Global.ColumnInfos = new ObservableCollection<Models.DbColumn>();
                 PowerDesigner.PowerDesignerHelper.Export(dialog.FileName, ProjectSetting!.Model, PowerDesigner.ExportMode.Override);// , PowerDesigner.ExportMode.Override
 

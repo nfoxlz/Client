@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Compete.Scripts
 {
@@ -28,14 +29,25 @@ namespace Compete.Scripts
     /// </summary>
     public sealed class ScriptBuilder
     {
+        public const string DefaultLanguage = "CSharp";
+
+        private static string gcPath = Path.GetDirectoryName(typeof(GCSettings).GetTypeInfo().Assembly.Location)!;
+
         private static readonly IEnumerable<MetadataReference>? references = new[]
         {
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
             MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(GCSettings).GetTypeInfo().Assembly.Location)!, "System.Runtime.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Runtime.dll")),
             MetadataReference.CreateFromFile(typeof(DynamicAttribute).GetTypeInfo().Assembly.Location),
             MetadataReference.CreateFromFile(typeof(DataRow).GetTypeInfo().Assembly.Location),
             MetadataReference.CreateFromFile(typeof(MarshalByValueComponent).GetTypeInfo().Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(FrameworkElement).GetTypeInfo().Assembly.Location),
+
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Linq.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.Primitives.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Xml.ReaderWriter.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Private.Xml.dll")),
         };
 
         private static readonly CSharpCompilationOptions cSharpCompilationOptions = new(OutputKind.DynamicallyLinkedLibrary);
@@ -127,8 +139,8 @@ namespace Compete.Scripts
 
             var assemblyPath = GetAssemblyFileName(path, className);
             var assembly = bilder.Build(assemblyPath);
-            //Debug.Assert(assembly != null && bilder.Errors == null, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
-            if (assembly == null || bilder.Errors != null && bilder.Errors.Count > 0)
+            //Debug.Assert(null != assembly && null == bilder.Errors, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
+            if (null == assembly || null != bilder.Errors && 0 < bilder.Errors.Count)
             {
                 var info = new FileInfo(assemblyPath);
                 if (info.Length == 0)
@@ -155,7 +167,7 @@ namespace Compete.Scripts
             };
             
             var assembly = bilder.Build();
-            Debug.Assert(assembly != null && bilder.Errors == null, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
+            Debug.Assert(null != assembly && null == bilder.Errors, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
 
             return assembly.GetType(className);
         }

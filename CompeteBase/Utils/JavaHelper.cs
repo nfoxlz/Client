@@ -34,7 +34,7 @@ namespace Compete.Utils
 
         public static IDictionary<string, object>? Convert(IDictionary<string, object>? data)
         {
-            if (data == null)
+            if (null == data)
                 return null;
 
             var result = new Dictionary<string, object>();
