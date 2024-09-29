@@ -27,7 +27,7 @@ namespace Compete.Mis.Frame
                     GlobalCommon.MainBusyIndicator.IsBusy = true;
                 });
 
-            if (null == element)
+            if (element is null)
                 return null;
 
             // 将鼠标光标图橡改为等待。

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Compete.Mis;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +31,22 @@ namespace UITemplate
         {
             RecordCount = 100UL;
             //OnPropertyChanged(nameof(RecordCount));
+
+            var a = "abc";
+            //DataRowView item = new DataRowView();
+            //var id = 1L;
+            //var b = a switch
+            //{
+            //    "abc" => id.Equals(item["Creator_User_Id"]),   // GlobalCommon.CreateSystemVariable(MemoryData.SystemVariables.CurrentUserId)
+            //    "bcd" => false,
+            //    _ => true,
+            //}; ;
+
+            //DataRowView rowView = new DataRowView;
+
+            //if (0M.Equals(rowView[""]))
+            //{
+            //}
 
             DataSet data = new DataSet();
 

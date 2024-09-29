@@ -1,4 +1,5 @@
 ﻿using Compete.Common;
+using Compete.Extensions;
 using Compete.Mis.Plugins;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,12 @@ namespace Compete.Mis.Provider
 
 #if JAVA_LANGUAGE
         public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, Utils.JavaHelper.Convert(parameters)));  // Java
+
+        //public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), actionId.ToByteArray());
 #else
         public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, parameters));
+        //public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), data.GetTableNames(), actionId.ToByteArray());
 #endif
-
         public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), actionId.ToByteArray());
 
         public Result Save(string path, string name, IDictionary<string, SplitData> data, Guid actionId)
@@ -35,22 +38,22 @@ namespace Compete.Mis.Provider
             {
                 tableSaveData = new Frame.Services.ServiceModels.SaveData();
                 hasData = false;
-                if (tableData.Value.AddedTable != null)
+                if (tableData.Value.AddedTable is not null)
                 {
                     tableSaveData.AddedTable = MemoryData.DataCreator.ConvertSimpleDataTable(tableData.Value.AddedTable);
                     hasData = true;
                 }
-                if (tableData.Value.DeletedTable != null)
+                if (tableData.Value.DeletedTable is not null)
                 {
                     tableSaveData.DeletedTable = MemoryData.DataCreator.ConvertSimpleDataTable(tableData.Value.DeletedTable);
                     hasData = true;
                 }
-                if (tableData.Value.ModifiedTable != null)
+                if (tableData.Value.ModifiedTable is not null)
                 {
                     tableSaveData.ModifiedTable = MemoryData.DataCreator.ConvertSimpleDataTable(tableData.Value.ModifiedTable);
                     hasData = true;
                 }
-                if (tableData.Value.ModifiedOriginalTable != null)
+                if (tableData.Value.ModifiedOriginalTable is not null)
                 {
                     tableSaveData.ModifiedOriginalTable = MemoryData.DataCreator.ConvertSimpleDataTable(tableData.Value.ModifiedOriginalTable);
                     hasData = true;

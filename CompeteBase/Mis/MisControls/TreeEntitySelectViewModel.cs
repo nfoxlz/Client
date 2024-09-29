@@ -24,7 +24,7 @@ namespace Compete.Mis.MisControls
                     var lengthList = new List<int>();
                     foreach (var length in lengths)
                         lengthList.Add(Convert.ToInt32(length));
-                    levelLengths = lengthList.ToArray();
+                    levelLengths = [.. lengthList];
                 }
             }
         }
@@ -38,7 +38,7 @@ namespace Compete.Mis.MisControls
             if (!Conditions!.TryAdd("code", code ?? string.Empty))
                 Conditions!["code"] = code ?? string.Empty;
 
-            var len = code.Length;
+            var len = code?.Length;
             var sum = 0;
             for (var i = 0; i < levelLengths!.Length && sum <= len; i++)
                 sum += levelLengths[i];
@@ -59,6 +59,6 @@ namespace Compete.Mis.MisControls
             }
         }
 
-        protected override bool CanOk() => base.CanOk() && null != LevelPath && null != LevelLength;
+        protected override bool CanOk() => base.CanOk() && LevelPath is not null && LevelLength is not null;
     }
 }

@@ -98,5 +98,62 @@ namespace Compete.Mis
             ReleaseString(str);
             return result;
         }
+
+        public static object? CreateSystemVariable(MemoryData.SystemVariables value)
+        {
+            DateTime now;
+
+            switch (value)
+            {
+                case MemoryData.SystemVariables.NewGuid:
+                    return Guid.NewGuid();
+                case MemoryData.SystemVariables.CurrentDateTime:
+                    return DateTime.Now;
+                case MemoryData.SystemVariables.CurrentDate:
+                    return DateTime.Now.Date;
+                case MemoryData.SystemVariables.CurrentTime:
+                    return DateTime.Now.TimeOfDay;
+                case MemoryData.SystemVariables.CurrentYearMonth:
+                    now = DateTime.Now;
+                    return new DateTime(now.Year, now.Month, 1);
+                case MemoryData.SystemVariables.CurrentYear:
+                    return new DateTime(DateTime.Now.Year, 1, 1);
+                case MemoryData.SystemVariables.CurrentMonth:
+                    return DateTime.Now.Month;
+                case MemoryData.SystemVariables.PreviousYearMonth:
+                    now = DateTime.Now;
+                    return new DateTime(now.AddMonths(-1).Year, now.AddMonths(-1).Month, 1);
+                case MemoryData.SystemVariables.PreviousYear:
+                    return new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1);
+                case MemoryData.SystemVariables.PreviousMonth:
+                    return DateTime.Now.AddMonths(-1).Month;
+                case MemoryData.SystemVariables.ServerDateTime:
+                    return ServerDateTimeProvider!.GetServerDateTime();
+                case MemoryData.SystemVariables.ServerDate:
+                    return ServerDateTimeProvider!.GetServerDate();
+                case MemoryData.SystemVariables.ServerTime:
+                    return ServerDateTimeProvider!.GetServerTime();
+                case MemoryData.SystemVariables.AccountingDate:
+                    return ServerDateTimeProvider!.GetAccountingDate();
+                case MemoryData.SystemVariables.CurrentApplication:
+                    return ApplicationNo;
+                case MemoryData.SystemVariables.CurrentClientSide:
+                    return ClientSide;
+                case MemoryData.SystemVariables.CurrentTenantId:
+                    return CurrentTenant!.Id;
+                case MemoryData.SystemVariables.CurrentTenantCode:
+                    return CurrentTenant!.Code;
+                case MemoryData.SystemVariables.CurrentTenantName:
+                    return CurrentTenant!.Name;
+                case MemoryData.SystemVariables.CurrentUserId:
+                    return CurrentUser!.Id;
+                case MemoryData.SystemVariables.CurrentUserCode:
+                    return CurrentUser!.Code;
+                case MemoryData.SystemVariables.CurrentUserName:
+                    return CurrentUser!.Name;
+                default:
+                    return null;
+            }
+        }
     }
 }

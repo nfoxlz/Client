@@ -83,6 +83,8 @@
     <s:String x:Key="Message.ServiceError">应用服务异常。（服务【{0}】   方法【{1}】）</s:String>
     
     <!--操作错误提示-->
+    <s:String x:Key="Message.ExecuteSaveSqlWarning">系统将直接变更数据，且变更成功后不能恢复，是否继续变更？</s:String>
+    <s:String x:Key="Message.LockWarning">系统不能加锁，请等其它加锁任务完成后再进行操作。</s:String>
     <s:String x:Key="Message.DetailNonnullRuleError">第【{0}】行【{1}】不能为空。</s:String>
     <s:String x:Key="Message.NonnullRuleError">【{0}】为不能为空。</s:String>
     <s:String x:Key="Message.InboundQuantityError">(【实际入库数量】+【折扣入库数量】)×【入库包装规格】不能大于【未入库数量】。</s:String>
@@ -111,6 +113,7 @@
     <s:String x:Key="Message.AmountZero">金额不能为零。</s:String>
     <s:String x:Key="Message.DebitCreditNotEqualError">借贷金额必须相等。</s:String>
     <s:String x:Key="Message.NoAmountError">借贷金额不能都为0。</s:String>
+    <!--<s:String x:Key="Message.ConcurrentAmountError">借贷金额不能都不为0。</s:String>-->
 
     <!--插件-->
     <s:String x:Key="QueryButton">查询(_Q)</s:String>

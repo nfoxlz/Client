@@ -108,7 +108,7 @@ namespace Compete.Mis.Developer.ViewModels
                     break;
                 }
 
-            if (null == document)
+            if (document is null)
             {
                 document = new LayoutDocument() { Title = title, Content = Activator.CreateInstance<T>() };
                 pane.Children.Add(document);                                            // 添加新的文档。
@@ -128,9 +128,9 @@ namespace Compete.Mis.Developer.ViewModels
             {
                 //ProjectSetting.ColumnSettings.Clear();
 
-                //if (null == Global.ProjectSetting.EntityInfos)
+                //if (Global.ProjectSetting.EntityInfos is null)
                 //    Global.ProjectSetting.EntityInfos = new ObservableCollection<Models.DbTable>();
-                //if (null == Global.ColumnInfos)
+                //if (Global.ColumnInfos is null)
                 //    Global.ColumnInfos = new ObservableCollection<Models.DbColumn>();
                 PowerDesigner.PowerDesignerHelper.Export(dialog.FileName, ProjectSetting!.Model, PowerDesigner.ExportMode.Override);// , PowerDesigner.ExportMode.Override
 
@@ -172,7 +172,7 @@ namespace Compete.Mis.Developer.ViewModels
             ((MnemonicCodeGeneraterViewModel)generater.DataContext).SetDatabaseSetting(ProjectSetting!.ConnectionSetting!);
         }
 
-        private bool HasProjectSetting() => ProjectSetting != null;
+        private bool HasProjectSetting() => ProjectSetting is not null;
 
         //[RelayCommand]
         //private void DataInitialize()

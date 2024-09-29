@@ -27,7 +27,7 @@ namespace Compete.Mis.Plugins
 
         //public string? MemoryDataName { get; set; }
 
-        public IDictionary<string, Models.SimpleData>? MemoryData { get; set; }
+        public IList<Models.SimpleData>? MemoryData { get; set; }
 
         public bool IsMergePluginParameter { get; set; }
 
@@ -58,6 +58,8 @@ namespace Compete.Mis.Plugins
         public IDictionary<string, IEnumerable<string>>? RequiredColumns { get; set; }
 
         public IDictionary<string, IEnumerable<string>>? UniqueColumns { get; set; }
+
+        public IDictionary<string, IEnumerable<string>>? NewCopyColumns { get; set; }
 
         public IEnumerable<string>? InvisibleIdTables { get; set; }
 
@@ -92,6 +94,8 @@ namespace Compete.Mis.Plugins
         public IDictionary<string, string[]>? SaveColumns { get; set; }
 
         public IDictionary<string, string>? RequiredTables { get; set; }
+
+        public IDictionary<string, string>? RequiredDataTables { get; set; }
 
         public string? VerifyScriptFileName { get; set; } = "Verify.cs";
 

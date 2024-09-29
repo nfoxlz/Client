@@ -30,7 +30,7 @@ namespace Compete.Extensions
             var result = new Dictionary<string, object>();
 
             foreach (DataColumn column in row.Table.Columns)
-                if (row[column] != DBNull.Value && (null == columns || (from columnName in columns
+                if (row[column] != DBNull.Value && (columns is null || (from columnName in columns
                                                                         where column.ColumnName == columnName
                                                                         select columnName).Any()))
                     result.Add(column.ColumnName, row[column]);
@@ -58,9 +58,9 @@ namespace Compete.Extensions
             var columns = targetRow.Table.Columns;
             foreach (DataColumn column in souceRow.Table.Columns)
             {
-                if (omittedColumns != null && (from columnName in omittedColumns
-                                               where columnName == column.ColumnName
-                                               select columnName).Any())
+                if (omittedColumns is not null && (from columnName in omittedColumns
+                                                   where columnName == column.ColumnName
+                                                   select columnName).Any())
                     continue;
                 if (columns.Contains(column.ColumnName) && !Mis.MisControls.DataVerifier.IsNull(souceRow[column], column))//souceRow[column.ColumnName] != DBNull.Value
                     targetRow[column.ColumnName] = Convert.ChangeType(souceRow[column], columns[column.ColumnName]!.DataType);
@@ -70,7 +70,7 @@ namespace Compete.Extensions
             ////targetRow.BeginEdit();
             //foreach (DataColumn column in targetRow.Table.Columns)
             //{
-            //    if (omittedColumns != null && (from columnName in omittedColumns
+            //    if (omittedColumns is not null && (from columnName in omittedColumns
             //                                   where columnName == column.ColumnName
             //                                   select columnName).Any())
             //        continue;
@@ -86,7 +86,7 @@ namespace Compete.Extensions
             var result = new List<object>();
 
             var dataColumns = row.Table.Columns;
-            if (null == columns)
+            if (columns is null)
                 foreach (DataColumn column in dataColumns)
                     result.Add(row[column]);
             else
@@ -105,6 +105,16 @@ namespace Compete.Extensions
             view.RowFilter = rowFilter;
             var result = view.ToTable(false, columnNames);
             view.RowFilter = tempFilter;
+            return result;
+        }
+
+        public static IList<string> GetTableNames(this DataSet data)
+        {
+            var result = new List<string>();
+
+            foreach (DataTable table in data.Tables)
+                result.Add(table.TableName);
+
             return result;
         }
     }

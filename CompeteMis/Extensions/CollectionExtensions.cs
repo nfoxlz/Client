@@ -39,7 +39,7 @@ namespace Compete.Extensions
         {
             var result = new Dictionary<TKey, TValue>();
             foreach (var pair in dic)
-                if (pair.Value != null)
+                if (pair.Value is not null)
                     result.Add(pair.Key, pair.Value);
             return result;
         }

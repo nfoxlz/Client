@@ -39,7 +39,7 @@ namespace Compete.Mis.MisControls
         protected DataRow? GetSourceRow()
         {
             var bindingExpression = GetBindingExpression(ValueProperty);
-            if (null == bindingExpression)
+            if (bindingExpression is null)
                 return null;
 
             var source = bindingExpression.ResolvedSource ?? bindingExpression.ParentBinding.Source;
@@ -74,7 +74,7 @@ namespace Compete.Mis.MisControls
             try
             {
                 var selectedItem = SelectData();
-                if (selectedItem == null)
+                if (selectedItem is null)
                     return;
 
                 if (selectedItem is DataRowView view)
@@ -129,7 +129,7 @@ namespace Compete.Mis.MisControls
         private void SetEntityValue(object? item)
         {
             isSetValue = true;
-            if (null == item)
+            if (item is null)
                 Value = DBNull.Value;
             else if (item.HasProperty(ValuePath))
                 Value = item.GetPropertyValue(ValuePath);
@@ -143,7 +143,7 @@ namespace Compete.Mis.MisControls
             }
             isSetValue = false;
 
-            if (null == item)
+            if (item is null)
                 DisplayTextBox.Text = string.Empty;
             else if (item.HasProperty(DisplayPath))
                 DisplayTextBox.Text = item.GetPropertyValue(DisplayPath)!.ToString();
@@ -164,7 +164,7 @@ namespace Compete.Mis.MisControls
             if (IsCopySameName)
             {
                 var sourceRow = GetSourceRow();
-                if (sourceRow != null)
+                if (sourceRow is not null)
                     row.CopyTo(sourceRow, omittedColumns.Merge([string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath, string.IsNullOrWhiteSpace(DisplayPath) ? "Name" : DisplayPath]));
             }
 
@@ -201,7 +201,7 @@ namespace Compete.Mis.MisControls
                     enhancedDataGrid.IsEditing = false;
             }
 
-            if (null == Value || Value is long longVal && longVal == 0L || Value is Guid guidVal && Guid.Empty == guidVal || Value is string stringVal && string.IsNullOrWhiteSpace(stringVal))
+            if (Value is null || Value is long longVal && longVal == 0L || Value is Guid guidVal && Guid.Empty == guidVal || Value is string stringVal && string.IsNullOrWhiteSpace(stringVal))
                 DisplayTextBox.Text = string.Empty;
 
             //var columns = row.Table.Columns;
@@ -216,7 +216,7 @@ namespace Compete.Mis.MisControls
             //{
             //    var sourceRow = GetSourceRow();
 
-            //    if (sourceRow != null)
+            //    if (sourceRow  is not null)
             //    {
             //        var oldValue = Value;
             //        row.CopyTo(sourceRow, omittedColumns);
@@ -262,13 +262,13 @@ namespace Compete.Mis.MisControls
             DependencyProperty.Register(nameof(Value), typeof(object), typeof(AbstractEntityBox), new PropertyMetadata((d, e) =>
             {
                 var abstractEntityBox = (AbstractEntityBox)d;
-                if (abstractEntityBox.isSetValue || abstractEntityBox.Value != null && abstractEntityBox.Value.Equals(abstractEntityBox.oldValue) || string.IsNullOrWhiteSpace(abstractEntityBox.ServiceParameter) || string.IsNullOrWhiteSpace(abstractEntityBox.DisplayPath))
+                if (abstractEntityBox.isSetValue || abstractEntityBox.Value is not null && abstractEntityBox.Value.Equals(abstractEntityBox.oldValue) || string.IsNullOrWhiteSpace(abstractEntityBox.ServiceParameter) || string.IsNullOrWhiteSpace(abstractEntityBox.DisplayPath))
                     return;
 
                 // 取得需要从UI线程向新线程传递的数据。
                 var entityBoxValue = abstractEntityBox.Value;               // 控件的值。
 
-                if (null == entityBoxValue || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && 0L == val)
+                if (entityBoxValue is null || string.IsNullOrWhiteSpace(entityBoxValue.ToString()) || entityBoxValue is long val && 0L == val)
                 {
                     abstractEntityBox.DisplayTextBox.Text = string.Empty;
                     return;
@@ -276,7 +276,7 @@ namespace Compete.Mis.MisControls
 
                 var parameter = abstractEntityBox.ServiceParameter;
                 var entities = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(parameter, entityBoxValue), "Query");
-                if (null == entities || entities.Rows.Count == 0 || !entities.Columns.Contains(abstractEntityBox.DisplayPath))
+                if (entities is null || entities.Rows.Count == 0 || !entities.Columns.Contains(abstractEntityBox.DisplayPath))
                     return;
 
                 abstractEntityBox.DisplayTextBox.Text = abstractEntityBox.GetDisplay(entities);
@@ -452,9 +452,9 @@ namespace Compete.Mis.MisControls
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, null == parameters || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, null == parameters || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
 
@@ -465,9 +465,9 @@ namespace Compete.Mis.MisControls
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, null == parameters || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, null == parameters || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
     }

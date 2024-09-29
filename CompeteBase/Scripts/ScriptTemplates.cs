@@ -192,10 +192,57 @@ namespace Compete.Scripts
     }}}}
 }}}}";
 
+        public const string CheckTemplate = @"using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
+
+namespace Compete.Scripts
+{{{{
+    public static class {{0}}
+    {{{{
+        public static bool {0}(object? item)
+        {{{{
+            {{1}}
+        }}}}
+    }}}}
+}}}}";
+
+        public const string RunCheckTemplate = @"using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Compete.Mis;
+using Compete.Mis.Plugins;
+using Compete.Mis.MisControls;
+
+namespace Compete.Scripts
+{{{{
+    public static class {{0}}
+    {{{{
+        public static bool {0}(PluginCommandParameter parameter, object? item)
+        {{{{
+            {{1}}
+        }}}}
+    }}}}
+}}}}";
+
         public const string InitializingMethodClassName = "Compete.Scripts.InitializingClass";
 
         public const string QueringMethodClassName = "Compete.Scripts.QueringClass";
 
         public const string QueriedMethodClassName = "Compete.Scripts.QueriedClass";
+
+        public const string CheckMethodClassName = "Compete.Scripts.CheckClass";
+
+        public const string RunCheckMethodClassName = "Compete.Scripts.RunCheckClass";
     }
 }

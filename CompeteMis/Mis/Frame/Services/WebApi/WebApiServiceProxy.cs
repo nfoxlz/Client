@@ -34,7 +34,7 @@ namespace Compete.Mis.Frame.Services.WebApi
 #endif
 
             Dictionary<string, object?>? parameters;
-            if (null == args)
+            if (args is null)
                 parameters = null;
             else
             {
@@ -53,7 +53,11 @@ namespace Compete.Mis.Frame.Services.WebApi
                     return null;
                 }
                 else
-                    return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
+                {
+                    var result = Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
+                    return result;
+                }
+                    //return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
             }
             catch (InvalidOperationException)
             {

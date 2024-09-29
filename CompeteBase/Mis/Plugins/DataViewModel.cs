@@ -5,6 +5,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -64,8 +65,8 @@ namespace Compete.Mis.Plugins
         {
             (View as Window)?.Close();
 
-            if (PluginParameter?.BackAction != null)
-                PluginParameter.BackAction(false);
+            if (PluginParameter?.BackCallAction is not null)
+                PluginParameter.BackCallAction(false);
         }
 
 
@@ -108,9 +109,18 @@ namespace Compete.Mis.Plugins
                 }
             }
         }
+
+        protected override bool CheckAuthorition(long authorition) => CheckAuthorition(authorition, MasterData?.CurrentItem);
+
+        protected virtual bool CheckAuthorition(long authorition, object? item) => true;
+
+        protected override bool GetRunAuthorition(PluginCommandParameter? parameter) => GetRunAuthorition(parameter, MasterData?.CurrentItem);
+
+        protected virtual bool GetRunAuthorition(PluginCommandParameter? parameter, object? item) => true;
+
         protected abstract void QueryData(string? name);
 
-        protected override Action<bool>? BackAction
+        protected override Action<bool>? BackCallAction
         {
             get => (isSucceed) =>
             {
@@ -129,6 +139,7 @@ namespace Compete.Mis.Plugins
         {
             SaveCommand.NotifyCanExecuteChanged();
             SaveCloseCommand.NotifyCanExecuteChanged();
+            SaveCallBackCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand(CanExecute = nameof(CanQuery))]
@@ -154,7 +165,7 @@ namespace Compete.Mis.Plugins
             if (!HasQueryAuthorition)
                 return false;
 
-            if (ConditionTable != null && ConditionTable.Verify(out string viewErrorText))
+            if (ConditionTable is not null && ConditionTable.Verify(out string viewErrorText))
             {
                 MessageText = viewErrorText;
                 return false;
@@ -166,10 +177,10 @@ namespace Compete.Mis.Plugins
 
         partial void OnMasterDataChanged(BindingListCollectionView? oldValue, BindingListCollectionView? newValue)
         {
-            if (oldValue != null)
+            if (oldValue is not null)
                 oldValue.CurrentChanged -= DataViewModel_CurrentChanged;
 
-            if (newValue != null)
+            if (newValue is not null)
                 newValue.CurrentChanged += DataViewModel_CurrentChanged;
         }
 
@@ -178,6 +189,8 @@ namespace Compete.Mis.Plugins
             RunCommand.NotifyCanExecuteChanged();
             DeleteCommand.NotifyCanExecuteChanged();
         }
+
+        public bool HasModifyAuthorition { get => HasAuthorition(ReserveAuthorition.Modify); }
 
         [RelayCommand(CanExecute = nameof(CanAdd))]
         private void Add()
@@ -191,7 +204,7 @@ namespace Compete.Mis.Plugins
 
         private bool CanAdd()
         {
-            if (!HasAddAuthorition || null == MasterData)// && MasterData.CanAddNew;
+            if (!HasAddAuthorition || MasterData is null)// && MasterData.CanAddNew;
                 return false;
 
             foreach (var item in MasterData)
@@ -210,7 +223,7 @@ namespace Compete.Mis.Plugins
 
         public bool HasDeleteAuthorition { get => HasAuthorition(ReserveAuthorition.Delete); }
 
-        private bool CanDelete() => HasDeleteAuthorition && MasterData != null && MasterData.CurrentItem != null && MasterData.CurrentItem.GetType().ToString() != "MS.Internal.NamedObject";// && MasterData.CanRemove;
+        private bool CanDelete() => HasDeleteAuthorition && MasterData is not null && MasterData.CurrentItem is not null && MasterData.CurrentItem.GetType().ToString() != "MS.Internal.NamedObject";// && MasterData.CanRemove;
 
         private void Table_RowChanged(object sender, DataRowChangeEventArgs e)
         {
@@ -230,8 +243,7 @@ namespace Compete.Mis.Plugins
 
         private readonly object pausedLock = new();
 
-        [RelayCommand(CanExecute = nameof(CanSave))]
-        private void Save(string? name) => RunBackground(() =>
+        private void SaveData(string? name, Action action)
         {
             if (isPaused)
                 return;
@@ -246,51 +258,54 @@ namespace Compete.Mis.Plugins
             {
                 if (SaveData(name))
                     return;
+
+                //ActionId = Guid.NewGuid();
+                action();
+            }
+            finally
+            {
+                isPaused = false;
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private void Save(string? name) => RunBackground(() =>
+        SaveData(name, () =>
+        {
+            Data!.AcceptChanges();
+
+            if (CanQuery())
+                Query(null);
+        }));
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private void SaveClose(string? name) => RunBackground(() =>
+            SaveData(name, () =>
+            {
+                if (PluginParameter?.BackCallAction is not null)
+                    Threading.ThreadHelper.RunBackgroundUI(() => PluginParameter.BackCallAction(true));
+
+                (View as Window)?.Close();
+            }));
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private void SaveCallBack(string? name) => RunBackground(() =>
+            SaveData(name, () =>
+            {
+                if (PluginParameter?.BackCallAction is not null)
+                    Threading.ThreadHelper.RunBackgroundUI(() => PluginParameter.BackCallAction(true));
 
                 Data!.AcceptChanges();
 
                 if (CanQuery())
                     Query(null);
-            }
-            finally
-            {
-                isPaused = false;
-            }
-        });
-
-        [RelayCommand(CanExecute = nameof(CanSave))]
-        private void SaveClose(string? name) => RunBackground(() =>
-        {
-            if (isPaused)
-                return;
-
-            lock (pausedLock)
-                if (isPaused)
-                    return;
-                else
-                    isPaused = true;
-
-            try
-            {
-                if (SaveData(name))
-                    return;
-
-                (View as Window)?.Close();
-
-                if (PluginParameter?.BackAction != null)
-                    PluginParameter.BackAction(true);
-            }
-            finally
-            {
-                isPaused = false;
-            }
-        });
+            }));
 
         public bool HasSaveAuthorition { get => HasAuthorition(ReserveAuthorition.Save); }
 
         private bool VerifyData()
         {
-            if (null == Data || !Data.HasChanges() || isPaused)
+            if (Data is null || !Data.HasChanges() || isPaused)
                 return false;
 
             var builder = new StringBuilder();
@@ -316,10 +331,20 @@ namespace Compete.Mis.Plugins
         [RelayCommand(CanExecute = nameof(CanAudit))]
         private void Audit(string? name) => DirectExecuteSaveSql(name ?? "audit");
 
+        [RelayCommand(CanExecute = nameof(CanAudit))]
+        private void AuditClose(string? name) => DirectExecuteSaveSqlClose(name ?? "audit");
+
         public bool HasAuditAuthorition { get => HasAuthorition(ReserveAuthorition.Audit); }
 
-        private bool CanAudit() => HasAuditAuthorition && VerifyData();
-        
+        private bool CanAudit() => HasAuditAuthorition;// && VerifyData()
+
+        [RelayCommand(CanExecute = nameof(CanDirectSave))]
+        private void DirectSave(string? name) => DirectExecuteSaveSql(name ?? "save");
+
+        public bool HasDirectSaveAuthorition { get => HasAuthorition(ReserveAuthorition.DirectSave); }
+
+        private bool CanDirectSave() => HasDirectSaveAuthorition && CanDirectExecuteSql;
+
         [RelayCommand(CanExecute = nameof(CanDirectAdd))]
         private void DirectAdd(string? name) => DirectExecuteSaveSql(name ?? "add");
 
@@ -329,6 +354,9 @@ namespace Compete.Mis.Plugins
 
         [RelayCommand(CanExecute = nameof(CanDirectDelete))]
         private void DirectDelete(string? name) => DirectExecuteSaveSql(name ?? "delete");
+
+        [RelayCommand(CanExecute = nameof(CanDirectDelete))]
+        private void DirectDeleteClose(string? name) => DirectExecuteSaveSqlClose(name ?? "delete");
 
         public bool HasDirectDeleteAuthorition { get => HasAuthorition(ReserveAuthorition.DirectDelete); }
 
@@ -355,14 +383,17 @@ namespace Compete.Mis.Plugins
 
         private bool CanDirectDeleteChild() => HasDirectDeleteChildAuthorition && CanDirectExecuteSql;
 
-        private void DirectExecuteSaveSql(string name) => RunBackground(() =>
+        private void DirectExecuteSaveSqlAction(string name, Action action)
         {
             if (isPaused)
                 return;
 
+            if (MessageDialog.Warning("Message.ExecuteSaveSqlWarning", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
             lock (pausedLock)
                 if (isPaused)
-                    return;
+                    throw new Exceptions.LockException();
                 else
                     isPaused = true;
 
@@ -371,14 +402,34 @@ namespace Compete.Mis.Plugins
                 if (ExecuteSaveSql(name))
                     return;
 
-                if (CanQuery())
-                    Query();
+                action();
+            }
+            catch(Exceptions.LockException)
+            {
+                MessageDialog.Warning("Message.LockWarning");
             }
             finally
             {
                 isPaused = false;
             }
-        });
+        }
+
+        private void DirectExecuteSaveSql(string name) => RunBackground(() =>
+            DirectExecuteSaveSqlAction(name, () =>
+            {
+                if (CanQuery())
+                    Query();
+            }));
+
+        private void DirectExecuteSaveSqlClose(string name) => RunBackground(() =>
+            DirectExecuteSaveSqlAction(name, () =>
+            {
+                if (PluginParameter?.BackCallAction is not null)
+                    Threading.ThreadHelper.RunBackgroundUI(() => PluginParameter.BackCallAction(true));
+                    //Task.Run(() => Application.Current.Dispatcher.Invoke(() => PluginParameter.BackCallAction(true)));
+
+                (View as Window)?.Close();
+            }));
 
         protected virtual bool ExecuteSaveSql(string name) => false;
 
@@ -386,7 +437,7 @@ namespace Compete.Mis.Plugins
 
         protected bool VerifyConditionTable()
         {
-            if (null == ConditionTable)
+            if (ConditionTable is null)
                 return false;
 
             if (ConditionTable.Verify(out string dataErrorText))
@@ -403,7 +454,7 @@ namespace Compete.Mis.Plugins
         private FlowDocument? GetDataFlowDocument()
         {
             var document = GetDocument();
-            if (null == document)
+            if (document is null)
                 return null;
 
             document.DataContext = this;
@@ -419,7 +470,7 @@ namespace Compete.Mis.Plugins
         private void Print()
         {
             var document = GetDataFlowDocument();
-            if (null == document)
+            if (document is null)
                 return;
 
             var viewer = new DocumentViewer();
@@ -431,7 +482,7 @@ namespace Compete.Mis.Plugins
         private void PrintPreview()
         {
             var document = GetDataFlowDocument();
-            if (null == document)
+            if (document is null)
                 return;
 
             var window = new Print.PrintPreviewWindow();
@@ -468,22 +519,45 @@ namespace Compete.Mis.Plugins
         partial void OnDataChanged(DataSet? oldValue, DataSet? newValue)
         {
             if (oldValue is not null)
+            {
+                if (MasterData is not null)
+                    MasterData.CurrentChanged -= MasterData_CurrentChanged;
+
                 foreach (DataTable table in oldValue.Tables)
                 {
                     table.ColumnChanged -= Table_ColumnChanged;
                     table.RowDeleted -= Table_RowChanged;
+                    table.TableNewRow -= Table_TableNewRow;
                 }
+            }
 
             if (newValue is not null)
             {
                 MasterData = CollectionViewSource.GetDefaultView(newValue.Tables[0]) as BindingListCollectionView;      // 获取主数据视图。
+                if (MasterData is not null)
+                    MasterData.CurrentChanged += MasterData_CurrentChanged;
+
                 foreach (DataTable table in newValue.Tables)
                 {
                     table.ColumnChanged += Table_ColumnChanged;
                     table.RowDeleted += Table_RowChanged;
+                    table.TableNewRow += Table_TableNewRow;
                 }
             }
         }
+
+        private void MasterData_CurrentChanged(object? sender, EventArgs e)
+        {
+            RunCommand.NotifyCanExecuteChanged();
+            DeleteCommand.NotifyCanExecuteChanged();
+            DirectDeleteCommand.NotifyCanExecuteChanged();
+            DirectModifyCommand.NotifyCanExecuteChanged();
+            AuditCommand.NotifyCanExecuteChanged();
+            DirectAddChildCommand.NotifyCanExecuteChanged();
+            DirectDeleteChildCommand.NotifyCanExecuteChanged();
+        }
+
+        protected virtual void Table_TableNewRow(object sender, DataTableNewRowEventArgs e) { }
 
         private void Table_ColumnChanged(object sender, DataColumnChangeEventArgs e)
         {
@@ -493,13 +567,13 @@ namespace Compete.Mis.Plugins
 
         partial void OnConditionTableChanged(DataTable? oldValue, DataTable? newValue)
         {
-            if (oldValue != null)
+            if (oldValue is not null)
             {
                 oldValue.RowChanged -= ConditionTable_RowChanged;
                 oldValue.RowDeleted -= ConditionTable_RowChanged;
             }
 
-            if (newValue != null)
+            if (newValue is not null)
             {
                 ConditionData = CollectionViewSource.GetDefaultView(newValue) as BindingListCollectionView;
                 newValue.RowChanged += ConditionTable_RowChanged;
@@ -514,6 +588,7 @@ namespace Compete.Mis.Plugins
         private void ConditionTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {
             QueryCommand.NotifyCanExecuteChanged();
+
             DirectAddCommand.NotifyCanExecuteChanged();
             DirectDeleteCommand.NotifyCanExecuteChanged();
             DirectModifyCommand.NotifyCanExecuteChanged();
@@ -522,6 +597,6 @@ namespace Compete.Mis.Plugins
             DirectDeleteChildCommand.NotifyCanExecuteChanged();
         }
 
-        protected override bool CanRun(PluginCommandParameter parameter) => base.CanRun(parameter) && (parameter?.RequiredCurrentItem == false || MasterData?.CurrentItem != null);
+        protected override bool CanRun(PluginCommandParameter parameter) => base.CanRun(parameter) && (parameter?.RequiredCurrentItem == false || MasterData?.CurrentItem is not null);
     }
 }

@@ -119,13 +119,13 @@ namespace Compete.Mis.MisControls
             var binding = GetBinding(column);
 
             var control = column.ExtendedProperties[ExtendedPropertyNames.Control];
-            var controlType = null == control ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
+            var controlType = control is null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             FrameworkElement? result;
             var columnName = column.ColumnName;
             var dataType = column.DataType;
             var type = column.ExtendedProperties[ExtendedPropertyNames.DataType];
-            var dbType = null == type ? DbType.String : type.ToString()!.ToEnum<DbType>();
+            var dbType = type is null ? DbType.String : type.ToString()!.ToEnum<DbType>();
             var parameters = DataControlHelper.ConvertParameters((string)column.ExtendedProperties[ExtendedPropertyNames.Parameters]!);
 
             if (isReadOnly) // 只读处理。
@@ -145,19 +145,19 @@ namespace Compete.Mis.MisControls
                             {
                                 IsReadOnly = true,
                                 EntityName = treeEntitySetting.DisplayName ?? entityName,
-                                ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
-                                DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
-                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
-                                LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
-                                LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],
+                                LevelLength = parameters is null ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                LevelPath = parameters is null ? treeEntitySetting.LevelPath : parameters["LevelPath"],
                             }
                             : new EntityBox
                             {
                                 IsReadOnly = true,
                                 EntityName = entityName,
-                                ValuePath = null == parameters ? columnName : parameters["ValuePath"],
-                                DisplayPath = null == parameters ? $"{entityName}_Name" : parameters["DisplayPath"],
-                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"]
+                                ValuePath = parameters is null ? columnName : parameters["ValuePath"],
+                                DisplayPath = parameters is null ? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"]
                             };
                         result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                     }
@@ -182,19 +182,19 @@ namespace Compete.Mis.MisControls
                                 {
                                     IsReadOnly = true,
                                     EntityName = treeEntitySetting.DisplayName ?? entityBoxName,
-                                    ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
-                                    DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityBoxName}_Name" : parameters["DisplayPath"],
-                                    ServiceParameter = null == parameters ? entityBoxName : parameters["ServiceParameter"],
-                                    LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
-                                    LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                    ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                    DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityBoxName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = parameters is null ? entityBoxName : parameters["ServiceParameter"],
+                                    LevelLength = parameters is null ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                    LevelPath = parameters is null ? treeEntitySetting.LevelPath : parameters["LevelPath"],
                                 }
                                 : new EntityBox
                                 {
                                     IsReadOnly = true,
                                     EntityName = entityBoxName,
-                                    ValuePath = null == parameters ? columnName : parameters["ValuePath"],
-                                    DisplayPath = null == parameters ? $"{entityBoxName}_Name" : parameters["DisplayPath"],
-                                    ServiceParameter = null == parameters ? entityBoxName : parameters["ServiceParameter"]
+                                    ValuePath = parameters is null ? columnName : parameters["ValuePath"],
+                                    DisplayPath = parameters is null ? $"{entityBoxName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = parameters is null ? entityBoxName : parameters["ServiceParameter"]
                                 };
                             result.SetBinding(AbstractEntityBox.ValueProperty, binding);
                             break;
@@ -246,11 +246,11 @@ namespace Compete.Mis.MisControls
                             {
                                 IsRequired = isRequired,
                                 EntityName = treeEntitySetting.DisplayName ?? entityName,
-                                ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
-                                DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
-                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
-                                LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
-                                LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],
+                                LevelLength = parameters is null ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                LevelPath = parameters is null ? treeEntitySetting.LevelPath : parameters["LevelPath"],
                             }
                             : new EntityBox
                             {
@@ -258,7 +258,7 @@ namespace Compete.Mis.MisControls
                                 EntityName = column.Caption,
                                 ValuePath = columnName,
                                 DisplayPath = $"{entityName}_Name",
-                                ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"]
+                                ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"]
                             };
                         var showFormat = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.ShowFormat]?.ToString();
                         if (!string.IsNullOrEmpty(showFormat))
@@ -406,18 +406,18 @@ namespace Compete.Mis.MisControls
                                 {
                                     IsReadOnly = true,
                                     EntityName = treeEntitySetting.DisplayName ?? entityName,
-                                    ValuePath = null == parameters ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
-                                    DisplayPath = null == parameters ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
-                                    ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
-                                    LevelLength = null == parameters ? treeEntitySetting.LevelLength : parameters["LevelLength"],
-                                    LevelPath = null == parameters ? treeEntitySetting.LevelPath : parameters["LevelPath"],
+                                    ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
+                                    DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],
+                                    LevelLength = parameters is null ? treeEntitySetting.LevelLength : parameters["LevelLength"],
+                                    LevelPath = parameters is null ? treeEntitySetting.LevelPath : parameters["LevelPath"],
                                 }
                                 : new EntityBox
                                 {
                                     EntityName = column.Caption,
-                                    ValuePath = null == parameters ? entityName + "_Id" : parameters["ValuePath"],
-                                    DisplayPath = null == parameters ? entityName + "_Name" : parameters["DisplayPath"],
-                                    ServiceParameter = null == parameters ? entityName : parameters["ServiceParameter"],
+                                    ValuePath = parameters is null ? entityName + "_Id" : parameters["ValuePath"],
+                                    DisplayPath = parameters is null ? entityName + "_Name" : parameters["DisplayPath"],
+                                    ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],
                                     IsRequired = isRequired
                                 };
                             result.SetBinding(AbstractEntityBox.ValueProperty, binding);
@@ -463,15 +463,15 @@ namespace Compete.Mis.MisControls
             Debug.Assert(name.StartsWith(prefix), $"范围开始控件名【{name}】不是以【{prefix}】开始。");
 
             var endControl = ((FrameworkElement)(frameworkElement).Parent).FindName($"{related}{name.Remove(5)}");
-            if (null == endControl)
+            if (endControl is null)
                 return;
 
             var beginValue = sender!.GetPropertyValue("Value") as IComparable;
             var endValue = endControl.GetPropertyValue("Value");
 
-            Debug.Assert(beginValue != null, "范围开始控件的值不可比较。");
+            Debug.Assert(beginValue is not null, "范围开始控件的值不可比较。");
 
-            if (endValue != null && beginValue.CompareTo(endValue) > 0)
+            if (endValue is not null && beginValue.CompareTo(endValue) > 0)
                 endControl.SetPropertyValue("Value", beginValue);
         }
 

@@ -24,7 +24,7 @@ namespace Compete.Utils
         /// <returns>指定类型的等效对象。</returns>
         public static object? ChangeType(object value, Type conversionType)
         {
-            if (null == value)
+            if (value is null)
                 return null;
 
             return Convert.ChangeType(value, conversionType);
@@ -39,7 +39,7 @@ namespace Compete.Utils
         public static T? ChangeNullableType<T>(object? value)
             where T : struct
         {
-            if (null == value)
+            if (value is null)
                 return null;
 
             return Convert.ChangeType(value, typeof(T)) as T?;
@@ -53,7 +53,7 @@ namespace Compete.Utils
         /// <returns>指定类型的等效对象。</returns>
         public static T? ChangeType<T>(object value)
         {
-            if (null == value)
+            if (value is null)
                 return default;
 
             return (T)Convert.ChangeType(value, typeof(T));

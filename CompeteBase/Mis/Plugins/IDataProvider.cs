@@ -6,7 +6,7 @@ namespace Compete.Mis.Plugins
 {
     public interface IDataProvider
     {
-        DataSet Query(string path, string name, IDictionary<string, object>? parameters);
+        DataSet Query(string path, string name, IDictionary<string, object>? parameters = null);
 
         Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30);
 

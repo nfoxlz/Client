@@ -20,14 +20,14 @@ namespace Compete.Mis.Developer.SqlGenerater
                     clauses.Add(setting.DbPhysicalType!);
                 if (setting.IsRequired || !setting.AllowDBNull)
                     clauses.Add("NOT NULL");
-                if (setting.DefaultValue != null)
+                if (setting.DefaultValue is not null)
                     if (setting.DbDataType.IsString())
                         clauses.Add($"DEFAULT \"{setting.DefaultValue}\"");
                     else
                         clauses.Add($"DEFAULT {setting.DefaultValue}");
                 sql.AppendLine($"\t{string.Join(" ", clauses)},");
             }
-            if (table.KeySettings != null)
+            if (table.KeySettings is not null)
                 sql.AppendLine($"\tCONSTRAINT PK_{table.Code.ToUpper()} PRIMARY KEY ({string.Join(", ", table.KeySettings)})");
             sql.AppendLine(");");
             sql.AppendLine();
@@ -39,7 +39,7 @@ namespace Compete.Mis.Developer.SqlGenerater
 
             sql.AppendLine();
 
-            if (table.IndexSettings != null)
+            if (table.IndexSettings is not null)
             {
                 foreach (var setting in table.IndexSettings)
                     sql.AppendLine($"CREATE INDEX {setting.Key} ON {table.Code} ({string.Join(", ", setting.Value)});");

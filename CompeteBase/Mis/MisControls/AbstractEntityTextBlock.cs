@@ -99,7 +99,7 @@ namespace Compete.Mis.MisControls
                     return;
 
                 //var entity = Threading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider.GetEntity(abstractEntityTextBlock.ServiceParameter, abstractEntityTextBlock.Value), "Query");
-                if (null == abstractEntityTextBlock.Value)
+                if (abstractEntityTextBlock.Value is null)
                 {
                     abstractEntityTextBlock.Text = string.Empty;
                     return;
@@ -149,11 +149,11 @@ namespace Compete.Mis.MisControls
                 try
                 {
                     var entities = GlobalCommon.EntityDataProvider!.GetEntity(abstractEntityTextBlock.ServiceParameter, abstractEntityTextBlock.Value);
-                    if (null == entities || 0 == entities.Rows.Count || !entities.Columns.Contains(abstractEntityTextBlock.DisplayPath))
+                    if (entities is null || 0 == entities.Rows.Count || !entities.Columns.Contains(abstractEntityTextBlock.DisplayPath))
                         return;
 
                     abstractEntityTextBlock.Text = abstractEntityTextBlock.GetDisplay(entities);
-                    //abstractEntityTextBlock.Text = string.IsNullOrWhiteSpace(abstractEntityTextBlock.Format) || null == abstractEntityTextBlock.formatMethod
+                    //abstractEntityTextBlock.Text = string.IsNullOrWhiteSpace(abstractEntityTextBlock.Format) || abstractEntityTextBlock.formatMethod is null
                     //    ? entity.Rows[0][abstractEntityTextBlock.DisplayPath].ToString()
                     //    : abstractEntityTextBlock.formatMethod.Invoke(null, [entity.Rows[0]])?.ToString();
                 }
@@ -189,9 +189,9 @@ namespace Compete.Mis.MisControls
 
             return new Dictionary<DependencyProperty, object?>
             {
-                { ValuePathProperty, null == parameters || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, null == parameters || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
 
@@ -201,9 +201,9 @@ namespace Compete.Mis.MisControls
 
             return new Dictionary<DependencyProperty, object?>
             {
-                { ValuePathProperty, null == parameters || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, null == parameters || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, null == parameters || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
     }

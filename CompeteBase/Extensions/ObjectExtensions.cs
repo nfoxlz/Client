@@ -25,7 +25,7 @@ namespace Compete.Extensions
         /// <param name="obj">要判断的对象。</param>
         /// <param name="name">指定的判定属性名。</param>
         /// <returns>true为有该属性；false为没有该属性。</returns>
-        public static bool HasProperty(this object obj, string name) => obj != null && (from property in obj.GetType().GetProperties()
+        public static bool HasProperty(this object obj, string name) => obj is not null && (from property in obj.GetType().GetProperties()
                                                                                         where property.Name == name
                                                                                         select property).Any();
 
@@ -35,7 +35,7 @@ namespace Compete.Extensions
 
         public static object? GetPropertyValue(this object obj, long index) => obj.GetType().GetProperties()[index].GetValue(obj);
 
-        public static object? TryGetPropertyValue(this object obj, string name) => (obj != null && obj.HasProperty(name)) ? obj.GetType().GetProperty(name)?.GetValue(obj) : null;
+        public static object? TryGetPropertyValue(this object obj, string name) => obj is not null && obj.HasProperty(name) ? obj.GetType().GetProperty(name)?.GetValue(obj) : null;
 
         public static void SetPropertyValue(this object obj, string name, object val) => obj.GetType().GetProperty(name)?.SetValue(obj, val);
 
@@ -54,14 +54,7 @@ namespace Compete.Extensions
             return false;
         }
 
-        public static Type? GetPropertyType(this object obj, string name)
-        {
-            var info = obj.GetType().GetProperty(name);
-            if (null == info)
-                return null;
-            else
-                return info.PropertyType;
-        }
+        public static Type? GetPropertyType(this object obj, string name) => obj.GetType().GetProperty(name)?.PropertyType;
 
         public static long PropertyCount(this object obj) => obj.GetType().GetProperties().LongLength;
 
@@ -69,7 +62,7 @@ namespace Compete.Extensions
         {
             var result = new Dictionary<string, object?>();
 
-            if (obj != null)
+            if (obj is not null)
                 foreach (var propertyInfo in obj.GetType().GetProperties())
                     result.Add(propertyInfo.Name, propertyInfo.GetValue(obj));
 
@@ -85,7 +78,7 @@ namespace Compete.Extensions
         public static TDestination? DynamicMapTo<TDestination>(this object source)
         {
             TDestination? destination = (TDestination?)Activator.CreateInstance(typeof(TDestination));
-            if (destination != null)
+            if (destination is not null)
                 source.DynamicMapTo(destination);
             return destination;
         }
@@ -104,13 +97,13 @@ namespace Compete.Extensions
             foreach (var sourceProperty in sourceProperties)
             {
                 sourceValue = sourceProperty.GetValue(source);
-                if (null == sourceValue)
+                if (sourceValue is null)
                     continue;
 
                 var destinationProperty = (from property in destinationProperties
                                            where property.Name == sourceProperty.Name
                                            select property).FirstOrDefault();
-                if (null == destinationProperty)// || nullCopy && null != destinationProperty.CanRead && destinationProperty.GetValue(destination)
+                if (destinationProperty is null)// || nullCopy && destinationProperty.CanRead is not null && destinationProperty.GetValue(destination)
                     continue;
 
                 if (destinationProperty.PropertyType.ToString() == sourceProperty.PropertyType.ToString() || destinationProperty.PropertyType.IsAssignableFrom(sourceProperty.PropertyType))

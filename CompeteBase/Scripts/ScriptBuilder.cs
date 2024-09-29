@@ -31,10 +31,10 @@ namespace Compete.Scripts
     {
         public const string DefaultLanguage = "CSharp";
 
-        private static string gcPath = Path.GetDirectoryName(typeof(GCSettings).GetTypeInfo().Assembly.Location)!;
+        private static readonly string gcPath = Path.GetDirectoryName(typeof(GCSettings).GetTypeInfo().Assembly.Location)!;
 
-        private static readonly IEnumerable<MetadataReference>? references = new[]
-        {
+        private static readonly IEnumerable<MetadataReference>? references =
+        [
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
             MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
             MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Runtime.dll")),
@@ -48,7 +48,7 @@ namespace Compete.Scripts
             MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.dll")),
             MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Xml.ReaderWriter.dll")),
             MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Private.Xml.dll")),
-        };
+        ];
 
         private static readonly CSharpCompilationOptions cSharpCompilationOptions = new(OutputKind.DynamicallyLinkedLibrary);
 
@@ -139,8 +139,8 @@ namespace Compete.Scripts
 
             var assemblyPath = GetAssemblyFileName(path, className);
             var assembly = bilder.Build(assemblyPath);
-            //Debug.Assert(null != assembly && null == bilder.Errors, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
-            if (null == assembly || null != bilder.Errors && 0 < bilder.Errors.Count)
+            //Debug.Assert(assembly is not null && bilder.Errors is null, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
+            if (assembly is null || bilder.Errors is not null && 0 < bilder.Errors.Count)
             {
                 var info = new FileInfo(assemblyPath);
                 if (info.Length == 0)
@@ -167,7 +167,7 @@ namespace Compete.Scripts
             };
             
             var assembly = bilder.Build();
-            Debug.Assert(null != assembly && null == bilder.Errors, $"脚本编译出差。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
+            Debug.Assert(assembly is not null && bilder.Errors is null, $"脚本编译出错。\r\n{string.Join("\r\n", bilder.Errors?.ToString() ?? string.Empty)}");
 
             return assembly.GetType(className);
         }

@@ -68,11 +68,11 @@ namespace Compete.Mis.MisControls
 
         private void CreateRow()
         {
-            if (null == ShowColumns)
+            if (ShowColumns is null)
                 return;
 
             var source = ItemsSource ?? DataContext;
-            if (null == source)
+            if (source is null)
                 return;
 
             DataView view;
@@ -107,7 +107,7 @@ namespace Compete.Mis.MisControls
                     textAlignment = dataColumn.DataType.IsNumeric() ? TextAlignment.Right : TextAlignment.Left;
                     if (rowView.Row[column] is DBNull)
                         val = string.Empty;
-                    else if (null == format)
+                    else if (format is null)
                         val = rowView.Row[column].ToString();
                     else if (TextAlignment.Right == textAlignment)
                         val = Convert.ToDecimal(rowView.Row[column]).ToString(format);

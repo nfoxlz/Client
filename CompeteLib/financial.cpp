@@ -4,10 +4,10 @@
 
 extern "C"
 {
-	__declspec(dllexport) size_t getLevelLen(const char* code, const char* structure)
+	__declspec(dllexport) int getLevelLen(const char* code, const char* structure)
 	{
 		std::string level;
-		int levelLen = 0, len = 0, codeLen = strlen(code);
+		int levelLen = 0, len = 0, codeLen = (int)strlen(code);
 		std::stringstream ss(structure);
 		while (std::getline(ss, level, '-'))
 		{
@@ -23,7 +23,7 @@ extern "C"
 	__declspec(dllexport) int getNextLevelLen(const char* code, const char* structure)
 	{
 		std::string level;
-		int levelLen = 0, len = 0, codeLen = strlen(code);
+		int levelLen = 0, len = 0, codeLen = (int)strlen(code);
 		std::stringstream ss(structure);
 		while (std::getline(ss, level, '-'))
 		{

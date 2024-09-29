@@ -80,7 +80,15 @@ namespace Compete.Mis.MisControls
         /// <param name="text">消息。</param>
         /// <param name="args">一个对象数组，其中包含零个或多个要设置格式的对象。</param>
         /// <returns>对话框结果（按了哪个按钮）。</returns>
-        public static MessageBoxResult Warning(string text, params object[] args) => ShowMessageBox(text, "MessageTitle.Warning", MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK, args);
+        public static MessageBoxResult Warning(string text, params object[] args) => Warning(text, MessageBoxButton.OK, args);
+
+        public static MessageBoxResult Warning(string text, MessageBoxButton button, params object[] args) => Warning(text, button, button switch
+        {
+            MessageBoxButton.YesNo or MessageBoxButton.YesNoCancel => MessageBoxResult.Yes,
+            _ => MessageBoxResult.OK,
+        }, args);
+
+        public static MessageBoxResult Warning(string text, MessageBoxButton button, MessageBoxResult defaultResult, params object[] args) => ShowMessageBox(text, "MessageTitle.Warning", button, MessageBoxImage.Warning, defaultResult, args);
 
         /// <summary>
         /// 显示可恢复的错误（错误）消息
@@ -105,15 +113,12 @@ namespace Compete.Mis.MisControls
         /// <param name="button">显示的按钮。</param>
         /// <param name="args">一个对象数组，其中包含零个或多个要设置格式的对象。</param>
         /// <returns>对话框结果（按了哪个按钮）。</returns>
-        public static MessageBoxResult Question(string text, MessageBoxButton button, params object[] args)
-        {
-            var messageBoxResult = button switch
+        public static MessageBoxResult Question(string text, MessageBoxButton button, params object[] args) =>
+            Question(text, button, button switch
             {
                 MessageBoxButton.YesNo or MessageBoxButton.YesNoCancel => MessageBoxResult.Yes,
                 _ => MessageBoxResult.OK,
-            };
-            return Question(text, button, messageBoxResult, args);
-        }
+            }, args);
 
         /// <summary>
         /// 询问。

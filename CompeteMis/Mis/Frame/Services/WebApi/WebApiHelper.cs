@@ -36,7 +36,7 @@ namespace Compete.Mis.Frame.Services.WebApi
             try
             {
                 //using var handler = new HttpClientHandler() { UseCookies = true };
-                //if (cookieCollection != null)
+                //if (cookieCollection is not null)
                 //    foreach (Cookie cookie in cookieCollection)
                 //        handler.CookieContainer.Add(cookie);
                 //using var client = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };
@@ -73,7 +73,7 @@ namespace Compete.Mis.Frame.Services.WebApi
         public void Post(string requestUri, IDictionary<string, object?>? parameters = null) => httpClient.PostAsJsonAsync(requestUri, signHelper.GenerateSignParameter(parameters), DefaultJsonSerializerOptions);
         //{
         //    using var handler = new HttpClientHandler() { UseCookies = true };
-        //    if (cookieCollection != null)
+        //    if (cookieCollection is not null)
         //        foreach (Cookie cookie in cookieCollection)
         //            handler.CookieContainer.Add(cookie);
         //    using var client = new HttpClient(handler) { BaseAddress = new Uri(baseAddress) };

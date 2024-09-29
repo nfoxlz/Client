@@ -43,7 +43,7 @@ namespace Compete.Mis.Frame.ViewModels
         private void Ok()
         {
             var user = service.Authenticate(Tenant!, User!, Password!);
-            if (user != null)
+            if (user is not null)
             {
                 GC.Collect();
                 Tenant = string.Empty;
@@ -70,7 +70,7 @@ namespace Compete.Mis.Frame.ViewModels
                 // 失败，且已达到验证最大次数。
                 MisControls.MessageDialog.Error("LoginPage.UserOrPasswordErrorMessageExit");
                 //var window = (sender as FrameworkElement).GetWindow();
-                //if (window != null && !BrowserInteropHelper.IsBrowserHosted)
+                //if (window is not null && !BrowserInteropHelper.IsBrowserHosted)
                 //    window.Close();
                 //Application.Current.MainWindow.Close();
                 Application.Current.Shutdown();

@@ -20,15 +20,15 @@ namespace Compete.Mis.Plugins
             {
                 //uiElement.DataContext is PluginViewModel viewModel;
 
-                var viewModel = uiElement.DataContext is PluginViewModel model ? model : null == uiElement.DataContext ? (CustomSettingDataViewModel<T>)(uiElement.DataContext = CreateViewModel()) : null;
-                if (viewModel != null)
+                var viewModel = uiElement.DataContext is PluginViewModel model ? model : uiElement.DataContext is null ? (CustomSettingDataViewModel<T>)(uiElement.DataContext = CreateViewModel()) : null;
+                if (viewModel is not null)
                 {
                     viewModel.PluginParameter ??= parameter;
                     viewModel.Authorition &= parameter.Authorition;
                     viewModel.TrySetPropertyValue("SettingFileName", path);
                     uiElement.DataContext ??= viewModel;
                 }
-                //if (null != viewModel && null == viewModel.Data)
+                //if (viewModel is not null && viewModel.Data is null)
                 //    viewModel.Data = GlobalCommon.DataProvider!.Query(basePath, setting.LoadName, setting.QueryParameters);
             }
 

@@ -11,7 +11,7 @@ namespace Compete.Mis.Plugins
         {
             base.ProcessData(data);
 
-            if (null == Setting?.CalculatedColumns)
+            if (Setting?.CalculatedColumns is null)
                 return;
 
             DataColumnCollection columns;

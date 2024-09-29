@@ -31,13 +31,13 @@ namespace Compete.Mis
         public static Cursor? BeginProcess(this FrameworkElement element, string? busyContent = null)
         {
             // 显示等待控件。
-            if (GlobalCommon.MainBusyIndicator != null)
+            if (GlobalCommon.MainBusyIndicator is not null)
             {
                 GlobalCommon.MainBusyIndicator.BusyContent = string.IsNullOrWhiteSpace(busyContent) ? waitMessage : GlobalCommon.GetMessage("WaitMessage", GlobalCommon.GetMessage(busyContent));
                 GlobalCommon.MainBusyIndicator.IsBusy = true;
             }
 
-            if (null == element)
+            if (element is null)
                 return null;
 
             // 将鼠标光标图橡改为等待。
@@ -53,9 +53,9 @@ namespace Compete.Mis
         /// <param name="currentCursor">元素的原始鼠标光标图橡。</param>
         public static void EndProcess(this FrameworkElement element, Cursor? currentCursor = null)
         {
-            if (null != GlobalCommon.MainBusyIndicator)
+            if (GlobalCommon.MainBusyIndicator is not null)
                 GlobalCommon.MainBusyIndicator.IsBusy = false;    // 结束等待控件。
-            if (element != null)
+            if (element is not null)
                 element.Cursor = currentCursor;         // 还原鼠标光标图橡。
         }
 
@@ -83,7 +83,7 @@ namespace Compete.Mis
                 return frameworkElement as Window;
 
             var element = frameworkElement;
-            while (null != element)
+            while (element is not null)
             {
                 if (element.Parent is Window)
                     return element.Parent as Window;

@@ -15,7 +15,7 @@ namespace Compete.Mis.Runtime.Security
 
         public IDictionary<string, object?>? GenerateSignParameter(IDictionary<string, object?>? parameters)
         {
-            if (null == parameters)
+            if (parameters is null)
                 return null;
 
             var result = new Dictionary<string, object?>(parameters);
@@ -30,7 +30,7 @@ namespace Compete.Mis.Runtime.Security
 
         //public IDictionary<string, object>? GenerateSignParameter(object? parameters)
         //{
-        //    if (null == parameters)
+        //    if (parameters is null)
         //        return null;
 
         //    var parameterList = new List<string>();
@@ -40,7 +40,7 @@ namespace Compete.Mis.Runtime.Security
         //    foreach (var property in parameters.GetType().GetProperties())
         //    {
         //        parameterValue = property.GetValue(parameters)!;
-        //        if (parameterValue != null && (parameterValue is IDictionary || parameterValue is IEnumerable<Models.Entity>) || parameterValue is IEnumerable<long>)
+        //        if (parameterValue is not null && (parameterValue is IDictionary || parameterValue is IEnumerable<Models.Entity>) || parameterValue is IEnumerable<long>)
         //        {
         //            changedpParameters.Add(property.Name, parameterValue);
         //            continue;
@@ -62,7 +62,7 @@ namespace Compete.Mis.Runtime.Security
 
         public bool Verify(IDictionary<string, object> parameters)
         {
-            if (null == parameters)
+            if (parameters is null)
                 return true;
 
             var parameterList = new List<string>();
@@ -70,7 +70,7 @@ namespace Compete.Mis.Runtime.Security
             string? sign = null;
             foreach (var parameter in parameters)
             {
-                if (null != parameter.Value)
+                if (parameter.Value is not null)
                     continue;
 
                 if (parameter.Key == Constants.SignParameterName)
@@ -81,7 +81,7 @@ namespace Compete.Mis.Runtime.Security
 
             AddAdditionalParameters(parameterList);
 
-            return null == sign || PasswordHelper.Verify(string.Join("&", parameterList), sign);
+            return sign is null || PasswordHelper.Verify(string.Join("&", parameterList), sign);
         }
 
         public bool Verify(string data, string sign) =>

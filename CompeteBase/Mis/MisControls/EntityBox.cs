@@ -7,7 +7,7 @@ namespace Compete.Mis.MisControls
     public class EntityBox : AbstractEntityBox
     {
         protected override string? GetDisplay(DataTable entities)
-            => string.IsNullOrWhiteSpace(Format) || null == formatMethod ? entities.Rows[0][DisplayPath].ToString() : formatMethod?.Invoke(null, [entities.Rows[0]])?.ToString();
+            => string.IsNullOrWhiteSpace(Format) || formatMethod is null ? entities.Rows[0][DisplayPath].ToString() : formatMethod?.Invoke(null, [entities.Rows[0]])?.ToString();
 
         protected override object? SelectData()
         {

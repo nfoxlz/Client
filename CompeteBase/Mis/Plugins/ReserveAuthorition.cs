@@ -64,63 +64,73 @@ namespace Compete.Mis.Plugins
         Keep = 256L,
 
         /// <summary>
-        /// 直接增加。2的10次幂。
+        /// 直接保存。2的10次幂。
         /// </summary>
-        DirectAdd = 512L,
+        DirectSave = 512L,
 
         /// <summary>
-        /// 直接删除。2的11次幂。
+        /// 直接增加。2的11次幂。
         /// </summary>
-        DirectDelete = 1024L,
+        DirectAdd = 1024L,
 
         /// <summary>
-        /// 直接修改。2的12次幂。
+        /// 直接删除。2的12次幂。
         /// </summary>
-        DirectModify = 2048L,
+        DirectDelete = 2048L,
 
         /// <summary>
-        /// 批量删除。2的13次幂。
+        /// 直接修改。2的13次幂。
         /// </summary>
-        BatchDelete = 4096L,
+        DirectModify = 4096L,
 
         /// <summary>
-        /// 批量审核。2的14次幂。
+        /// 批量删除。2的14次幂。
         /// </summary>
-        BatchAudit = 8192L,
+        BatchDelete = 8192L,
 
         /// <summary>
-        /// 批量记账。2的15次幂。
+        /// 批量审核。2的15次幂。
         /// </summary>
-        BatchKeep = 16384L,
+        BatchAudit = 16384L,
 
         /// <summary>
-        /// 执行SQL。2的16次幂。
+        /// 批量记账。2的16次幂。
         /// </summary>
-        ExecuteSql = 32768L,
+        BatchKeep = 32768L,
 
         /// <summary>
-        /// 扩展保存。2的17次幂。
+        /// 执行SQL。2的17次幂。
         /// </summary>
-        ExtendedSave = 65536L,
+        ExecuteSql = 65536L,
 
         /// <summary>
-        /// 增加子项。2的18次幂。
+        /// 扩展保存。2的18次幂。
         /// </summary>
-        AddChild = 131072L,
+        ExtendedSave = 131072L,
 
         /// <summary>
-        /// 直接增加子项。2的19次幂。
+        /// 增加子项。2的19次幂。
         /// </summary>
-        DirectAddChild = 262144L,
+        AddChild = 262144L,
 
         /// <summary>
-        /// 删除子项。2的20次幂。
+        /// 直接增加子项。2的20次幂。
         /// </summary>
-        DeleteChild = 524288L,
+        DirectAddChild = 524288L,
 
         /// <summary>
-        /// 直接删除子项。2的21次幂。
+        /// 删除子项。2的21次幂。
         /// </summary>
-        DirectDeleteChild = 1048576L,
+        DeleteChild = 1048576L,
+
+        /// <summary>
+        /// 直接删除子项。2的22次幂。
+        /// </summary>
+        DirectDeleteChild = 2097152L,
+
+        /// <summary>
+        /// 查询返回消息。2的23次幂。
+        /// </summary>
+        QueryMessage = 4194304L,
     }
 }

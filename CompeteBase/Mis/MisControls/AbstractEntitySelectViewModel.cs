@@ -147,7 +147,7 @@ namespace Compete.Mis.MisControls
         /// </summary>
         /// <param name="sender">调用处理程序的命令目标。</param>
         /// <param name="e">事件数据。</param>
-        protected override bool CanOk() => SelectedItem != null;
+        protected override bool CanOk() => SelectedItem is not null;
 
         /// <summary>
         /// OK 命令的Executed事件的处理程序。
@@ -166,6 +166,6 @@ namespace Compete.Mis.MisControls
         [RelayCommand(CanExecute = nameof(CanRefresh))]
         private void Refresh() => QueryData();
 
-        private bool CanRefresh() => ServiceParameter != null;
+        private bool CanRefresh() => ServiceParameter is not null;
     }
 }

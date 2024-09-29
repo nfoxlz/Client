@@ -52,7 +52,7 @@ namespace Compete.Mis.Plugins
             using var factory = GlobalCommon.CreateLoggerFactory();
             var logger = factory.CreateLogger<UIPlugin>();
 
-            if (null == parameter)
+            if (parameter is null)
             {
                 logger.LogWarning("参数为空。");
                 return;

@@ -27,7 +27,7 @@ namespace Compete.Mis.Developer.ViewModels
             Tables = projectSetting.Model.EntitySettings.Values;
         }
 
-        private bool HasTable() => Table != null;
+        private bool HasTable() => Table is not null;
 
         [RelayCommand(CanExecute = nameof(HasTable))]
         private void GenerateCreateSql() => SqlText = generater.GenerateCreateSql(Table!);

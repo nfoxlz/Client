@@ -153,7 +153,7 @@ namespace Compete.Mis.MisControls
             var isRequired = !e.Column.IsReadOnly && column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.IsRequired) && Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired]);
 
             var control = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Control];
-            var controlType = null == control ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
+            var controlType = control is null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             BindingBase binding;
             if ((dataGrid.IsReadOnly || e.Column.IsReadOnly) && controlType == DataControlType.Default && e.Column is DataGridBoundColumn dataGridBoundColumn)
@@ -184,7 +184,7 @@ namespace Compete.Mis.MisControls
             //if (binding.StringFormat == "C2")
             //    binding.StringFormat = "¥{0:N2}";
 
-            if (column.ExtendedProperties.Contains(MemoryData.ExtendedPropertyNames.TargetNullValue) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.TargetNullValue] != null)
+            if (column.ExtendedProperties.Contains(MemoryData.ExtendedPropertyNames.TargetNullValue) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.TargetNullValue] is not null)
                 binding.TargetNullValue = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.TargetNullValue];
 
             var parameters = DataControlHelper.ConvertParameters((string)column!.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!)!;
@@ -198,6 +198,13 @@ namespace Compete.Mis.MisControls
                     if ((dataType == typeof(long) || dataType == typeof(Guid)) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
                         e.Column = CreateColumn(binding, typeof(EntityTextBlock), EntityTextBlock.ValueProperty,
                             EntityTextBlock.GeneratePropertyDictionary(column, parameters), false, true);
+                    else if (dataType == typeof(sbyte))
+                        e.Column = CreateColumn(binding, typeof(EnumTextBlock), EnumTextBlock.ValueProperty,
+                            new Dictionary<DependencyProperty, object?>
+                            {
+                                { EnumTextBlock.EnumNameProperty, columnName },
+                            },
+                            false, true);
                     else if (column.DataType.IsNumeric() && e.Column is DataGridBoundColumn gridBoundColumn)
                     {
                         gridBoundColumn.ElementStyle = new Style { TargetType = typeof(TextBlock) };
@@ -427,7 +434,7 @@ namespace Compete.Mis.MisControls
                                 false, false, displayPropertyDictionary);
                         break;
                     case DataControlType.SinglechoiceBox:   // 单选框。
-                        var enumName = column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.Parameters) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters] != null
+                        var enumName = column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.Parameters) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters] is not null
                                     ? column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()
                                     : columnName;
                         Debug.Assert(GlobalCommon.EnumDictionary.ContainsKey(enumName!), $"枚举{enumName}未定义。");
@@ -459,7 +466,7 @@ namespace Compete.Mis.MisControls
             if (!((DataGrid)sender!).IsReadOnly)
             {
                 var foregroundBrush = e.Column.IsReadOnly ? null : isRequired ? Constants.RequiredBrush : Constants.CanWriteBrush;
-                if (foregroundBrush != null)
+                if (foregroundBrush is not null)
                 {
                     e.Column.HeaderStyle = new Style { TargetType = typeof(DataGridColumnHeader) };
                     e.Column.HeaderStyle.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = foregroundBrush });
@@ -565,19 +572,24 @@ namespace Compete.Mis.MisControls
 
                 cellFactory.SetValue(Control.BorderThicknessProperty, new Thickness(0D));
             }
-            else if (editType == typeof(EntityBox))
+            else if (typeof(EntityBox) == editType)
             {
                 cellFactory = new FrameworkElementFactory(typeof(EntityTextBlock));
                 cellFactory.SetBinding(AbstractEntityTextBlock.ValueProperty, binding);
 
                 //binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             }
-            else if (editType == typeof(TreeEntityBox))
+            else if (typeof(TreeEntityBox) == editType)
             {
                 cellFactory = new FrameworkElementFactory(typeof(TreeEntityTextBlock));
                 cellFactory.SetBinding(AbstractEntityTextBlock.ValueProperty, binding);
 
                 //binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            }
+            else if (typeof(EnumComboBox) == editType)
+            {
+                cellFactory = new FrameworkElementFactory(typeof(EnumTextBlock));
+                cellFactory.SetBinding(EnumTextBlock.ValueProperty, binding);
             }
             else
             {
@@ -588,11 +600,11 @@ namespace Compete.Mis.MisControls
                     cellFactory.SetValue(TextBlock.TextAlignmentProperty, TextAlignment.Right);
             }
 
-            if (propertyDictionary != null)
+            if (propertyDictionary is not null)
                 foreach (var pair in propertyDictionary)
                     cellFactory.SetValue(pair.Key, pair.Value);
 
-            if (displayPropertyDictionary != null && displayPropertyDictionary.Count > 0)
+            if (displayPropertyDictionary is not null && displayPropertyDictionary.Count > 0)
                 foreach (var pair in displayPropertyDictionary)
                     cellFactory.SetValue(pair.Key, pair.Value);
 
@@ -608,7 +620,7 @@ namespace Compete.Mis.MisControls
             cellEditingFactory.SetValue(Control.BorderThicknessProperty, new Thickness(0D));
             cellEditingFactory.SetValue(FrameworkElement.TagProperty, new TagData { Data = dataGrid });
 
-            if (propertyDictionary != null)
+            if (propertyDictionary is not null)
                 foreach (var pair in propertyDictionary)
                     cellEditingFactory.SetValue(pair.Key, pair.Value);
 

@@ -13,7 +13,7 @@ namespace Compete.Utils
             var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
             var collection = searcher.Get();
             foreach (var obj in collection)
-                if (obj["ProcessorId"] != null)
+                if (obj["ProcessorId"] is not null)
                     return obj["ProcessorId"].ToString();
             return null;
         }
@@ -23,7 +23,7 @@ namespace Compete.Utils
             var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
             var collection = searcher.Get();
             foreach (var obj in collection)
-                if (obj["SerialNumber"] != null)
+                if (obj["SerialNumber"] is not null)
                     return obj["SerialNumber"].ToString();
             return null;
         }
@@ -33,7 +33,7 @@ namespace Compete.Utils
             var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
             var collection = searcher.Get();
             foreach (var obj in collection)
-                if (obj["SerialNumber"] != null)
+                if (obj["SerialNumber"] is not null)
                     return obj["SerialNumber"].ToString();
             return null;
         }

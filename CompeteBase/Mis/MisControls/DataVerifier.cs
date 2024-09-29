@@ -45,7 +45,7 @@ namespace Compete.Mis.MisControls
         {
             errorText = string.Empty;
 
-            if (null == element)
+            if (element is null)
                 return false;
 
             var result = false;
@@ -168,7 +168,7 @@ namespace Compete.Mis.MisControls
         {
             errorText = string.Empty;
 
-            if (null == data)
+            if (data is null)
                 return false;
 
             var result = false;
@@ -194,7 +194,7 @@ namespace Compete.Mis.MisControls
         /// <returns>true为空，false不为空。</returns>
         public static bool IsNull(object val, DataColumn column)
         {
-            return null == val || DBNull.Value == val
+            return val is null || DBNull.Value == val
                 || (column.ColumnName.ToLower().EndsWith("_id") && column.DataType == typeof(long) && (long)val == 0L)
                 || (column.DataType == typeof(string) && string.IsNullOrWhiteSpace(val as string)
                 || (column.DataType == typeof(Guid) && (Guid)val == Guid.Empty));
@@ -232,7 +232,7 @@ namespace Compete.Mis.MisControls
             errorText = string.Empty;
             var builder = new StringBuilder();
 
-            if (null == table)
+            if (table is null)
                 return false;
 
             int index;
@@ -293,7 +293,7 @@ namespace Compete.Mis.MisControls
         {
             errorText = string.Empty;
 
-            if (null == rowView)
+            if (rowView is null)
                 return false;
 
             return rowView.Row.Verify(out errorText);
@@ -330,7 +330,7 @@ namespace Compete.Mis.MisControls
         {
             errorText = string.Empty;
 
-            if (null == row)
+            if (row is null)
                 return false;
 
             foreach (DataColumn column in row.Table.Columns)

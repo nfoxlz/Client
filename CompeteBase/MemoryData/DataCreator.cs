@@ -35,12 +35,12 @@ namespace Compete.MemoryData
             var columns = e.Row.Table.Columns;
             foreach (DataColumn column in columns)
                 if (column.ExtendedProperties.Contains(ExtendedPropertyNames.DefaultSystemValue) && (SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]! != SystemVariables.None)
-                    e.Row[column] = CreateSystemVariable((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]!);
+                    e.Row[column] = Mis.GlobalCommon.CreateSystemVariable((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]!);
         }
 
         private static void SetColumnProperties(DataColumn column, DataColumnSetting setting)
         {
-            if (!column.AllowDBNull && null == setting.DefaultValue && SystemVariables.None == setting.DefaultSystemValue)
+            if (!column.AllowDBNull && setting.DefaultValue is null && SystemVariables.None == setting.DefaultSystemValue)
             {
                 if (column.DataType == typeof(string))
                     column.DefaultValue = string.Empty;
@@ -51,15 +51,15 @@ namespace Compete.MemoryData
                 else if (column.DataType == typeof(Guid))
                     column.DefaultValue = default;
                 else
-                    column.DefaultValue = null == setting.DefaultValue ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
+                    column.DefaultValue = setting.DefaultValue is null ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
             }
             else
-                column.DefaultValue = null == setting.DefaultValue ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
+                column.DefaultValue = setting.DefaultValue is null ? DBNull.Value : Convert.ChangeType(setting.DefaultValue.ToString(), column.DataType);
         }
 
         private static object GetMaxValue(Type type, object? maxValue)
         {
-            if (null == maxValue)
+            if (maxValue is null)
             {
                 if (type == typeof(decimal))
                     return decimal.MaxValue;
@@ -98,7 +98,7 @@ namespace Compete.MemoryData
 
         private static object? GetMinValue(Type type, object? minValue)
         {
-            if (null == minValue)
+            if (minValue is null)
             {
                 if (type == typeof(decimal))
                     return decimal.MinValue;
@@ -183,7 +183,7 @@ namespace Compete.MemoryData
             var columnSetting = (from setting in GlobalDataColumnSettings
                                  where setting.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase)
                                  select setting).FirstOrDefault();
-            return null == columnSetting ? new DataColumn(columnName) : CreateColumn(columnSetting);
+            return columnSetting is null ? new DataColumn(columnName) : CreateColumn(columnSetting);
         }
 
 
@@ -191,7 +191,7 @@ namespace Compete.MemoryData
 
         private const string billTypeNameColumnName = "BillTypeName";
 
-        public static DataTable Create(Mis.Models.SimpleData table, string? tableName = null)
+        public static DataTable Create(Mis.Models.SimpleData table)
         {
             string column;
             DataColumn dataColumn;
@@ -199,8 +199,7 @@ namespace Compete.MemoryData
             var billTypeIndex = -1;
             bool hasDefaultSystemValue = false;
 
-            if (!string.IsNullOrWhiteSpace(tableName))
-                result.TableName = tableName;
+            result.TableName = table.TableName;
 
             var count = table.Columns!.Length;
             for (int index = 0; index < count; index++)
@@ -209,7 +208,7 @@ namespace Compete.MemoryData
                 var columnSetting = (from setting in GlobalDataColumnSettings
                                      where setting.ColumnName.Equals(column, StringComparison.OrdinalIgnoreCase)
                                      select setting).FirstOrDefault();
-                if (null == columnSetting)
+                if (columnSetting is null)
                     result.Columns.Add(column);
                 else
                 {
@@ -228,7 +227,7 @@ namespace Compete.MemoryData
 
             DataRow newRow;
             int columnIndex;
-            if (table.Rows != null)
+            if (table.Rows is not null)
             {
                 if (billTypeIndex >= 0)
                     count++;
@@ -245,7 +244,9 @@ namespace Compete.MemoryData
                                 newRow[billTypeNameColumnName] = name;
                             continue;
                         }
-                        newRow[i] = Convert.ChangeType((row[columnIndex] is JsonElement element ? element.GetValue(result.Columns[i].DataType) : row[columnIndex]) ?? result.Columns[i].DataType.GetDefault() ?? result.Columns[i].DefaultValue, result.Columns[i].DataType);
+                        var newValue = row[columnIndex] is JsonElement element ? element.GetValue(result.Columns[i].DataType) : row[columnIndex];
+                        newRow[i] = newValue is null ? result.Columns[i].AllowDBNull ? DBNull.Value : result.Columns[i].DefaultValue ?? result.Columns[i].DataType.GetDefault() : newValue;
+                        //newRow[i] = Convert.ChangeType((row[columnIndex] is JsonElement element ? element.GetValue(result.Columns[i].DataType) : row[columnIndex]) ?? result.Columns[i].DefaultValue ?? result.Columns[i].DataType.GetDefault(), result.Columns[i].DataType);
                         columnIndex++;
                     }
                     result.Rows.Add(newRow);
@@ -258,15 +259,11 @@ namespace Compete.MemoryData
             return result;
         }
 
-        public static DataSet Create(IDictionary<string, Mis.Models.SimpleData> tables)
+        public static DataSet Create(IList<Mis.Models.SimpleData> tables)
         {
             var result = new DataSet();
-            foreach (var tablePair in tables)
-            {
-                var dataTable = Create(tablePair.Value, tablePair.Key);
-                dataTable.TableName = tablePair.Key;
-                result.Tables.Add(dataTable);
-            }
+            foreach (var table in tables)
+                result.Tables.Add(Create(table));
             return result;
         }
 
@@ -314,7 +311,7 @@ namespace Compete.MemoryData
                 column.AllowDBNull = false;
             if (setting.ReadOnly)
                 column.ReadOnly = true;
-            if (setting.DefaultValue != null)
+            if (setting.DefaultValue is not null)
                 column.DefaultValue = setting.DefaultValue;
             if (setting.IsUnique)
                 column.Unique = true;
@@ -343,11 +340,11 @@ namespace Compete.MemoryData
                 column.ExtendedProperties[ExtendedPropertyNames.DisplayIndex] = setting.DisplayIndex;
             if (setting.DefaultSystemValue != SystemVariables.None)
                 column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue] = setting.DefaultSystemValue;
-            if (setting.TargetNullValue != null)
+            if (setting.TargetNullValue is not null)
                 column.ExtendedProperties[ExtendedPropertyNames.TargetNullValue] = setting.TargetNullValue;
-            if (setting.MaxValue != null)
+            if (setting.MaxValue is not null)
                 column.ExtendedProperties[ExtendedPropertyNames.Maximum] = GetMaxValue(column.DataType, setting.MaxValue);
-            if (setting.MinValue != null)
+            if (setting.MinValue is not null)
                 column.ExtendedProperties[ExtendedPropertyNames.Minimum] = GetMinValue(column.DataType, setting.MinValue);
             //if (setting.Length > 0)
             //    column.ExtendedProperties[ExtendedPropertyNames.Length] = setting.Length;
@@ -372,7 +369,7 @@ namespace Compete.MemoryData
                 var columnSetting = (from setting in settings
                                      where setting.ColumnName == column.ColumnName
                                      select setting).FirstOrDefault();
-                if (columnSetting != null)
+                if (columnSetting is not null)
                     SetColumn(column, columnSetting);
             }
         }
@@ -391,6 +388,7 @@ namespace Compete.MemoryData
 
             var result = new Mis.Models.SimpleData
             {
+                TableName = table.TableName,
                 Columns = new string[columnCount],
                 Rows = new object[rowCount][],
             };
@@ -422,11 +420,11 @@ namespace Compete.MemoryData
         //        result.Add(table.TableName, ConvertSimpleDataTable(table));
         //    return result;
         //}
-        public static IDictionary<string, Mis.Models.SimpleData> ConvertSimpleDataSet(DataSet data)
+        public static IList<Mis.Models.SimpleData> ConvertSimpleDataSet(DataSet data)
         {
-            var result = new Dictionary<string, Mis.Models.SimpleData>();
+            var result = new List<Mis.Models.SimpleData>();
             foreach (DataTable table in data.Tables)
-                result.Add(table.TableName, ConvertSimpleDataTable(table));
+                result.Add(ConvertSimpleDataTable(table));
             return result;
         }
 
@@ -456,63 +454,6 @@ namespace Compete.MemoryData
                 result.Tables.Add(Create(setting.Key, setting.Value));
 
             return result;
-        }
-
-        private static object? CreateSystemVariable(SystemVariables value)
-        {
-            DateTime now;
-
-            switch(value)
-            {
-                case SystemVariables.NewGuid:
-                    return Guid.NewGuid();
-                case SystemVariables.CurrentDateTime:
-                    return DateTime.Now;
-                case SystemVariables.CurrentDate:
-                    return DateTime.Now.Date;
-                case SystemVariables.CurrentTime:
-                    return DateTime.Now.TimeOfDay;
-                case SystemVariables.CurrentYearMonth:
-                    now = DateTime.Now;
-                    return new DateTime(now.Year, now.Month, 1);
-                case SystemVariables.CurrentYear:
-                    return new DateTime(DateTime.Now.Year, 1, 1);
-                case SystemVariables.CurrentMonth:
-                    return DateTime.Now.Month;
-                case SystemVariables.PreviousYearMonth:
-                    now = DateTime.Now;
-                    return new DateTime(now.AddMonths(-1).Year, now.AddMonths(-1).Month, 1);
-                case SystemVariables.PreviousYear:
-                    return new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1);
-                case SystemVariables.PreviousMonth:
-                    return DateTime.Now.AddMonths(-1).Month;
-                case SystemVariables.ServerDateTime:
-                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDateTime();
-                case SystemVariables.ServerDate:
-                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerDate();
-                case SystemVariables.ServerTime:
-                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetServerTime();
-                case SystemVariables.AccountingDate:
-                    return Mis.GlobalCommon.ServerDateTimeProvider!.GetAccountingDate();
-                case SystemVariables.CurrentApplication:
-                    return Mis.GlobalCommon.ApplicationNo;
-                case SystemVariables.CurrentClientSide:
-                    return Mis.GlobalCommon.ClientSide;
-                case SystemVariables.CurrentTenantId:
-                    return Mis.GlobalCommon.CurrentTenant!.Id;
-                case SystemVariables.CurrentTenantCode:
-                    return Mis.GlobalCommon.CurrentTenant!.Code;
-                case SystemVariables.CurrentTenantName:
-                    return Mis.GlobalCommon.CurrentTenant!.Name;
-                case SystemVariables.CurrentUserId:
-                    return Mis.GlobalCommon.CurrentUser!.Id;
-                case SystemVariables.CurrentUserCode:
-                    return Mis.GlobalCommon.CurrentUser!.Code;
-                case SystemVariables.CurrentUserName:
-                    return Mis.GlobalCommon.CurrentUser!.Name;
-                default:
-                    return null;
-            }
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Compete.Mis.MisControls
             var valueRow = (from row in entityData
                             where row[valuePath].Equals(value)
                             select row).FirstOrDefault();
-            if (null == valueRow)
+            if (valueRow is null)
                 return string.Empty;
 
             var lvlLength = (from length in levelLength?.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [valueRow[levelPath].ToString()!.Length.ToString()]
@@ -60,7 +60,7 @@ namespace Compete.Mis.MisControls
                             where row[levelPath].Equals(valueRow![levelPath].ToString()![..sum])
                             select row).FirstOrDefault();
 
-                if (null == valueRow)
+                if (valueRow is null)
                     break;
 
                 displayList.Insert(0, valueRow[namePath].ToString()!);

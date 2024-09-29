@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace Compete.Mis.Plugins
 {
-    public sealed class PluginCommandParameter
+    public sealed class PluginCommandParameter : PluginParameter
     {
-        public required string Path { get; set; }
-
-        public string? Parameter { get; set; }
+        public ReserveAuthorition CommandAuthorition { get; set; } = ReserveAuthorition.All;
 
         public required string Title { get; set; }
 
@@ -15,7 +13,7 @@ namespace Compete.Mis.Plugins
 
         public IDictionary<string, object>? Data { get; set; }
 
-        public Action<bool>? BackAction { get; set; }
+        public Action<bool>? BackCallAction { get; set; }
 
         public bool RequiredCurrentItem { get; set; }
     }

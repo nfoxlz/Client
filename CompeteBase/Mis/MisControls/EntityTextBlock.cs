@@ -14,7 +14,7 @@ namespace Compete.Mis.MisControls
     public class EntityTextBlock : AbstractEntityTextBlock
     {
         protected override string? GetDisplay(DataTable entities)
-            => string.IsNullOrWhiteSpace(Format) || null == formatMethod
+            => string.IsNullOrWhiteSpace(Format) || formatMethod is null
                 ? entities.Rows[0][DisplayPath].ToString()
                 : formatMethod.Invoke(null, [entities.Rows[0]])?.ToString();
     }

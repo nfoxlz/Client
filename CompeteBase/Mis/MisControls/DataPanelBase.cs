@@ -105,7 +105,7 @@ namespace Compete.Mis.MisControls
                 source = collectionView.SourceCollection;
 
             DataColumnCollection? columns = Utils.DataHelper.GetColumns(source);
-            if (null == columns)
+            if (columns is null)
                 return;
 
             //if (source is DataTable table)
@@ -166,14 +166,14 @@ namespace Compete.Mis.MisControls
                     TextAlignment = TextAlignment.Right
                 };
                 var foreground = GetTitleForeground(column);
-                if (foreground != null)
+                if (foreground is not null)
                     titleControl.Foreground = foreground;
                 SetColumn(titleControl, columnIndex);
                 Children.Add(titleControl);
 
                 // 生成编辑或显示控件。
                 element = CreateElement(column);
-                if (null == element)
+                if (element is null)
                     continue;
                 element.Margin = new Thickness(TitleWidth, top, 0D, 0D);
                 element.VerticalAlignment = VerticalAlignment.Top;

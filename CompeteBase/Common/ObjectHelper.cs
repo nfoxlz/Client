@@ -134,7 +134,7 @@ namespace Compete.Common
                     stream.Close();
                 }
 
-            if (result != null)
+            if (result is not null)
                 lock (paths)
                     if (!paths.Contains(path))
                         paths.Add(path);
@@ -157,7 +157,7 @@ namespace Compete.Common
         public object? CreateInstance(string path, string typeName)
         {
             var assembly = LoadAssembly(path);
-            return null == assembly ? null : CreateInstance(assembly, typeName);
+            return assembly is null ? null : CreateInstance(assembly, typeName);
         }
 
         public Type? GetType(string path, string typeName) => LoadAssembly(path)?.GetType(typeName);
