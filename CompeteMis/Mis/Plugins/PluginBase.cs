@@ -11,7 +11,17 @@ namespace Compete.Mis.Plugins
 
         public virtual bool CanExecute(object? parameter) => parameter is PluginCommandParameter;
 
-        public void Execute(object? parameter) => Run(parameter as PluginCommandParameter);
+        public void Execute(object? parameter)
+        {
+            try
+            {
+                Run(parameter as PluginCommandParameter);
+            }
+            catch(Exception ex)
+            {
+                MisControls.MessageDialog.Exception(ex);
+            }
+        }
 
         protected abstract void Run(PluginCommandParameter? parameter);
     }

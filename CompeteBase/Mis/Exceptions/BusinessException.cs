@@ -14,7 +14,7 @@ namespace Compete.Mis.Exceptions
     /// <summary>
     /// BusinessException 类。
     /// </summary>
-    public class BusinessException : PlatformException
+    public class BusinessException : MisException
     {
         /// <summary>
         /// 结构方法。

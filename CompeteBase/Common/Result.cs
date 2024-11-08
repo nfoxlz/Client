@@ -1,6 +1,6 @@
 ﻿namespace Compete.Common
 {
-    public sealed class Result
+    public class Result
     {
         public int ErrorNo { get; set; } = 0;
 

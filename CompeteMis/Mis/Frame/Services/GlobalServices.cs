@@ -2,7 +2,7 @@
 
 namespace Compete.Mis.Frame.Services
 {
-    internal static class GlobalServices
+    public static class GlobalServices
     {
         //public static IAccountService AccountService { get; } = DispatchProxy.Create<IAccountService, WebApi.WebApiServiceProxy>();
 

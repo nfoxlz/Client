@@ -114,6 +114,10 @@
     <s:String x:Key="Message.DebitCreditNotEqualError">借贷金额必须相等。</s:String>
     <s:String x:Key="Message.NoAmountError">借贷金额不能都为0。</s:String>
     <!--<s:String x:Key="Message.ConcurrentAmountError">借贷金额不能都不为0。</s:String>-->
+    <s:String x:Key="Message.BusinessError">业务错误。</s:String>
+
+    <s:String x:Key="Message.MonthClosedError">选择的月份已经关账。</s:String>
+    <s:String x:Key="Message.MonthIsAfterNowError">选择的月份不能在现在之后。</s:String>
 
     <!--插件-->
     <s:String x:Key="QueryButton">查询(_Q)</s:String>
@@ -127,5 +131,8 @@
     <s:String x:Key="KeepButton">记账(_K)</s:String>
     <s:String x:Key="AddChildButton">新增子项</s:String>
     <s:String x:Key="DeleteChildButton">删除子项</s:String>
+	<s:String x:Key="CloseButton">关闭(_C)</s:String>
+
+    <s:String x:Key="CarryOverButton">结转(_C)</s:String>
 
 </ResourceDictionary>

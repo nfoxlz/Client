@@ -41,6 +41,8 @@ namespace Compete.Mis.Plugins
 
         private MethodInfo? verifyMethod;
 
+        private DataTable? backupConditionTable;
+
         //public PluginCommandParameter? PluginParameter { get; set; }
 
         //public PluginSetting? Setting { get; set; }
@@ -53,6 +55,9 @@ namespace Compete.Mis.Plugins
             {
                 if (!string.IsNullOrWhiteSpace(Setting.InitializingScriptFileName))
                     CompileFile(basePath, Setting.InitializingScriptFileName, Scripts.ScriptTemplates.BeforeTemplate, Scripts.ScriptTemplates.InitializingMethodClassName)?.Invoke(null, [this]);
+
+                if (!string.IsNullOrWhiteSpace(Setting.InitializedScriptFileName))
+                    initializedMethodInfo = CompileFile(basePath, Setting.InitializedScriptFileName, Scripts.ScriptTemplates.AfterTemplate, Scripts.ScriptTemplates.InitializedMethodClassName);
 
                 if (string.IsNullOrWhiteSpace(PluginParameter!.Title))
                     PluginParameter.Title = Setting.Title ?? string.Empty;
@@ -82,6 +87,9 @@ namespace Compete.Mis.Plugins
                     if (Setting.ConditionDataColumnSettings is not null)
                         MemoryData.DataCreator.SetColumns(conditionData, Setting.ConditionDataColumnSettings);
 
+                    if (Setting.ConditionRequiredColumns is not null)
+                        SetBooleanProperty(conditionData, Setting.ConditionRequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
+
                     ConditionTable = conditionData;
                     ConditionData?.AddNew();
                     ConditionData?.CommitNew();
@@ -97,9 +105,6 @@ namespace Compete.Mis.Plugins
                         foreach (var param in PluginParameter.Data)
                             if (columns.Contains(param.Key))
                                 row[param.Key] = param.Value;
-
-                    if (Setting.ConditionRequiredColumns is not null)
-                        SetBooleanProperty(ConditionTable, Setting.ConditionRequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
                 }
 
                 // 生成汇总数据表。
@@ -165,10 +170,21 @@ namespace Compete.Mis.Plugins
                         authoritionCheckMethodDictionary.Add(authoritionValue, methodInfo);
                 }
 
-                runCheckMethod = CompileFile(basePath, $"CheckRun.cs", Scripts.ScriptTemplates.RunCheckTemplate, Scripts.ScriptTemplates.RunCheckMethodClassName);
+                runCheckMethod = CompileFile(basePath, "CheckRun.cs", Scripts.ScriptTemplates.RunCheckTemplate, Scripts.ScriptTemplates.RunCheckMethodClassName);
             }
 
             return base.Initializing();
+        }
+
+        private MethodInfo? initializedMethodInfo;
+
+        public DataTable? LocalData { get; set; }
+
+        protected override void Initialized()
+        {
+            base.Initialized();
+
+            initializedMethodInfo?.Invoke(null, [this, Data]);
         }
 
         private static MethodInfo? CompileFile(string basePath, string scriptFileName, string template, string className)
@@ -413,6 +429,8 @@ namespace Compete.Mis.Plugins
             if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(Setting!.DataLoadName))
             {
                 IDictionary<string, object>? parameters = ConditionTable is null || 0 == ConditionTable.Rows.Count ? null : ConditionTable.Rows[0].ToDictionary(Setting!.QueryConditionColumns);
+                if (parameters != null)
+                    backupConditionTable = ConditionTable.Clone();
 
                 if (Setting!.QueryParameters is not null)
                 {
@@ -555,7 +573,7 @@ namespace Compete.Mis.Plugins
                                 foreach (DataColumn column in table.Columns)
                                     if (methodDictionary.TryGetValue(column.ColumnName, out MethodInfo? method))
                                         columnVerifiers.Add(column, method);
-                                table.ColumnChanging += Verifier_Table_ColumnChanging; ;
+                                table.ColumnChanging += Verifier_Table_ColumnChanging;
                             }
                     }
 
@@ -612,6 +630,8 @@ namespace Compete.Mis.Plugins
             base.ConditionTableChanged(oldValue, newValue);
         }
 
+        //private bool isVerifing = false;
+
         private static void ExecuteVerifier(DataColumnChangeEventArgs e, Dictionary<DataColumn, MethodInfo> methodDictionary)
         {
             if (e.Column is null || !methodDictionary.TryGetValue(e.Column, out MethodInfo? verifier))
@@ -620,9 +640,9 @@ namespace Compete.Mis.Plugins
             var message = verifier.Invoke(null, [e.Row, e.ProposedValue])?.ToString();
             if (!string.IsNullOrWhiteSpace(message))
             {
-                MisControls.MessageDialog.Warning(message);
                 e.ProposedValue = e.Row[e.Column];
                 e.Row.CancelEdit();
+                MisControls.MessageDialog.Warning(message);
             }
         }
 
@@ -723,7 +743,7 @@ namespace Compete.Mis.Plugins
                 var columnName = ConditionPrefix + column;
                 if (!dataSet.Tables[0].Columns.Contains(columnName))
                 {
-                    var dataColumn = ConditionTable!.Columns[column];
+                    var dataColumn = backupConditionTable!.Columns[column];
                     dataSet.Tables[0].Columns.Add(new DataColumn(columnName, dataColumn!.DataType));
                 }
             }
@@ -731,7 +751,7 @@ namespace Compete.Mis.Plugins
             if (0 == dataSet.Tables[0].Rows.Count)
                 dataSet.Tables[0].Rows.Add(dataSet.Tables[0].NewRow());
 
-            var conditionRow = ConditionTable!.Rows[0];
+            var conditionRow = backupConditionTable!.Rows[0];
             foreach (DataRow row in dataSet.Tables[0].Rows)
                 foreach (var column in Setting.SaveConditionColumns)
                     row[ConditionPrefix + column] = conditionRow[column];
@@ -806,8 +826,8 @@ namespace Compete.Mis.Plugins
             else
             {
                 var dataSet = new DataSet();
-                if (Setting.IsMergeConditionData && !Setting.IsMergeConditionTable && ConditionTable is not null)
-                    dataSet.Tables.Add(RemoveColumns(ConditionTable, Setting.SaveConditionColumns));
+                if (Setting.IsMergeConditionData && !Setting.IsMergeConditionTable && backupConditionTable is not null)
+                    dataSet.Tables.Add(RemoveColumns(backupConditionTable, Setting.SaveConditionColumns));
 
                 foreach (DataTable table in Data!.Tables)
                 {
@@ -831,7 +851,7 @@ namespace Compete.Mis.Plugins
                         dataSet.Tables.Add(dataView.ToTable());
                 }
 
-                if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && ConditionTable is not null)
+                if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && backupConditionTable is not null)
                     MergeConditionTable(ref dataSet);
 
                 result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", dataSet, ActionId!.Value);
@@ -1000,7 +1020,7 @@ namespace Compete.Mis.Plugins
             var currentItem = MasterData?.CurrentItem as DataRowView;
             if (Setting?.RunColumns is null)
                 parameter.Data = currentItem?.Row.ToDictionary();
-            else
+            else if (currentItem != null)
             {
                 var dataParameters = new Dictionary<string, object>();
                 foreach (var column in Setting.RunColumns)
@@ -1017,6 +1037,11 @@ namespace Compete.Mis.Plugins
                 : base.CheckAuthorition(authorition, item);
 
         protected override bool GetRunAuthorition(PluginCommandParameter? parameter, object? item)
-            => runCheckMethod is null || parameter is null ? base.GetRunAuthorition(parameter, item) : (bool)runCheckMethod.Invoke(null, [parameter!, item])!;
+            => runCheckMethod is null || parameter is null
+            ? base.GetRunAuthorition(parameter, item)
+            : (bool)runCheckMethod.Invoke(null, [parameter!, item, new Dictionary<string, object?> 
+            {
+                { "IsClosed", Global.GlobalCache.GetValue("IsFinanceClosed") }
+            }])!;
     }
 }

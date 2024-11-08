@@ -1,4 +1,5 @@
-﻿using Compete.Mis.Plugins;
+﻿using Compete.Extensions;
+using Compete.Mis.Plugins;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -91,9 +92,66 @@ namespace Compete.Mis.Frame.Services.WebApi
                 try
                 {
                     var responseMessage = response.EnsureSuccessStatusCode();
-                    return responseMessage.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync(type) : throw new WebApiServiceException(responseMessage);
+                    //return responseMessage.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync(type) : throw new WebApiServiceException(responseMessage);
+                    if (!responseMessage.IsSuccessStatusCode)
+                        throw new WebApiServiceException(responseMessage);
+
+                    //var result = await response.Content.ReadFromJsonAsync(type);
+                    //if (result == null)
+                    //{
+                    //    var resultString = await response.Content.ReadAsStringAsync();
+                    //    try
+                    //    {
+                    //        return Convert.ChangeType(resultString, type);
+                    //    }
+                    //    catch (Exception exception)
+                    //    {
+                    //        throw new Exception(resultString, exception);
+                    //    }
+                    //}
+
+                    //if (type.IsAssignableFrom(result.GetType()))
+                    //    return result;
+
+                    //return Convert.ChangeType(result, type);
+                    if (type.IsPrimitive || type == typeof(DateTime) || type == typeof(DateTime?) || type == typeof(TimeSpan) || type == typeof(TimeSpan?))
+                    {
+                        var resultString = await response.Content.ReadAsStringAsync();
+                        if (resultString == null)
+                            return defaultValue;
+
+                        resultString = resultString.Trim();
+
+                        if (resultString.ToLower() == "null" || string.IsNullOrWhiteSpace(resultString))
+                            return defaultValue;
+                        //#if !JAVA_LANGUAGE
+                        //                        if (type == typeof(bool) || type == typeof(bool?))
+                        //                            return resultString != "0";
+                        //#endif
+
+                        if (type == typeof(DateTime) || type == typeof(DateTime?))
+                        {
+                            if ("\"0001-01-01T00:00:00Z\"" == resultString)
+                                return type == typeof(DateTime?) ? null : new DateTime();
+                            resultString = resultString.Replace('t', ' ').Replace("z", string.Empty);
+                        }
+
+                        if (!type.IsNumeric() && type != typeof(bool) && type != typeof(bool?) && resultString[0] == '"' && resultString[^1] == '"')
+                            resultString = resultString[1..^1];
+
+                        try
+                        {
+                            return Convert.ChangeType(resultString, type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) ? type.GetGenericArguments()[0] : type);
+                        }
+                        catch (Exception exception)
+                        {
+                            throw new Exception(resultString, exception);
+                        }
+                    }
+                    else
+                        return await response.Content.ReadFromJsonAsync(type);
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     using var factory = GlobalCommon.CreateLoggerFactory();
                     var logger = factory.CreateLogger<UIPlugin>();

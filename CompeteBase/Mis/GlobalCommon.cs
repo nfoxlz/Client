@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.IO;
 using System.Runtime.Caching;
 using System.Runtime.InteropServices;
@@ -13,6 +14,18 @@ namespace Compete.Mis
 {
     public static class GlobalCommon
     {
+        private static readonly TimeSpan DefaultEntityCacheExpiration;
+
+        static GlobalCommon()
+        {
+            var cacheExpiration = ConfigurationManager.AppSettings["CacheEntityExpiration"];
+            DefaultEntityCacheExpiration = !string.IsNullOrWhiteSpace(cacheExpiration) && double.TryParse(cacheExpiration, out double expiration)
+                ? TimeSpan.FromMicroseconds(expiration)
+                : TimeSpan.FromMinutes(10D);
+        }
+
+        private static readonly Dictionary<string, Runtime.Caching.Cache<object, DataTable>> entityDictionary = [];
+
         public const long ApplicationNo = 0L;
 
         public const long ClientSide = 0L;
@@ -22,6 +35,24 @@ namespace Compete.Mis
         public static Models.Entity? CurrentUser { get; set; }
 
         public static MisControls.IEntityDataProvider? EntityDataProvider { get; set; }
+
+        public static DataTable GetEntity(string name, object id)
+        {
+            Runtime.Caching.Cache<object, DataTable> cache;
+            if (entityDictionary.TryGetValue(name, out Runtime.Caching.Cache<object, DataTable>? value))
+                cache = value;
+            else
+            {
+                cache = new Runtime.Caching.Cache<object, DataTable>(name, key => EntityDataProvider!.GetEntity(name, key))
+                {
+                    Expiration = DefaultEntityCacheExpiration
+                };
+
+                entityDictionary.Add(name, cache);
+            }
+
+            return cache.GetValue(id);
+        }
 
         public static IDictionary<string, MisControls.TreeEntitySetting>? TreeEntitySettingDictionary { get; set; }
 
@@ -44,10 +75,10 @@ namespace Compete.Mis
         /// <param name="arg">格式化参数。</param>
         /// <returns>屏幕消息。</returns>
         public static string GetMessage(string displayName, params object[] arg)
-            => Application.Current.Resources.MergedDictionaries.Count > 0 ? string.Format((Application.Current.Resources.MergedDictionaries[0][displayName] ?? displayName).ToString()!, arg) : displayName;
+            => Application.Current.Resources.MergedDictionaries.Count > 1 ? string.Format((Application.Current.Resources.MergedDictionaries[1][displayName] ?? displayName).ToString()!, arg) : displayName;
 
         public static string GetMessageOrDefault(string displayName, string defaultMessage, params object[] arg)
-            => Application.Current.Resources.MergedDictionaries.Count > 0 ? string.Format((Application.Current.Resources.MergedDictionaries[0][displayName] ?? defaultMessage).ToString()!, arg) : defaultMessage;
+            => Application.Current.Resources.MergedDictionaries.Count > 1 ? string.Format((Application.Current.Resources.MergedDictionaries[1][displayName] ?? defaultMessage).ToString()!, arg) : defaultMessage;
 
         /// <summary>
         /// 获取枚举字典。
@@ -87,8 +118,9 @@ namespace Compete.Mis
 
         public static Plugins.IDataProvider? DataProvider { get; set; }
 
-        public static Utils.IConfiguration? GlobalConfiguration { get; set; }
+        public static Utils.ISetting? GlobalConfiguration { get; set; }
 
+        //[LibraryImport("CompeteLib.dll")]
         [DllImport("CompeteLib.dll", EntryPoint = "releaseString", CallingConvention = CallingConvention.Cdecl)]
         private static extern void ReleaseString(IntPtr str);
 
@@ -102,6 +134,7 @@ namespace Compete.Mis
         public static object? CreateSystemVariable(MemoryData.SystemVariables value)
         {
             DateTime now;
+            DateTime? accountingDate;
 
             switch (value)
             {
@@ -121,12 +154,19 @@ namespace Compete.Mis
                 case MemoryData.SystemVariables.CurrentMonth:
                     return DateTime.Now.Month;
                 case MemoryData.SystemVariables.PreviousYearMonth:
-                    now = DateTime.Now;
-                    return new DateTime(now.AddMonths(-1).Year, now.AddMonths(-1).Month, 1);
+                    now = DateTime.Now.AddMonths(-1);
+                    return new DateTime(now.Year, now.Month, 1);
                 case MemoryData.SystemVariables.PreviousYear:
                     return new DateTime(DateTime.Now.AddYears(-1).Year, 1, 1);
                 case MemoryData.SystemVariables.PreviousMonth:
                     return DateTime.Now.AddMonths(-1).Month;
+                case MemoryData.SystemVariables.NextYearMonth:
+                    now = DateTime.Now.AddMonths(1);
+                    return new DateTime(now.Year, now.Month, 1);
+                case MemoryData.SystemVariables.NextYear:
+                    return new DateTime(DateTime.Now.AddYears(1).Year, 1, 1);
+                case MemoryData.SystemVariables.NextMonth:
+                    return DateTime.Now.AddMonths(1).Month;
                 case MemoryData.SystemVariables.ServerDateTime:
                     return ServerDateTimeProvider!.GetServerDateTime();
                 case MemoryData.SystemVariables.ServerDate:
@@ -135,6 +175,46 @@ namespace Compete.Mis
                     return ServerDateTimeProvider!.GetServerTime();
                 case MemoryData.SystemVariables.AccountingDate:
                     return ServerDateTimeProvider!.GetAccountingDate();
+                case MemoryData.SystemVariables.AccountingYearMonth:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    return accountingDate == null ? null : new DateTime(accountingDate.Value.Year, accountingDate.Value.Month, 1);
+                case MemoryData.SystemVariables.AccountingYear:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    return accountingDate == null ? null : new DateTime(accountingDate.Value.Year, 1, 1);
+                case MemoryData.SystemVariables.AccountingMonth:
+                    return ServerDateTimeProvider!.GetAccountingDate()?.Month;
+                case MemoryData.SystemVariables.AccountingDay:
+                    return ServerDateTimeProvider!.GetAccountingDate()?.Day;
+                case MemoryData.SystemVariables.PreviousAccountingYearMonth:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    if (accountingDate == null)
+                        return null;
+                    now = accountingDate.Value.AddMonths(-1);
+                    return new DateTime(now.Year, now.Month, 1);
+                case MemoryData.SystemVariables.PreviousAccountingYear:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    return accountingDate == null ? null : new DateTime(accountingDate.Value.AddYears(-1).Year, 1, 1);
+                case MemoryData.SystemVariables.PreviousAccountingMonth:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    if (accountingDate == null)
+                        return null;
+                    return accountingDate.Value.AddMonths(-1).Month;
+                case MemoryData.SystemVariables.NextAccountingYearMonth:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    if (accountingDate == null)
+                        return null;
+                    now = accountingDate.Value.AddMonths(1);
+                    return new DateTime(now.Year, now.Month, 1);
+                case MemoryData.SystemVariables.NextAccountingYear:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    if (accountingDate == null)
+                        return null;
+                    return new DateTime(accountingDate.Value.AddYears(1).Year, 1, 1);
+                case MemoryData.SystemVariables.NextAccountingMonth:
+                    accountingDate = ServerDateTimeProvider!.GetAccountingDate();
+                    if (accountingDate == null)
+                        return null;
+                    return accountingDate.Value.AddMonths(1).Month;
                 case MemoryData.SystemVariables.CurrentApplication:
                     return ApplicationNo;
                 case MemoryData.SystemVariables.CurrentClientSide:

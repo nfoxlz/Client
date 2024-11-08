@@ -111,7 +111,7 @@ namespace Compete.Mis.MisControls
         /// </summary>
         /// <param name="column">所依据的数据列。</param>
         /// <returns>生成的编辑或显示控件。</returns>
-        protected override FrameworkElement? CreateElement(DataColumn column)
+        protected override FrameworkElement? CreateElement(DataColumn column, TextBlock titleControl)
         {
             var isReadOnly = IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]);     // 是否只读。
             var isRequired = !isReadOnly && (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsRequired])); // 是否必填。
@@ -202,7 +202,8 @@ namespace Compete.Mis.MisControls
                             result = new SinglechoiceBox
                             {
                                 IsReadOnly = true,
-                                ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -210,7 +211,8 @@ namespace Compete.Mis.MisControls
                             result = new MultichoiceBox
                             {
                                 IsReadOnly = true,
-                                ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -425,14 +427,16 @@ namespace Compete.Mis.MisControls
                         case DataControlType.SinglechoiceBox:   // 单选框。
                             result = new SinglechoiceBox
                             {
-                                ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
                         case DataControlType.MultichoiceBox:    // 多选框。
                             result = new MultichoiceBox
                             {
-                                ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
+                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -451,6 +455,9 @@ namespace Compete.Mis.MisControls
                     VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                     Height = 23D
                 };
+
+            if (isRequired)
+                titleControl.Foreground = Brushes.Maroon;
 
             return result;
         }

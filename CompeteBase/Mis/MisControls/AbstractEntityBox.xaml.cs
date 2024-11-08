@@ -275,7 +275,7 @@ namespace Compete.Mis.MisControls
                 }
 
                 var parameter = abstractEntityBox.ServiceParameter;
-                var entities = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.EntityDataProvider!.GetEntity(parameter, entityBoxValue), "Query");
+                var entities = MisThreading.ThreadingHelper.Invoke(() => GlobalCommon.GetEntity(parameter, entityBoxValue), "Query");
                 if (entities is null || entities.Rows.Count == 0 || !entities.Columns.Contains(abstractEntityBox.DisplayPath))
                     return;
 

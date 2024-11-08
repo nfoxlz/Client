@@ -47,17 +47,17 @@ namespace Compete.Mis.Frame.Services.WebApi
 
             try
             {
-                if (targetMethod?.ReturnType == typeof(void))
+                if (targetMethod?.ReturnType == typeof(void) || targetMethod?.ReturnType == null)
                 {
                     Global.ServiceHelper.Post($"{className}/{methodName}", parameters);
                     return null;
                 }
                 else
-                {
-                    var result = Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
-                    return result;
-                }
-                    //return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
+                    return Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
+                //{
+                //    var result = Global.ServiceHelper.Post(targetMethod!.ReturnType, $"{className}/{methodName}", parameters);
+                //    return result;
+                //}
             }
             catch (InvalidOperationException)
             {

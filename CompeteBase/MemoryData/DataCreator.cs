@@ -2,8 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
+using System.Windows.Documents;
 
 namespace Compete.MemoryData
 {
@@ -35,7 +38,7 @@ namespace Compete.MemoryData
             var columns = e.Row.Table.Columns;
             foreach (DataColumn column in columns)
                 if (column.ExtendedProperties.Contains(ExtendedPropertyNames.DefaultSystemValue) && (SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]! != SystemVariables.None)
-                    e.Row[column] = Mis.GlobalCommon.CreateSystemVariable((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]!);
+                    e.Row[column] = Mis.GlobalCommon.CreateSystemVariable((SystemVariables)column.ExtendedProperties[ExtendedPropertyNames.DefaultSystemValue]!) ?? DBNull.Value;
         }
 
         private static void SetColumnProperties(DataColumn column, DataColumnSetting setting)
@@ -174,11 +177,10 @@ namespace Compete.MemoryData
             column.ExtendedProperties[ExtendedPropertyNames.ErrorText] = setting.ErrorText;
             column.ExtendedProperties[ExtendedPropertyNames.Control] = setting.Control;
             column.ExtendedProperties[ExtendedPropertyNames.Parameters] = setting.Parameters;
-
             return column;
         }
 
-        private static DataColumn CreateColumn(string columnName)
+        public static DataColumn CreateColumn(string columnName)
         {
             var columnSetting = (from setting in GlobalDataColumnSettings
                                  where setting.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase)

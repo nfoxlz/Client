@@ -118,7 +118,7 @@
         CurrentRoleName,
 
         /// <summary>
-        /// 当前年月日期。
+        /// 当前年月。
         /// </summary>
         CurrentYearMonth,
 
@@ -138,7 +138,7 @@
         PreviousYearMonth,
 
         /// <summary>
-        /// 前一年月日期。
+        /// 前一年日期。
         /// </summary>
         PreviousYear,
 
@@ -148,8 +148,73 @@
         PreviousMonth,
 
         /// <summary>
+        /// 下一年月日期。
+        /// </summary>
+        NextYearMonth,
+
+        /// <summary>
+        /// 下一年日期。
+        /// </summary>
+        NextYear,
+
+        /// <summary>
+        /// 下一月份。
+        /// </summary>
+        NextMonth,
+
+        /// <summary>
         /// 记账日期。
         /// </summary>
         AccountingDate,
+
+        /// <summary>
+        /// 记账年月。
+        /// </summary>
+        AccountingYearMonth,
+
+        /// <summary>
+        /// 记账年。
+        /// </summary>
+        AccountingYear,
+
+        /// <summary>
+        /// 记账月。
+        /// </summary>
+        AccountingMonth,
+
+        /// <summary>
+        /// 记账日。
+        /// </summary>
+        AccountingDay,
+
+        /// <summary>
+        /// 前一记账年月。
+        /// </summary>
+        PreviousAccountingYearMonth,
+
+        /// <summary>
+        /// 前一记账年。
+        /// </summary>
+        PreviousAccountingYear,
+
+        /// <summary>
+        /// 前一记账月。
+        /// </summary>
+        PreviousAccountingMonth,
+
+        /// <summary>
+        /// 下一记账年月。
+        /// </summary>
+        NextAccountingYearMonth,
+
+        /// <summary>
+        /// 下一记账年。
+        /// </summary>
+        NextAccountingYear,
+
+        /// <summary>
+        /// 下一记账月。
+        /// </summary>
+        NextAccountingMonth,
     }
 }

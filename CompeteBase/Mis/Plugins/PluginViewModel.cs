@@ -1,11 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Windows;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Xml.Linq;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
+using System.Windows;
 
 namespace Compete.Mis.Plugins
 {

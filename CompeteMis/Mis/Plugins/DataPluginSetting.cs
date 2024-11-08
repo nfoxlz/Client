@@ -61,6 +61,8 @@ namespace Compete.Mis.Plugins
 
         public IDictionary<string, IEnumerable<string>>? NewCopyColumns { get; set; }
 
+        public IDictionary<string, IEnumerable<string>>? ZeroIsEmptyColumns { get; set; }
+
         public IEnumerable<string>? InvisibleIdTables { get; set; }
 
         public IDictionary<string, object?>? QueryParameters { get; set; }
@@ -68,6 +70,8 @@ namespace Compete.Mis.Plugins
         public IEnumerable<TotalSetting>? TotalSettings { get; set; }
 
         public string? InitializingScriptFileName { get; set; }
+
+        public string? InitializedScriptFileName { get; set; }
 
         public IDictionary<string, string>? ConditionCalculateScriptFileNames { get; set; }
 

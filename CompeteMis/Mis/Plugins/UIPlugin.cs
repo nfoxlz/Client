@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
 using System.Windows.Markup;
@@ -28,6 +27,8 @@ namespace Compete.Mis.Plugins
                         Content = ui,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     };
+                    if (string.IsNullOrWhiteSpace(window.Title))
+                        window.Title = title;
                     if (uIType == PluginUIType.Window)
                         window.Show();
                     else
@@ -38,14 +39,18 @@ namespace Compete.Mis.Plugins
                     break;
                 default:
                     if (ui is Window windowUI)
+                    {
+                        if (string.IsNullOrWhiteSpace(windowUI.Title))
+                            windowUI.Title = title;
                         windowUI.Show();
+                    }
                     else
                         AddDocument(ui, title);
                     break;
             }
         }
 
-        protected virtual void SetupUI(object ui, string basePath, PluginCommandParameter parameter) { }
+        protected virtual void SetupUI(object ui, string basePath, PluginCommandParameter parameter) => Show(ui, PluginUIType.Auto, parameter.Title);
 
         protected override void Run(PluginCommandParameter? parameter)
         {

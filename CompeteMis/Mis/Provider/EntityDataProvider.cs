@@ -10,7 +10,7 @@ namespace Compete.Mis.Provider
 
         private const string pluginPath = "entitySelector";
 
-        public DataTable GetEntity(string name, object id) => MemoryData.DataCreator.Create(service.Query(pluginPath, $"get{name}", new Dictionary<string, object> { { "id", id } })).Tables[0];
+        public DataTable GetEntity(string name, object id) => DataConvertHelper.Convert(service.Query(pluginPath, $"get{name}", new Dictionary<string, object> { { "id", id } })).Tables[0];
 
         public Models.PagingDataQueryResult Query(string name, IDictionary<string, object>? conditions, ulong currentPageNo, ushort pageSize)
 #if JAVA_LANGUAGE

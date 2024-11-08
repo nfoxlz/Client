@@ -4,7 +4,8 @@ namespace Compete.Mis.Frame.Services
 {
     internal interface IDataService
     {
-        IList<Models.SimpleData> Query(string path, string name, IDictionary<string, object>? parameters = default);
+        //IList<Models.SimpleData> Query(string path, string name, IDictionary<string, object>? parameters = default);
+        ServiceModels.QueryResult Query(string path, string name, IDictionary<string, object>? parameters = default);
 
         //Models.SimpleDataTable QueryTable(string path, string name, IDictionary<string, object?>? parameters = default);
 

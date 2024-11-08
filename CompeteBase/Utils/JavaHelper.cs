@@ -9,11 +9,11 @@ namespace Compete.Utils
     {
         private static readonly DateTime startTime = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Utc);
 
-        public static DateTime ToDateTime(long timeStamp) => startTime.Add(new TimeSpan(timeStamp * 10000L)).ToLocalTime();
+        public static DateTime? ToDateTime(long? timeStamp) => timeStamp == null ? null : startTime.Add(new TimeSpan(timeStamp.Value * 10000L)).ToLocalTime();
 
         public static long ConvertDateTime(DateTime dateTime) => (long)(TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Utc) - startTime).TotalMilliseconds;
 
-        public static DateTimeOffset ToDateTimeOffset(long timeStamp) => ToDateTime(timeStamp);
+        public static DateTimeOffset? ToDateTimeOffset(long timeStamp) => ToDateTime(timeStamp);
 
         public static long ConvertDateTime(DateTimeOffset dateTimeOffset) => ConvertDateTime(dateTimeOffset.DateTime);
 

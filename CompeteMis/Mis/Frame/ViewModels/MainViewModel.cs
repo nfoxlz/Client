@@ -76,12 +76,12 @@ namespace Compete.Mis.Frame.ViewModels
             // 添加系统菜单。
             Menus.Add(new MenuItem()
             {
-                Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.SystemMenu"],
+                Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.SystemMenu"],
                 ItemsSource = new Control[]
                 {
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.ModifyPasswordMenu"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.ModifyPasswordMenu"],
                         Command = ModifyPasswordCommand
                     },
                     new Separator(),
@@ -95,7 +95,7 @@ namespace Compete.Mis.Frame.ViewModels
 #endif
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.LogoutMenu"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.LogoutMenu"],
                         Command = LogoutCommand,
                         Icon = new Image()
                         {
@@ -106,7 +106,7 @@ namespace Compete.Mis.Frame.ViewModels
                     },
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.ExitMenu"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.ExitMenu"],
                         Command = ExitCommand,
                         Icon = new Image()
                         {
@@ -121,13 +121,13 @@ namespace Compete.Mis.Frame.ViewModels
             // 添加编辑菜单。
             Menus.Add(new MenuItem()
             {
-                Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.EditMenu"],
+                Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.EditMenu"],
                 ItemsSource = new Control[]
                 {
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.UndoMenu"],
-                        ToolTip = Application.Current.Resources.MergedDictionaries[0]["MainPage.UndoTip"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.UndoMenu"],
+                        ToolTip = Application.Current.Resources.MergedDictionaries[1]["MainPage.UndoTip"],
                         Command = ApplicationCommands.Undo,
                         Icon = new Image()
                         {
@@ -138,8 +138,8 @@ namespace Compete.Mis.Frame.ViewModels
                     },
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.RedoMenu"],
-                        ToolTip = Application.Current.Resources.MergedDictionaries[0]["MainPage.RedoTip"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.RedoMenu"],
+                        ToolTip = Application.Current.Resources.MergedDictionaries[1]["MainPage.RedoTip"],
                         Command = ApplicationCommands.Redo,
                         Icon = new Image()
                         {
@@ -151,8 +151,8 @@ namespace Compete.Mis.Frame.ViewModels
                     new Separator(),
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.CutMenu"],
-                        ToolTip = Application.Current.Resources.MergedDictionaries[0]["MainPage.CutTip"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.CutMenu"],
+                        ToolTip = Application.Current.Resources.MergedDictionaries[1]["MainPage.CutTip"],
                         Command = ApplicationCommands.Cut,
                         Icon = new Image()
                         {
@@ -163,8 +163,8 @@ namespace Compete.Mis.Frame.ViewModels
                     },
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.CopyMenu"],
-                        ToolTip = Application.Current.Resources.MergedDictionaries[0]["MainPage.CopyTip"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.CopyMenu"],
+                        ToolTip = Application.Current.Resources.MergedDictionaries[1]["MainPage.CopyTip"],
                         Command = ApplicationCommands.Copy,
                         Icon = new Image()
                         {
@@ -175,8 +175,8 @@ namespace Compete.Mis.Frame.ViewModels
                     },
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.PasteMenu"],
-                        ToolTip = Application.Current.Resources.MergedDictionaries[0]["MainPage.PasteTip"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.PasteMenu"],
+                        ToolTip = Application.Current.Resources.MergedDictionaries[1]["MainPage.PasteTip"],
                         Command = ApplicationCommands.Paste,
                         Icon = new Image()
                         {
@@ -191,12 +191,12 @@ namespace Compete.Mis.Frame.ViewModels
             // 添加帮助菜单。
             Menus.Add(new MenuItem()
             {
-                Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.HelpMenu"],
+                Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.HelpMenu"],
                 ItemsSource = new Control[]
                 {
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.ViewHelpMenu"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.ViewHelpMenu"],
                         Command = HelpCommand,
                         Icon = new Image()
                         {
@@ -207,7 +207,7 @@ namespace Compete.Mis.Frame.ViewModels
                     },
                     new MenuItem()
                     {
-                        Header = Application.Current.Resources.MergedDictionaries[0]["MainPage.AboutMenu"],
+                        Header = Application.Current.Resources.MergedDictionaries[1]["MainPage.AboutMenu"],
                         Command = AboutCommand,
                         Icon = new Image()
                         {

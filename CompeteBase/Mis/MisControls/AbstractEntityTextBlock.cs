@@ -148,7 +148,7 @@ namespace Compete.Mis.MisControls
 
                 try
                 {
-                    var entities = GlobalCommon.EntityDataProvider!.GetEntity(abstractEntityTextBlock.ServiceParameter, abstractEntityTextBlock.Value);
+                    var entities = GlobalCommon.GetEntity(abstractEntityTextBlock.ServiceParameter, abstractEntityTextBlock.Value);
                     if (entities is null || 0 == entities.Rows.Count || !entities.Columns.Contains(abstractEntityTextBlock.DisplayPath))
                         return;
 

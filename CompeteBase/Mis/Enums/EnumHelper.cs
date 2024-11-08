@@ -9,9 +9,16 @@ namespace Compete.Mis.Enums
 
         public static void Initialize(IEumnDataProvider provider) => enums = provider.GetEnums();
 
-        internal static IList<EnumItem> GetEnum(string name) => (from info in enums
-                                                                 where info.Name == name
-                                                                 orderby info.Sn, info.Value
-                                                                 select new EnumItem { Value = info.Value, DisplayName = info.DisplayName }).ToList();
+        internal static IList<EnumItem> GetEnum(string name)
+            => (from info in enums
+                where info.Name == name
+                orderby info.Sn, info.Value
+                select new EnumItem { Value = info.Value, DisplayName = info.DisplayName }).ToList();
+
+        internal static IDictionary<sbyte, string> GetDictionary(string name)
+            => (from info in enums
+                where info.Name == name
+                orderby info.Sn, info.Value
+                select new KeyValuePair<sbyte, string>(info.Value, info.DisplayName)).ToDictionary();
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace Compete.Utils
 {
-    public enum ConfigurationNames
+    public enum SettingNames
     {
         AccountStructure,
+        CostComputeMode,
     }
 }

@@ -10,6 +10,6 @@ namespace Compete.MemoryData
 
         TimeSpan GetServerTime() => GetServerDateTime().TimeOfDay;
 
-        DateTime GetAccountingDate();
+        DateTime? GetAccountingDate();
     }
 }

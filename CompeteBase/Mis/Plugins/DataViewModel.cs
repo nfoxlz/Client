@@ -34,7 +34,9 @@ namespace Compete.Mis.Plugins
         [NotifyPropertyChangedFor(nameof(MasterData))]
         [NotifyPropertyChangedFor(nameof(TotalTable))]
         [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ExtendedSaveCommand))]
         [NotifyCanExecuteChangedFor(nameof(SaveCloseCommand))]
+        [NotifyCanExecuteChangedFor(nameof(SaveCallBackCommand))]
         private DataSet? _data = null;
 
         [ObservableProperty]
@@ -91,6 +93,11 @@ namespace Compete.Mis.Plugins
             {
                 action();
             }
+            catch (Exceptions.BusinessException exception)
+            {
+                MessageText = exception.Message;
+                MessageDialog.Error(MessageText);
+            }
             catch (Exception exception)
             {
                 MessageText = exception.Message;
@@ -138,6 +145,7 @@ namespace Compete.Mis.Plugins
         private void SaveCommandNotifyCanExecuteChanged()
         {
             SaveCommand.NotifyCanExecuteChanged();
+            ExtendedSaveCommand.NotifyCanExecuteChanged();
             SaveCloseCommand.NotifyCanExecuteChanged();
             SaveCallBackCommand.NotifyCanExecuteChanged();
         }
@@ -156,7 +164,7 @@ namespace Compete.Mis.Plugins
 
             OnQueried(new EventArgs());
 
-            SaveCommandNotifyCanExecuteChanged();
+            //SaveCommandNotifyCanExecuteChanged();
         });
 
 
@@ -303,27 +311,28 @@ namespace Compete.Mis.Plugins
 
         public bool HasSaveAuthorition { get => HasAuthorition(ReserveAuthorition.Save); }
 
-        private bool VerifyData()
+        private bool VerifyNonnullData()
         {
-            if (Data is null || !Data.HasChanges() || isPaused)
-                return false;
-
             var builder = new StringBuilder();
             if (View is DependencyObject view && view.Verify(out string viewErrorText))
                 builder.Append(viewErrorText);
 
-            if (Data.Verify(out string dataErrorText))
+            if (Data!.Verify(out string dataErrorText))
                 builder.Append(dataErrorText);
 
             MessageText = builder.ToString();
             return Verify() && string.IsNullOrWhiteSpace(MessageText);
         }
 
+        private bool VerifyData() => Data is not null && Data.HasChanges() && !isPaused && VerifyNonnullData();//Data is null || !Data.HasChanges() || isPaused ? false : VerifyNonnullData()
+
+        private bool VerifyNoChangeData() => Data is not null && !isPaused && VerifyNonnullData();// Data is null || isPaused ? false : VerifyNonnullData()
+
         protected virtual bool CanSave() => HasSaveAuthorition && VerifyData();
 
         public bool HasExtendedSaveAuthorition { get => HasAuthorition(ReserveAuthorition.ExtendedSave); }
 
-        private bool CanExtendedSave(ExtendedSaveParameter? parameter) => HasAuthorition((long)ReserveAuthorition.ExtendedSave << (parameter?.AuthoritionFlag ?? 0)) && VerifyData();
+        private bool CanExtendedSave(ExtendedSaveParameter? parameter) => HasAuthorition((long)ReserveAuthorition.ExtendedSave << (parameter?.AuthoritionFlag ?? 0)) && ((parameter?.Availability ?? false) && VerifyNoChangeData() || VerifyData());
 
         [RelayCommand(CanExecute = nameof(CanExtendedSave))]
         private void ExtendedSave(ExtendedSaveParameter? parameter) => Save(parameter?.Name ?? "extendedSave");
@@ -496,6 +505,8 @@ namespace Compete.Mis.Plugins
 
         protected bool IsInitializing = false;
 
+        protected virtual void Initialized() { }
+
         public void Initialize()
         {
             IsInitializing = true;
@@ -507,6 +518,8 @@ namespace Compete.Mis.Plugins
 
                 if (CanQuery())
                     Query(null);
+
+                Initialized();
             }
             finally
             {
@@ -518,18 +531,16 @@ namespace Compete.Mis.Plugins
 
         partial void OnDataChanged(DataSet? oldValue, DataSet? newValue)
         {
-            if (oldValue is not null)
-            {
-                if (MasterData is not null)
-                    MasterData.CurrentChanged -= MasterData_CurrentChanged;
+            if (MasterData is not null)
+                MasterData.CurrentChanged -= MasterData_CurrentChanged;
 
+            if (oldValue is not null)
                 foreach (DataTable table in oldValue.Tables)
                 {
                     table.ColumnChanged -= Table_ColumnChanged;
                     table.RowDeleted -= Table_RowChanged;
                     table.TableNewRow -= Table_TableNewRow;
                 }
-            }
 
             if (newValue is not null)
             {

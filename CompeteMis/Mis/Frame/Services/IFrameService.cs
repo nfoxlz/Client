@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Compete.Mis.Frame.Services
 {
-    internal interface IFrameService
+    public interface IFrameService
     {
         IEnumerable<ServiceModels.MenuSetting> GetMenus();
 
@@ -12,17 +12,21 @@ namespace Compete.Mis.Frame.Services
 #if JAVA_LANGUAGE
         long GetServerDateTime();   // Java
 
-        long GetAccountingDate();
+        long? GetAccountingDate();
 #else
         DateTime GetServerDateTime();
 
-        DateTime GetAccountingDate();
+        DateTime? GetAccountingDate();
 #endif
+
+        IDictionary<string, string> GetSettings();
+
+        bool IsFinanceClosed();
+
+        bool IsFinanceClosedByDate(int periodYearMonth);
 
 #if DEBUG
         void ClearCache();
 #endif
-
-        IDictionary<string, string> GetConfigurations();
     }
 }

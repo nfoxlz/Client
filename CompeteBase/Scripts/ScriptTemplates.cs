@@ -228,7 +228,7 @@ namespace Compete.Scripts
 {{{{
     public static class {{0}}
     {{{{
-        public static bool {0}(PluginCommandParameter parameter, object? item)
+        public static bool {0}(PluginCommandParameter parameter, object? item, IDictionary<string, object?> context)
         {{{{
             {{1}}
         }}}}
@@ -236,6 +236,8 @@ namespace Compete.Scripts
 }}}}";
 
         public const string InitializingMethodClassName = "Compete.Scripts.InitializingClass";
+
+        public const string InitializedMethodClassName = "Compete.Scripts.InitializedClass";
 
         public const string QueringMethodClassName = "Compete.Scripts.QueringClass";
 

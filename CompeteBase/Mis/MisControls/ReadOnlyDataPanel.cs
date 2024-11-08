@@ -19,7 +19,7 @@ namespace Compete.Mis.MisControls
     /// </summary>
     public sealed class ReadOnlyDataPanel : DataPanelBase
     {
-        protected override FrameworkElement CreateElement(DataColumn column)
+        protected override FrameworkElement CreateElement(DataColumn column, TextBlock titleControl)
         {
             var binding = GetBinding(column);
 

@@ -2,7 +2,7 @@
 
 namespace Compete.Mis.Exceptions
 {
-    public class PlatformException : Exception
+    public class PlatformException : MisException
     {
         /// <summary>
         /// 结构方法。

@@ -10,7 +10,7 @@ namespace Compete.Utils
 
         public static int GetLevelLen(string code)
         {
-            var structure = Mis.GlobalCommon.GlobalConfiguration!.GetConfig<string>(ConfigurationNames.AccountStructure);
+            var structure = Mis.GlobalCommon.GlobalConfiguration!.GetSetting<string>(SettingNames.AccountStructure);
             if (string.IsNullOrWhiteSpace(structure))
                 return code.Length;
 
@@ -22,7 +22,7 @@ namespace Compete.Utils
 
         public static int GetNextLevelLen(string code)
         {
-            var structure = Mis.GlobalCommon.GlobalConfiguration!.GetConfig<string>(ConfigurationNames.AccountStructure);
+            var structure = Mis.GlobalCommon.GlobalConfiguration!.GetSetting<string>(SettingNames.AccountStructure);
             if (string.IsNullOrWhiteSpace(structure))
                 return code.Length + 1;
 

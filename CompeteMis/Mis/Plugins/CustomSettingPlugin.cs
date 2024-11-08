@@ -11,7 +11,7 @@ namespace Compete.Mis.Plugins
 
         protected override void SetupUI(object ui, string basePath, PluginCommandParameter parameter)
         {
-            base.SetupUI(ui, basePath, parameter);
+            //base.SetupUI(ui, basePath, parameter);
 
             var path = Path.Combine(basePath, "setting.json");
             T setting = File.Exists(path) ? JsonSerializer.Deserialize<T>(File.ReadAllText(path))! : new T();

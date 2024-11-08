@@ -1,6 +1,6 @@
 ﻿namespace Compete.Mis.Frame.Services.ServiceModels
 {
-    internal sealed class MenuSetting
+    public sealed class MenuSetting
     {
         /// <summary>
         /// 获取或设置菜单标识。

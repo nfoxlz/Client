@@ -3,29 +3,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:UITemplate"
              xmlns:plugins="clr-namespace:Compete.Mis.Plugins;assembly=CompeteBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <Grid>
-        <TextBlock Margin="10,10,10,0" Text="TextBlock" VerticalAlignment="Top" TextAlignment="Center" FontSize="24"/>
+        <TextBlock Margin="10,10,10,0" Text="TextBlock" VerticalAlignment="Top" TextAlignment="Center" FontSize="24" Foreground="Maroon"/>
         <DatePicker Name="mainDatePicker" Margin="10,45,318,380" CalendarOpened="DatePicker_CalendarOpened" CalendarClosed="MainDatePicker_CalendarClosed"/>
         <DatePickerTextBox Margin="10,75,318,350" Text="{Binding aaa, Mode=TwoWay}" IsEnabled="True"/>
-        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,105,10,10">
-            <DataGrid.Columns>
-                <DataGridTextColumn>
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
         <Button Content="Button" HorizontalAlignment="Left" Margin="558,45,0,0" VerticalAlignment="Top">
             <Button.CommandParameter>
-                <plugins:PluginCommandParameter CommandAuthorition="Add"/>
+                <plugins:PluginCommandParameter CommandAuthorition="Add" RequiredCurrentItem="False"/>
             </Button.CommandParameter>
         </Button>
+        <xctk:ByteUpDown HorizontalAlignment="Left" VerticalAlignment="Top" Margin="558,69,0,0" Maximum="31" Minimum="3"/>
+        <TabControl Margin="0,105,0,0">
+            <TabItem Header="TabItem">
+                <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,105,10,10">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn>
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+        <Grid HorizontalAlignment="Left" Height="55" Margin="615,34,0,0" VerticalAlignment="Top" Width="167">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition Width="148*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="9,12,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="15" Width="56"/>
+            <xctk:ByteUpDown Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Maximum="31" Minimum="3" Margin="87,10,0,0" Value="{Binding Master, Mode=OneTime}" IsEnabled="False"/>
+        </Grid>
+        <DatePicker HorizontalAlignment="Left" Margin="474,13,0,0" VerticalAlignment="Top"/>
         <!--<GroupBox Header="GroupBox"/>-->
 
         <!--<DocumentViewer/>-->

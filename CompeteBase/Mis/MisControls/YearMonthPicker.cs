@@ -93,7 +93,7 @@ namespace Compete.Mis.MisControls
             {
                 var datePicker = (YearMonthPicker)sender;
                 var calendar = GetDatePickerCalendar(sender);
-                datePicker.SelectedDate = calendar.SelectedDate;
+                //datePicker.SelectedDate = calendar.SelectedDate;
 
                 calendar.DisplayModeChanged -= Calendar_DisplayModeChanged;
             };

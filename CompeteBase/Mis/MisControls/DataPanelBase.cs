@@ -172,7 +172,7 @@ namespace Compete.Mis.MisControls
                 Children.Add(titleControl);
 
                 // 生成编辑或显示控件。
-                element = CreateElement(column);
+                element = CreateElement(column, titleControl);
                 if (element is null)
                     continue;
                 element.Margin = new Thickness(TitleWidth, top, 0D, 0D);
@@ -212,6 +212,6 @@ namespace Compete.Mis.MisControls
             return binding;
         }
 
-        protected abstract FrameworkElement? CreateElement(DataColumn column);
+        protected abstract FrameworkElement? CreateElement(DataColumn column, TextBlock titleControl);
     }
 }

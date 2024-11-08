@@ -5,5 +5,7 @@
         public int AuthoritionFlag { get; set; }
 
         public string? Name { get; set; }
+
+        public bool Availability { get; set; }
     }
 }

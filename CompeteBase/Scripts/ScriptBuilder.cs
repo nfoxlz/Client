@@ -33,22 +33,31 @@ namespace Compete.Scripts
 
         private static readonly string gcPath = Path.GetDirectoryName(typeof(GCSettings).GetTypeInfo().Assembly.Location)!;
 
-        private static readonly IEnumerable<MetadataReference>? references =
-        [
-            MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
-            MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Runtime.dll")),
-            MetadataReference.CreateFromFile(typeof(DynamicAttribute).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(DataRow).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(MarshalByValueComponent).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(FrameworkElement).GetTypeInfo().Assembly.Location),
+        private static readonly ICollection<MetadataReference>? references;
+        //private static readonly IEnumerable<MetadataReference>? references =
+        //[
+        //    MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
+        //    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Runtime.dll")),
+        //    MetadataReference.CreateFromFile(typeof(DynamicAttribute).GetTypeInfo().Assembly.Location),
+        //    MetadataReference.CreateFromFile(typeof(DataRow).GetTypeInfo().Assembly.Location),
+        //    MetadataReference.CreateFromFile(typeof(MarshalByValueComponent).GetTypeInfo().Assembly.Location),
+        //    MetadataReference.CreateFromFile(typeof(FrameworkElement).GetTypeInfo().Assembly.Location),
 
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Linq.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.Primitives.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Xml.ReaderWriter.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Private.Xml.dll")),
-        ];
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Linq.dll")),
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.Primitives.dll")),
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.ComponentModel.dll")),
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Xml.ReaderWriter.dll")),
+        //    MetadataReference.CreateFromFile(Path.Combine(gcPath, "System.Private.Xml.dll")),
+        //];
+
+        static ScriptBuilder()
+        {
+            references = new List<MetadataReference>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+                references.Add(MetadataReference.CreateFromFile(assembly.Location));
+        }
 
         private static readonly CSharpCompilationOptions cSharpCompilationOptions = new(OutputKind.DynamicallyLinkedLibrary);
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Compete.Extensions;
+using Compete.MemoryData;
+using System;
 using System.Data;
 
 namespace Compete.Mis.Plugins
@@ -21,7 +23,14 @@ namespace Compete.Mis.Plugins
                     columns = data.Tables[pair.Key]!.Columns;
                     foreach (var setting in pair.Value)
                         if (!columns.Contains(setting.BalanceColumn!))
-                            columns.Add(new DataColumn(setting.BalanceColumn, typeof(decimal)) { DefaultValue = 0M });
+                        {
+                            var column = DataCreator.CreateColumn(setting.BalanceColumn!);
+                            if (!column.DataType.IsNumeric())
+                                column.DataType = typeof(decimal);
+                            if (column.DefaultValue is null || column.DefaultValue is DBNull)
+                                column.DefaultValue = 0M;
+                            columns.Add(column);
+                        }
                 }
 
             decimal balance;

@@ -2,9 +2,9 @@
 
 namespace Compete.Mis.Frame.Services.ServiceModels
 {
-    public sealed class PagingQueryResult
+    public sealed class PagingQueryResult : QueryResult
     {
-        public IList<Models.SimpleData>? Data { get; set; }
+        //public IList<Models.SimpleData>? Data { get; set; }
 
         public ulong Count { get; set; }
 

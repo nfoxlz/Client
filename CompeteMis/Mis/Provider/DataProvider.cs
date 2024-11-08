@@ -1,5 +1,4 @@
 ﻿using Compete.Common;
-using Compete.Extensions;
 using Compete.Mis.Plugins;
 using System;
 using System.Collections.Generic;
@@ -20,11 +19,11 @@ namespace Compete.Mis.Provider
 #endif
 
 #if JAVA_LANGUAGE
-        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, Utils.JavaHelper.Convert(parameters)));  // Java
+        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => DataConvertHelper.Convert(service.Query(path, name, Utils.JavaHelper.Convert(parameters)));  // Java
 
         //public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), actionId.ToByteArray());
 #else
-        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => MemoryData.DataCreator.Create(service.Query(path, name, parameters));
+        public DataSet Query(string path, string name, IDictionary<string, object>? parameters) => DataConvertHelper.Convert(service.Query(path, name, parameters));
         //public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), data.GetTableNames(), actionId.ToByteArray());
 #endif
         public Result Save(string path, string name, DataSet data, Guid actionId) => service.Save(path, name, MemoryData.DataCreator.ConvertSimpleDataSet(data), actionId.ToByteArray());

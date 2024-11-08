@@ -238,8 +238,9 @@ namespace Compete.Mis.MisControls
                             e.Column = CreateColumn(binding, typeof(SinglechoiceBox), ChoiceBox.ValueProperty,
                                 new Dictionary<DependencyProperty, object?>
                                 {
-                                    { ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
-                                }, false, true,
+                                    //{ ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
+                                    { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
+                }, false, true,
                                 new Dictionary<DependencyProperty, object?>
                                 {
                                     { ChoiceBox.IsReadOnlyProperty, true }
@@ -249,7 +250,8 @@ namespace Compete.Mis.MisControls
                             e.Column = CreateColumn(binding, typeof(MultichoiceBox), ChoiceBox.ValueProperty,
                                 new Dictionary<DependencyProperty, object?>
                                 {
-                                    { ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
+                                    //{ ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
+                                    { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
                                 }, false, true,
                                 new Dictionary<DependencyProperty, object?>
                                 {
@@ -437,14 +439,15 @@ namespace Compete.Mis.MisControls
                         var enumName = column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.Parameters) && column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters] is not null
                                     ? column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()
                                     : columnName;
-                        Debug.Assert(GlobalCommon.EnumDictionary.ContainsKey(enumName!), $"枚举{enumName}未定义。");
+                        //Debug.Assert(GlobalCommon.EnumDictionary.ContainsKey(enumName!), $"枚举{enumName}未定义。");
 
                         e.Column = CreateColumn(binding, typeof(SinglechoiceBox), ChoiceBox.ValueProperty,
                             new Dictionary<DependencyProperty, object?>
                             {
                                 {
                                     ChoiceBox.ItemDataProperty,
-                                    GlobalCommon.EnumDictionary[enumName!]
+                                    EnumHelper.GetDictionary(enumName!)
+                                    //GlobalCommon.EnumDictionary[enumName!]
                                 }
                             });
                         break;
@@ -452,7 +455,7 @@ namespace Compete.Mis.MisControls
                         e.Column = CreateColumn(binding, typeof(MultichoiceBox), ChoiceBox.ValueProperty,
                             new Dictionary<DependencyProperty, object?>
                             {
-                                { ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
+                                { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)/*GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!]*/ }
                             });
                         break;
                 }
