@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:behaviour="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Compete.Mis.MisControls"
         mc:Ignorable="d"
         Title="EntitySelectDialog" Height="488" Width="868" WindowStartupLocation="CenterScreen" Icon="/CompeteBase;component/Assets/Images/Select.png">
@@ -11,7 +12,7 @@
         <local:EntitySelectViewModel/>
     </Window.DataContext>-->
     <Grid>
-        <local:EnhancedDataGrid x:Name="MainDataGrid" Margin="0,0,0,39" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding MasterData}" SelectedItem="{Binding SelectedItem}" ColumnWidth="Auto">
+        <local:EnhancedDataGrid x:Name="MainDataGrid" Margin="0,0,0,39" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding MasterData}" SelectedItem="{Binding SelectedItem}" ColumnWidth="Auto" RefreshCommand="{Binding RefreshCommand}" SortDescription="{Binding SortDescription,Mode=OneWayToSource}" IsPaging="True">
             <behaviour:Interaction.Triggers>
                 <behaviour:EventTrigger EventName="MouseDoubleClick">
                     <behaviour:InvokeCommandAction Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"/>
@@ -27,9 +28,9 @@
                 </Style>
             </DataGrid.RowStyle>
         </local:EnhancedDataGrid>
-        <local:Navigator Margin="10,0,0,11" VerticalAlignment="Bottom" CurrentPageNo="{Binding CurrentPageNo,Mode=OneWayToSource}" PageSize="{Binding PageSize,Mode=TwoWay}" RecordCount="{Binding RecordCount}" CurrentPageNoChangedCommand="{Binding Refresh}" PageSizeChangedCommand="{Binding Refresh}"/>
+        <local:Navigator Margin="10,0,0,11" VerticalAlignment="Bottom" CurrentPageNo="{Binding CurrentPageNo,Mode=OneWayToSource}" PageSize="{Binding PageSize,Mode=TwoWay}" RecordCount="{Binding RecordCount}" CurrentPageNoChangedCommand="{Binding RefreshCommand}" PageSizeChangedCommand="{Binding RefreshCommand}"/>
         <TextBlock HorizontalAlignment="Left" Margin="220,0,0,17" TextWrapping="Wrap" Text="{DynamicResource EntitySelectDialog.FilterTextBlock}" VerticalAlignment="Bottom"/>
-        <TextBox Height="23" Margin="249,0,330,11" TextWrapping="Wrap" Text="{Binding Filter,Mode=OneWayToSource}" VerticalAlignment="Bottom"/>
+        <xctk:WatermarkTextBox Margin="249,0,330,11" TextWrapping="Wrap" Text="{Binding Filter,Mode=OneWayToSource}" VerticalAlignment="Bottom"/>
         <Button Content="{DynamicResource EntitySelectDialog.RefreshButton}" HorizontalAlignment="Right" Margin="0,0,250,12" VerticalAlignment="Bottom" Width="75" IsDefault="True" Command="{Binding RefreshCommand}"/>
         <Button Content="{DynamicResource EntitySelectDialog.ClearButton}" HorizontalAlignment="Right" Margin="0,0,170,12" VerticalAlignment="Bottom" Width="75" Visibility="{Binding ClearButtonVisibility}" Command="{Binding ClearCommand}"/>
         <Button Content="{DynamicResource OKButton}" HorizontalAlignment="Right" Margin="0,0,90,12" VerticalAlignment="Bottom" Width="75" IsDefault="True" Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>

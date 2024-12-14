@@ -7,7 +7,15 @@ namespace Compete.Mis
     {
         public const ushort DefaultNavigatorPageSize = 30;
 
+        public const double TextBoxHeight = 24D;
+
         public const string NavigatorMaxPageNoFormat = "/{0}";
+
+        public const string EntityBoxParameterValuePath = "ValuePath";
+
+        public const string EntityBoxParameterDisplayPath = "DisplayPath";
+
+        public const string EntityBoxParameterServiceParameter = "ServiceParameter";
 
         public static readonly ushort[] DefaultNavigatorPageCollection = [10, 20, 30, 50, 100, 200];
 

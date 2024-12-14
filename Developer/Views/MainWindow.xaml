@@ -100,6 +100,8 @@
                 <MenuItem Command="{Binding SqlBuilder}" Header="{DynamicResource MainWindow.SqlBuilder}"/>
                 <MenuItem Command="{Binding CompressSqlFile}" Header="{DynamicResource MainWindow.CompressSqlFile}"/>
                 <MenuItem Command="{Binding FormatSqlFile}" Header="{DynamicResource MainWindow.FormatSqlFile}"/>
+                <MenuItem Command="{Binding GenerateFileListCommand}" Header="{DynamicResource MainWindow.GenerateFileList}"/>
+                <MenuItem Command="{Binding GenerateAssemblyListCommand}" Header="{DynamicResource MainWindow.GenerateAssemblyList}"/>
             </MenuItem>
         </Menu>
         <ToolBarTray Name="mainToolBarTray" DockPanel.Dock="Top">

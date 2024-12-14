@@ -43,6 +43,9 @@ namespace Compete.Mis.Plugins
         private string? _messageText;// = "就绪";
 
         [ObservableProperty]
+        private string? _sortDescription;
+
+        [ObservableProperty]
         private ushort _pageSize;
 
         [ObservableProperty]
@@ -125,7 +128,7 @@ namespace Compete.Mis.Plugins
 
         protected virtual bool GetRunAuthorition(PluginCommandParameter? parameter, object? item) => true;
 
-        protected abstract void QueryData(string? name);
+        protected abstract DataSet? QueryData(string? name);
 
         protected override Action<bool>? BackCallAction
         {
@@ -155,8 +158,12 @@ namespace Compete.Mis.Plugins
         {
             ConditionData?.CommitEdit();
 
-            QueryData(name);
-            Data?.AcceptChanges();
+            var data = QueryData(name);
+            if (data != null)
+            {
+                data.AcceptChanges();
+                Data = data;
+            }
 
             ActionId = Guid.NewGuid();
 
@@ -173,7 +180,7 @@ namespace Compete.Mis.Plugins
             if (!HasQueryAuthorition)
                 return false;
 
-            if (ConditionTable is not null && ConditionTable.Verify(out string viewErrorText))
+            if (ConditionTable is not null && ConditionTable.Verify(out string viewErrorText, false))
             {
                 MessageText = viewErrorText;
                 return false;
@@ -449,7 +456,7 @@ namespace Compete.Mis.Plugins
             if (ConditionTable is null)
                 return false;
 
-            if (ConditionTable.Verify(out string dataErrorText))
+            if (ConditionTable.Verify(out string dataErrorText, false))
             {
                 MessageText += dataErrorText;
                 return false;

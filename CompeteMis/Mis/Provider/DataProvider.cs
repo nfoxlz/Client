@@ -11,11 +11,11 @@ namespace Compete.Mis.Provider
     {
         private static readonly Frame.Services.IDataService service = DispatchProxy.Create<Frame.Services.IDataService, Frame.Services.WebApi.WebApiServiceProxy>();
 
-        public Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30)
+        public Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30, string? sortDescription = null)
 #if JAVA_LANGUAGE
-            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters), currentPageNo, pageSize).ToDataResult();    // Java
+            => service.PagingQuery(path, name, Utils.JavaHelper.Convert(parameters), currentPageNo, pageSize, sortDescription).ToDataResult();    // Java
 #else
-            => service.PagingQuery(path, name, parameters, currentPageNo, pageSize).ToDataResult();
+            => service.PagingQuery(path, name, parameters, currentPageNo, pageSize, sortDescription).ToDataResult();
 #endif
 
 #if JAVA_LANGUAGE

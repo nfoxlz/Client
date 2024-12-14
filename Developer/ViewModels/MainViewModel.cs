@@ -4,6 +4,9 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.AvalonDock.Layout;
@@ -179,5 +182,106 @@ namespace Compete.Mis.Developer.ViewModels
         //{
 
         //}
+
+        private const string fileListFileName = "FileList.csv";
+
+        [RelayCommand]
+        private static void GenerateFileList()
+        {
+            var dialog = new OpenFolderDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                DirectoryInfo currentDirectory;
+                var directories = new Queue<DirectoryInfo>();
+                var baseFolder = dialog.FolderName;
+                var builder = new StringBuilder();
+                string path;
+                try
+                {
+                    directories.Enqueue(new DirectoryInfo(baseFolder));
+                    while (directories.Count > 0L)
+                    {
+                        currentDirectory = directories.Dequeue();
+                        
+                        foreach (var file in currentDirectory.GetFiles())
+                        {
+                            path = Path.GetRelativePath(baseFolder, file.FullName);
+                            if (fileListFileName == path)
+                                continue;
+
+                            builder.Append(path);
+                            builder.Append(',');
+                            builder.Append(file.Length);
+                            builder.Append(',');
+                            builder.Append(file.LastWriteTimeUtc.ToString("yyyyMMddHHmmss"));
+                            builder.AppendLine();
+                        }
+
+                        foreach (var subdirectory in currentDirectory.GetDirectories())
+                            directories.Enqueue(subdirectory);
+                    }
+
+                    File.WriteAllText(Path.Combine(dialog.FolderName, fileListFileName), builder.ToString());
+                }
+                catch(Exception ex)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private const string assemblyListFileName = "AssemblyList.csv";
+
+        [RelayCommand]
+        private static void GenerateAssemblyList()
+        {
+            var dialog = new OpenFolderDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                DirectoryInfo currentDirectory;
+                var directories = new Queue<DirectoryInfo>();
+                var baseFolder = dialog.FolderName;
+                var builder = new StringBuilder();
+                string path;
+                try
+                {
+                    directories.Enqueue(new DirectoryInfo(baseFolder));
+                    while (directories.Count > 0L)
+                    {
+                        currentDirectory = directories.Dequeue();
+
+                        foreach (var file in currentDirectory.GetFiles())
+                        {
+                            path = Path.GetRelativePath(baseFolder, file.FullName);
+                            if (assemblyListFileName == path)
+                                continue;
+
+                            builder.Append(path);
+                            builder.Append(',');
+                            try
+                            {
+                                builder.Append(Assembly.LoadFrom(file.FullName).GetName().Version);
+                            }
+                            catch
+                            {
+                                builder.Append(file.Length);
+                                builder.Append(',');
+                                builder.Append(file.LastWriteTimeUtc.ToString("yyyyMMddHHmmss"));
+                            }
+                            builder.AppendLine();
+                        }
+
+                        foreach (var subdirectory in currentDirectory.GetDirectories())
+                            directories.Enqueue(subdirectory);
+                    }
+
+                    File.WriteAllText(Path.Combine(dialog.FolderName, assemblyListFileName), builder.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
+            }
+        }
     }
 }

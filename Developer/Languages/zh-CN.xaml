@@ -76,6 +76,8 @@
     <s:String x:Key="MainWindow.SqlBuilder">SQL构建器</s:String>
     <s:String x:Key="MainWindow.CompressSqlFile">压缩SQL文件</s:String>
     <s:String x:Key="MainWindow.FormatSqlFile">格式化SQL文件</s:String>
+    <s:String x:Key="MainWindow.GenerateFileList">生成FileList文件</s:String>
+    <s:String x:Key="MainWindow.GenerateAssemblyList">生成AssemblyList文件</s:String>
 
     <s:String x:Key="MainWindow.DataModel">数据模型</s:String>
     <s:String x:Key="MainWindow.CustomDataModel">自定义数据模型</s:String>

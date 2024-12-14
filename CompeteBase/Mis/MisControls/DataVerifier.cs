@@ -141,13 +141,14 @@ namespace Compete.Mis.MisControls
         /// 校验数据集。不通过时，显示错误消息框。
         /// </summary>
         /// <param name="data">被校验的数据集。</param>
+        /// <param name="ignoreUnchanged">是否忽略未修改的记录。</param>
         /// <returns>true为校验不通过，false为校验通过。</returns>
         /// <remarks>
         /// 主要校验非空校验。
         /// </remarks>
-        public static bool Verify(this DataSet data)
+        public static bool Verify(this DataSet data, bool ignoreUnchanged = true)
         {
-            var result = data.Verify(out string errorText);
+            var result = data.Verify(out string errorText, ignoreUnchanged);
 
             if (result)
                 MessageDialog.Error(errorText);
@@ -160,11 +161,12 @@ namespace Compete.Mis.MisControls
         /// </summary>
         /// <param name="data">被校验的数据集。</param>
         /// <param name="errorText">输出的错误文本。</param>
+        /// <param name="ignoreUnchanged">是否忽略未修改的记录。</param>
         /// <returns>true为校验不通过，false为校验通过。</returns>
         /// <remarks>
         /// 主要校验非空校验。
         /// </remarks>
-        public static bool Verify(this DataSet data, out string errorText)
+        public static bool Verify(this DataSet data, out string errorText, bool ignoreUnchanged = true)
         {
             errorText = string.Empty;
 
@@ -174,7 +176,7 @@ namespace Compete.Mis.MisControls
             var result = false;
             var builder = new StringBuilder();
             foreach (DataTable table in data.Tables)
-                if (table.Verify(out string error))
+                if (table.Verify(out string error, ignoreUnchanged))
                 {
                     builder.Append(error);
                     result = true;
@@ -204,13 +206,14 @@ namespace Compete.Mis.MisControls
         /// 校验数据表。不通过时，显示错误消息框。
         /// </summary>
         /// <param name="table">被校验的数据表。</param>
+        /// <param name="ignoreUnchanged">是否忽略未修改的记录。</param>
         /// <returns>true为校验不通过，false为校验通过。</returns>
         /// <remarks>
         /// 主要校验非空校验。
         /// </remarks>
-        public static bool Verify(this DataTable table)
+        public static bool Verify(this DataTable table, bool ignoreUnchanged = true)
         {
-            var result = table.Verify(out string errorText);
+            var result = table.Verify(out string errorText, ignoreUnchanged);
 
             if (result)
                 MessageDialog.Error(errorText);
@@ -223,11 +226,12 @@ namespace Compete.Mis.MisControls
         /// </summary>
         /// <param name="table">被校验的数据表。</param>
         /// <param name="errorText">输出的错误文本。</param>
+        /// <param name="ignoreUnchanged">是否忽略未修改的记录。</param>
         /// <returns>true为校验不通过，false为校验通过。</returns>
         /// <remarks>
         /// 主要校验非空校验。
         /// </remarks>
-        public static bool Verify(this DataTable table, out string errorText)
+        public static bool Verify(this DataTable table, out string errorText, bool ignoreUnchanged = true)
         {
             errorText = string.Empty;
             var builder = new StringBuilder();
@@ -246,7 +250,7 @@ namespace Compete.Mis.MisControls
                         if (row.RowState == DataRowState.Deleted)
                             continue;
                         index++;
-                        if (row.RowState == DataRowState.Unchanged)
+                        if (row.RowState == DataRowState.Unchanged && ignoreUnchanged)
                             continue;
 
                         if (IsNull(row[column], column))

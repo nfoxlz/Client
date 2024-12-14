@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Compete.Mis.MisControls
@@ -50,9 +49,24 @@ namespace Compete.Mis.MisControls
                 var enumComboBox = (EnumComboBox)d;
                 enumComboBox.Items.Clear();
                 if (!string.IsNullOrWhiteSpace(enumComboBox.EnumName))
-                    enumComboBox.ItemsSource = Enums.EnumHelper.GetEnum(enumComboBox.EnumName);
+                {
+                    var source = Enums.EnumHelper.GetEnum(enumComboBox.EnumName);
+                    if (!enumComboBox.IsRequired)
+                        source.Insert(0, new Enums.EnumItem());
+                    enumComboBox.ItemsSource = source;
+                }
                 //enumComboBox.SelectedValuePath;
                 //enumComboBox.DisplayMemberPath;
             }));
+
+        public bool IsRequired
+        {
+            get { return (bool)GetValue(IsRequiredProperty); }
+            set { SetValue(IsRequiredProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsRequired.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsRequiredProperty =
+            DependencyProperty.Register(nameof(IsRequired), typeof(bool), typeof(EnumComboBox), new PropertyMetadata(false));
     }
 }

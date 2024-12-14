@@ -11,6 +11,8 @@
     <s:String x:Key="WaitMessage">请等待程序运行……</s:String>
     <s:String x:Key="ClearButton">清</s:String>
 
+    <s:String x:Key="TitleSuffixTotal">总计</s:String>
+
     <!--异常消息-->
     <s:String x:Key="Exception.DataCannotSubmit">数据不能正确提交。</s:String>
 
@@ -57,6 +59,18 @@
     <s:String x:Key="MainPage.AboutMenu">关于(_A)</s:String>
 
     <s:String x:Key="MainPage.Welcome">欢迎</s:String>
+
+    <!--修改口令对话框-->
+    <s:String x:Key="ModifyPasswordBox.Title">修改口令</s:String>
+    <s:String x:Key="ModifyPasswordBox.OriginalPassword">原始口令</s:String>
+    <s:String x:Key="ModifyPasswordBox.OriginalPasswordWatermark">请输入原始口令。</s:String>
+    <s:String x:Key="ModifyPasswordBox.NewPassword">新口令</s:String>
+    <s:String x:Key="ModifyPasswordBox.NewPasswordWatermark">请输入不少于6个字符的新口令。</s:String>
+    <s:String x:Key="ModifyPasswordBox.VerifiedPassword">校验口令</s:String>
+    <s:String x:Key="ModifyPasswordBox.VerifiedPasswordWatermark">请再次输入与新口令相同的校验口令。</s:String>
+    <s:String x:Key="ModifyPasswordBox.ModifyButton">修改(_M)</s:String>
+    <s:String x:Key="ModifyPasswordBox.Success">修改成功。</s:String>
+    <s:String x:Key="ModifyPasswordBox.Failed">修改失败。</s:String>
 
     <!--关于对话框-->
     <s:String x:Key="AboutBox.Title">关于</s:String>
@@ -132,6 +146,9 @@
     <s:String x:Key="AddChildButton">新增子项</s:String>
     <s:String x:Key="DeleteChildButton">删除子项</s:String>
 	<s:String x:Key="CloseButton">关闭(_C)</s:String>
+    <s:String x:Key="ViewButton">查看(_V)</s:String>
+
+    <s:String x:Key="SaveSuccess">保存成功。</s:String>
 
     <s:String x:Key="CarryOverButton">结转(_C)</s:String>
 

@@ -25,7 +25,7 @@ namespace Compete.Mis.MisControls
         /// <param name="currentPageNo">当前页号。</param>
         /// <param name="pageSize">每页记录数。</param>
         /// <returns>查询到的数据。</returns>
-        Models.PagingDataQueryResult Query(string name, IDictionary<string, object>? conditions, ulong currentPageNo, ushort pageSize);
+        Models.PagingDataQueryResult Query(string name, IDictionary<string, object>? conditions, ulong currentPageNo, ushort pageSize, string? sortDescription = null);
 
         /// <summary>
         /// 根据标识取得实体。

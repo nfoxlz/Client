@@ -163,13 +163,34 @@ namespace Compete.Mis.MisControls
                     }
                     else
                     {
-                        result = new TextBox() { IsReadOnly = true };
-                        if (dataType.IsNumeric())
-                            ((TextBox)result).TextAlignment = TextAlignment.Right;
-                        else if (DbType.Date == dbType)
-                            binding.StringFormat = "yyyy年M月d日";
+                        if (typeof(sbyte) == dataType)
+                        {
+                            result = new EnumTextBox
+                            {
+                                EnumName = columnName,
+                            };
+                            result.SetBinding(EnumTextBox.ValueProperty, binding);
+                            //result = new EnumComboBox
+                            //{
+                            //    Name = columnName,
+                            //    EnumName = columnName,  // .Replace("_", string.Empty)
+                            //    SelectedValuePath = nameof(EnumItem.Value),
+                            //    DisplayMemberPath = nameof(EnumItem.DisplayName),
+                            //    IsEnabled = false,
+                            //    IsReadOnly = true,
+                            //};
+                            //result.SetBinding(EnumComboBox.SelectedValueProperty, binding);
+                        }
+                        else
+                        {
+                            result = new WatermarkTextBox() { IsReadOnly = true, Height = Constants.TextBoxHeight };
+                            if (dataType.IsNumeric())
+                                ((TextBox)result).TextAlignment = TextAlignment.Right;
+                            else if (DbType.Date == dbType)
+                                binding.StringFormat = "yyyy年M月d日";
 
-                        result.SetBinding(TextBox.TextProperty, binding);
+                            result.SetBinding(TextBox.TextProperty, binding);
+                        }
                     }
                 }
                 else
@@ -215,6 +236,13 @@ namespace Compete.Mis.MisControls
                                 ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
+                            break;
+                        case DataControlType.EnumTextBlock:
+                            result = new EnumTextBlock
+                            {
+                                EnumName = columnName
+                            };
+                            result.SetBinding(EnumTextBlock.ValueProperty, binding);
                             break;
                         default:
                             result = null;
@@ -363,6 +391,7 @@ namespace Compete.Mis.MisControls
                             EnumName = columnName,  // .Replace("_", string.Empty)
                             SelectedValuePath = nameof(EnumItem.Value),
                             DisplayMemberPath = nameof(EnumItem.DisplayName),
+                            IsRequired = isRequired,
                         };
                         result.SetBinding(EnumComboBox.SelectedValueProperty, binding);
                     }
@@ -388,7 +417,7 @@ namespace Compete.Mis.MisControls
                     }
                     else
                     {
-                        var textBox = new TextBox();
+                        var textBox = new WatermarkTextBox() { Height = Constants.TextBoxHeight };
                         result = textBox;
                         if (column.MaxLength >= 0)
                             ((TextBox)result).MaxLength = column.MaxLength;

@@ -33,6 +33,11 @@ namespace Compete.Mis.MisControls
         /// <summary>
         /// 多选框。
         /// </summary>
-        MultichoiceBox
+        MultichoiceBox,
+
+        /// <summary>
+        /// 枚举文本框。
+        /// </summary>
+        EnumTextBlock,
     }
 }

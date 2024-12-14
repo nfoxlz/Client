@@ -10,7 +10,7 @@
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
-const char* queryWMI(const BSTR query, const LPCWSTR wszName)
+static const char* queryWMI(const BSTR query, const LPCWSTR wszName)
 {
     HRESULT hres;
     IWbemLocator* pLoc = NULL;

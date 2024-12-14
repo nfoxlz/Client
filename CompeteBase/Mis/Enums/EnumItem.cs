@@ -2,7 +2,7 @@
 {
     internal sealed class EnumItem
     {
-        public sbyte Value { get; set; }
+        public sbyte? Value { get; set; }
 
         public string? DisplayName { get; set; }
     }

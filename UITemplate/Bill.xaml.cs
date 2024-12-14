@@ -81,5 +81,10 @@ namespace UITemplate
                 return null;
             return new DateTime(selectedDate.Value.Year, selectedDate.Value.Month, 1);
         }
+
+        private void DataGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            //e.Column.SortDirection = System.ComponentModel.ListSortDirection.Ascending;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Compete.Extensions;
+using Compete.Mis.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -395,7 +396,7 @@ namespace Compete.Mis.Plugins
 
         protected override bool CanQuery() => (!IsInitializing || Setting!.IsInitialQuery) && base.CanQuery();
 
-        protected override void QueryData(string? name)
+        protected override DataSet? QueryData(string? name)
         {
             var mainData = Setting?.MemoryDataSettings is null ? null : MemoryData.DataCreator.Create(Setting.MemoryDataSettings);
 
@@ -430,7 +431,7 @@ namespace Compete.Mis.Plugins
             {
                 IDictionary<string, object>? parameters = ConditionTable is null || 0 == ConditionTable.Rows.Count ? null : ConditionTable.Rows[0].ToDictionary(Setting!.QueryConditionColumns);
                 if (parameters != null)
-                    backupConditionTable = ConditionTable.Clone();
+                    backupConditionTable = ConditionTable?.Clone();
 
                 if (Setting!.QueryParameters is not null)
                 {
@@ -461,7 +462,7 @@ namespace Compete.Mis.Plugins
                 DataSet data;
                 if (Setting.IsPagingQuery)
                 {
-                    var result = GlobalCommon.DataProvider!.PagingQuery(PluginParameter!.Path, (name ?? Setting.DataLoadName)!, parameters, CurrentPageNo, PageSize);
+                    var result = GlobalCommon.DataProvider!.PagingQuery(PluginParameter!.Path, (name ?? Setting.DataLoadName)!, parameters, CurrentPageNo, PageSize, SortDescription);
                     data = result.Data!;
                     RecordCount = result.Count;
                     CurrentPageNo = result.PageNo;
@@ -529,11 +530,12 @@ namespace Compete.Mis.Plugins
 
                 if (Setting?.InvisibleIdTables is not null)
                     foreach(var tableNname in Setting.InvisibleIdTables)
-                        foreach (DataColumn column in mainData.Tables[tableNname]!.Columns)
-                            if (column.ColumnName.EndsWith("_Id", StringComparison.OrdinalIgnoreCase))
-                                column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]
-                                    = (column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible] as bool? ?? true)
-                                    && !(bool)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]!;
+                        if (mainData.Tables.Contains(tableNname))
+                            foreach (DataColumn column in mainData.Tables[tableNname]!.Columns)
+                                if (column.ColumnName.EndsWith("_Id", StringComparison.OrdinalIgnoreCase))
+                                    column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]
+                                        = (column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible] as bool? ?? true)
+                                        && !(bool)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]!;
 
                 if (Setting?.UniqueColumns is not null)
                     foreach (var pair in Setting.UniqueColumns)
@@ -587,11 +589,9 @@ namespace Compete.Mis.Plugins
             }
 
             if (true == (bool?)queringMethod?.Invoke(null, [this, mainData]))
-                return;
+                return null;
 
-            Data = mainData;
-
-            queriedMethod?.Invoke(null, [this, mainData]);
+            return mainData;
         }
 
         protected override void ConditionTableChanged(DataTable? oldValue, DataTable? newValue)
@@ -700,6 +700,8 @@ namespace Compete.Mis.Plugins
         protected override void OnQueried(EventArgs e)
         {
             base.OnQueried(e);
+
+            queriedMethod?.Invoke(null, [this, Data]);
 
             if (Setting!.IsAddMaster && 0 == MasterData?.Count)
                 MasterData.AddNew();
@@ -862,6 +864,11 @@ namespace Compete.Mis.Plugins
                 ShowMessage(result);
 
                 return true;
+            }
+            else
+            {
+                MessageText = GlobalCommon.GetMessage("SaveSuccess");
+                MisControls.MessageDialog.Success(MessageText);
             }
 
             return base.SaveData(name);

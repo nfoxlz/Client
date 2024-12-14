@@ -19,6 +19,8 @@ namespace Compete.Mis.Frame.Services
         DateTime? GetAccountingDate();
 #endif
 
+        bool ModifyPassword(string originalPassword, string newPassword);
+
         IDictionary<string, string> GetSettings();
 
         bool IsFinanceClosed();

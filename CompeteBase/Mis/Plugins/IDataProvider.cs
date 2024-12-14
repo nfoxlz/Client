@@ -8,7 +8,7 @@ namespace Compete.Mis.Plugins
     {
         DataSet Query(string path, string name, IDictionary<string, object>? parameters = null);
 
-        Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30);
+        Models.PagingDataQueryResult PagingQuery(string path, string name, IDictionary<string, object>? parameters = default, ulong currentPageNo = 1UL, ushort pageSize = 30, string? sortDescription = null);
 
         Common.Result Save(string path, string name, DataSet data, Guid actionId);
 

@@ -18,9 +18,9 @@
             </Button.CommandParameter>
         </Button>
         <xctk:ByteUpDown HorizontalAlignment="Left" VerticalAlignment="Top" Margin="558,69,0,0" Maximum="31" Minimum="3"/>
-        <TabControl Margin="0,105,0,0">
+        <TabControl Margin="0,218,0,0">
             <TabItem Header="TabItem">
-                <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,105,10,10">
+                <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,105,10,10" Sorting="DataGrid_Sorting">
                     <DataGrid.Columns>
                         <DataGridTextColumn>
                             <DataGridTextColumn.HeaderTemplate>
@@ -44,6 +44,8 @@
             <xctk:ByteUpDown Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Maximum="31" Minimum="3" Margin="87,10,0,0" Value="{Binding Master, Mode=OneTime}" IsEnabled="False"/>
         </Grid>
         <DatePicker HorizontalAlignment="Left" Margin="474,13,0,0" VerticalAlignment="Top"/>
+        <xctk:WatermarkTextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="402,120,0,0" Width="113"/>
+        <xctk:WatermarkTextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="402,148,0,0" Width="113"/>
         <!--<GroupBox Header="GroupBox"/>-->
 
         <!--<DocumentViewer/>-->

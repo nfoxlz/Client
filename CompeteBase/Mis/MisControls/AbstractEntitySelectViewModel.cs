@@ -26,6 +26,9 @@ namespace Compete.Mis.MisControls
         [ObservableProperty]
         private IEnumerable? _masterData;
 
+        [ObservableProperty]
+        private string? _sortDescription;
+
         private string? _filter;
 
         /// <summary>
@@ -124,7 +127,7 @@ namespace Compete.Mis.MisControls
             Querying();
 
             isQuering = true;
-            var result = GlobalCommon.EntityDataProvider!.Query(ServiceParameter, Conditions, CurrentPageNo, PageSize);  // 取得数据。
+            var result = GlobalCommon.EntityDataProvider!.Query(ServiceParameter, Conditions, CurrentPageNo, PageSize, SortDescription);  // 取得数据。
             isQuering = false;
             if (result.Count == 0)
                 return;

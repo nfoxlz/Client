@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace Compete.Mis.MisControls
 {
-    public sealed class EnumTextBlock : TextBlock
+    public class EnumRun : Run
     {
-        //static EnumTextBlock() => DefaultStyleKeyProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata(typeof(TextBlock)));
-
         private readonly Dictionary<sbyte, string?> enumDictionary = [];
 
         private void RefreshValue()
@@ -24,9 +22,9 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for EnumName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty EnumNameProperty =
-            DependencyProperty.Register(nameof(EnumName), typeof(string), typeof(EnumTextBlock), new PropertyMetadata((d, e) =>
+            DependencyProperty.Register(nameof(EnumName), typeof(string), typeof(EnumRun), new PropertyMetadata((d, e) =>
             {
-                var enumTextBlock = (EnumTextBlock)d;
+                var enumTextBlock = (EnumRun)d;
                 enumTextBlock.enumDictionary.Clear();
                 if (!string.IsNullOrWhiteSpace(enumTextBlock.EnumName))
                     foreach (var item in Enums.EnumHelper.GetEnum(enumTextBlock.EnumName))
@@ -43,6 +41,6 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register(nameof(Value), typeof(sbyte), typeof(EnumTextBlock), new PropertyMetadata((d, e) => ((EnumTextBlock)d).RefreshValue()));
+            DependencyProperty.Register(nameof(Value), typeof(sbyte), typeof(EnumRun), new PropertyMetadata((d, e) => ((EnumRun)d).RefreshValue()));
     }
 }

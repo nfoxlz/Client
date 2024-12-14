@@ -29,6 +29,7 @@ namespace Compete.Mis.MisControls
         public AbstractEntityBox()
         {
             InitializeComponent();
+            DisplayTextBox.Height = Constants.TextBoxHeight;
 
             SelectButton.Command = Select;
             ClearButton.Command = Clear;
@@ -165,7 +166,9 @@ namespace Compete.Mis.MisControls
             {
                 var sourceRow = GetSourceRow();
                 if (sourceRow is not null)
-                    row.CopyTo(sourceRow, omittedColumns.Merge([string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath, string.IsNullOrWhiteSpace(DisplayPath) ? "Name" : DisplayPath]));
+                    row.CopyTo(sourceRow, omittedColumns.Merge([string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath]));
+                    //row.CopyTo(sourceRow, omittedColumns.Merge([string.IsNullOrWhiteSpace(ValuePath) ? "Id" : ValuePath, string.IsNullOrWhiteSpace(DisplayPath) ? "Name" : DisplayPath]));
+                    //sourceRow.EndEdit();
             }
 
             var columns = row.Table.Columns;
@@ -445,29 +448,29 @@ namespace Compete.Mis.MisControls
             return entityName;
         }
 
-        public static IDictionary<DependencyProperty, object?> GeneratePropertyDictionary(DataColumn column, IDictionary<string, string> parameters)
+        public static IDictionary<DependencyProperty, object?> GeneratePropertyDictionary(DataColumn column, IDictionary<string, string>? parameters)
         {
             var entityName = GetEntityName(column.ColumnName);
 
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, parameters is null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters is null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterValuePath, out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterDisplayPath, out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterServiceParameter, out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
 
-        public static IDictionary<DependencyProperty, object?> GenerateGridPropertyDictionary(DataColumn column, IDictionary<string, string> parameters)
+        public static IDictionary<DependencyProperty, object?> GenerateGridPropertyDictionary(DataColumn column, IDictionary<string, string>? parameters)
         {
             var entityName = GetEntityName(column.ColumnName);
 
             return new Dictionary<DependencyProperty, object?>
             {
                 { EntityNameProperty, column.Caption },
-                { ValuePathProperty, parameters is null || !parameters.TryGetValue("ValuePath", out string? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters is null || !parameters.TryGetValue("DisplayPath", out string? displayPath) ? $"{entityName}_Name" : displayPath },
-                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue("ServiceParameter", out string? serviceParameter) ? entityName : serviceParameter }
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterValuePath, out string? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterDisplayPath, out string? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(Constants.EntityBoxParameterServiceParameter, out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
     }

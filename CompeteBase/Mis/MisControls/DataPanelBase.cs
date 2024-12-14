@@ -95,6 +95,16 @@ namespace Compete.Mis.MisControls
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(DataPanelBase), new PropertyMetadata((d, e) => ((DataPanelBase)d).CreateItems()));
 
+        public string TitleSuffix
+        {
+            get { return (string)GetValue(TitleSuffixProperty); }
+            set { SetValue(TitleSuffixProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TitleSuffix.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TitleSuffixProperty =
+            DependencyProperty.Register(nameof(TitleSuffix), typeof(string), typeof(DataPanelBase), new PropertyMetadata(string.Empty));
+
         /// <summary>
         /// 创建项。每一项包括一个标题控件与一个编辑或显示控件。
         /// </summary>
@@ -123,7 +133,7 @@ namespace Compete.Mis.MisControls
             foreach (DataColumn column in columns)
                 if (!column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.IsVisible) || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]))
                     TitleWidth = Math.Max(TitleWidth, CharWidthHelper.GetStringWidth(column.Caption));
-            TitleWidth += 10D;
+            TitleWidth += 10D + CharWidthHelper.GetStringWidth(TitleSuffix);
 
             CreateDataItems(columns);
         }
@@ -158,7 +168,7 @@ namespace Compete.Mis.MisControls
                 // 生成标题控件。
                 titleControl = new TextBlock
                 {
-                    Text = column.Caption,
+                    Text = column.Caption + TitleSuffix,
                     Margin = new Thickness(0D, top + 3D, 0D, 0D),
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
