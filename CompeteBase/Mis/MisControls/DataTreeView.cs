@@ -48,6 +48,8 @@ namespace Compete.Mis.MisControls
 
         private bool isBinding = false;
 
+        private bool isChildrenChecked = true;
+
         private void AddItems(ItemCollection items, IEnumerable<DataRowView> data, object itemValue)
         {
             var rows = (from row in data
@@ -77,15 +79,25 @@ namespace Compete.Mis.MisControls
 
                         var parent = ((FrameworkElement)((FrameworkElement)sender).Parent).Parent;
                         if (parent is HeaderedItemsControl headeredItemsControl)
+                        {
+                            isChildrenChecked = false;
                             ((ToggleButton)headeredItemsControl.Header).IsChecked = true;
+                            isChildrenChecked = true;
+                        }
+
+                        if (isChildrenChecked)
+                            foreach (var item in item.Items)
+                                ((ToggleButton)((HeaderedItemsControl)item).Header).IsChecked = true;
+
+
                     };
                     checkBox.Unchecked += (sender, e) =>
                     {
                         if (isBinding)
                             return;
 
-                        var parent = (ItemsControl)((FrameworkElement)sender).Parent;
-                        foreach(var item in parent.Items)
+                        //var parent = (ItemsControl)((FrameworkElement)sender).Parent;
+                        foreach(var item in item.Items)
                             ((ToggleButton)((HeaderedItemsControl)item).Header).IsChecked = false;
                     };
                     item.Header = checkBox;

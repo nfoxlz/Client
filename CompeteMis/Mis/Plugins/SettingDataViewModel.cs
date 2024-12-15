@@ -431,7 +431,7 @@ namespace Compete.Mis.Plugins
             {
                 IDictionary<string, object>? parameters = ConditionTable is null || 0 == ConditionTable.Rows.Count ? null : ConditionTable.Rows[0].ToDictionary(Setting!.QueryConditionColumns);
                 if (parameters != null)
-                    backupConditionTable = ConditionTable?.Clone();
+                    backupConditionTable = ConditionTable?.Copy();
 
                 if (Setting!.QueryParameters is not null)
                 {

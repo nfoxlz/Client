@@ -142,8 +142,11 @@ namespace Compete.Mis.MisControls
             using (var factory = GlobalCommon.CreateLoggerFactory())
                 factory.CreateLogger<ThreadingHelperBase>().LogError(GlobalCommon.LogMessage, exception.ToString());
 
-
+#if DEBUG || DEBUG_JAVA
+            return ShowMessageBox(exception.ToString(), "MessageTitle.Exception", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, args);
+#else
             return ShowMessageBox(exception.Message, "MessageTitle.Exception", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, args);
+#endif
         }
     }
 }
