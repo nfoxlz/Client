@@ -9,10 +9,11 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Compete.Mis.Plugins
 {
-    public sealed class SettingDataViewModel : SettingDataViewModel<DataPluginSetting> { }
+    public sealed partial class SettingDataViewModel : SettingDataViewModel<DataPluginSetting> { }
 
     public abstract partial class SettingDataViewModel<T> : CustomSettingDataViewModel<T> where T : DataPluginSetting, new()
     {
@@ -779,6 +780,47 @@ namespace Compete.Mis.Plugins
             return result.Rows.Count == 0 ? null : result;
         }
 
+        protected override DataSet? GetSaveData()
+        {
+            if (Data is null)
+                return null;
+
+            if (Setting!.IsDifferentiated)
+                return Data;
+
+            var dataSet = new DataSet();
+            if (Setting!.IsMergeConditionData && !Setting.IsMergeConditionTable && backupConditionTable is not null)
+                dataSet.Tables.Add(RemoveColumns(backupConditionTable, Setting.SaveConditionColumns));
+
+            DataView dataView;
+            foreach (DataTable table in Data.Tables)
+            {
+                dataView = Setting.UnmodifiedSaveTables is not null && (from tableName in Setting.UnmodifiedSaveTables
+                                                                        where tableName == table.TableName
+                                                                        select tableName).Any()
+                                                                        ? new DataView(table)
+                                                                        : new DataView(table)
+                                                                        {
+                                                                            RowStateFilter = Setting.SaveRowStateFilters is null || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
+                                                                                ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
+                                                                                : rowStateFilter,
+                                                                        };
+
+                if (Setting.SaveFilters is not null && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                    dataView.RowFilter = filter;
+
+                if (Setting.SaveColumns is not null && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
+                    dataSet.Tables.Add(dataView.ToTable(false, columns));
+                else
+                    dataSet.Tables.Add(dataView.ToTable());
+            }
+
+            if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && backupConditionTable is not null)
+                MergeConditionTable(ref dataSet);
+
+            return dataSet;
+        }
+
         protected override bool SaveData(string? name)
         {
             Common.Result result;
@@ -827,36 +869,37 @@ namespace Compete.Mis.Plugins
             }
             else
             {
-                var dataSet = new DataSet();
-                if (Setting.IsMergeConditionData && !Setting.IsMergeConditionTable && backupConditionTable is not null)
-                    dataSet.Tables.Add(RemoveColumns(backupConditionTable, Setting.SaveConditionColumns));
+                //var dataSet = new DataSet();
+                //if (Setting.IsMergeConditionData && !Setting.IsMergeConditionTable && backupConditionTable is not null)
+                //    dataSet.Tables.Add(RemoveColumns(backupConditionTable, Setting.SaveConditionColumns));
 
-                foreach (DataTable table in Data!.Tables)
-                {
-                    dataView = Setting.UnmodifiedSaveTables is not null && (from tableName in Setting.UnmodifiedSaveTables
-                                                                            where tableName == table.TableName
-                                                                            select tableName).Any()
-                                                                            ? new DataView(table)
-                                                                            : new DataView(table)
-                                                                            {
-                                                                                RowStateFilter = Setting.SaveRowStateFilters is null || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
-                                                                                    ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
-                                                                                    : rowStateFilter,
-                                                                            };
-                    
-                    if (Setting.SaveFilters is not null && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
-                        dataView.RowFilter = filter;
+                //foreach (DataTable table in Data!.Tables)
+                //{
+                //    dataView = Setting.UnmodifiedSaveTables is not null && (from tableName in Setting.UnmodifiedSaveTables
+                //                                                            where tableName == table.TableName
+                //                                                            select tableName).Any()
+                //                                                            ? new DataView(table)
+                //                                                            : new DataView(table)
+                //                                                            {
+                //                                                                RowStateFilter = Setting.SaveRowStateFilters is null || !Setting.SaveRowStateFilters!.TryGetValue(table.TableName, out var rowStateFilter)
+                //                                                                    ? DataViewRowState.Added | DataViewRowState.ModifiedCurrent
+                //                                                                    : rowStateFilter,
+                //                                                            };
 
-                    if (Setting.SaveColumns is not null && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
-                        dataSet.Tables.Add(dataView.ToTable(false, columns));
-                    else
-                        dataSet.Tables.Add(dataView.ToTable());
-                }
+                //    if (Setting.SaveFilters is not null && Setting.SaveFilters!.TryGetValue(table.TableName, out var filter) && !string.IsNullOrWhiteSpace(filter))
+                //        dataView.RowFilter = filter;
 
-                if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && backupConditionTable is not null)
-                    MergeConditionTable(ref dataSet);
+                //    if (Setting.SaveColumns is not null && Setting.SaveColumns!.TryGetValue(table.TableName, out var columns))
+                //        dataSet.Tables.Add(dataView.ToTable(false, columns));
+                //    else
+                //        dataSet.Tables.Add(dataView.ToTable());
+                //}
 
-                result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", dataSet, ActionId!.Value);
+                //if (Setting.IsMergeConditionData && Setting.IsMergeConditionTable && backupConditionTable is not null)
+                //    MergeConditionTable(ref dataSet);
+
+                //result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", dataSet, ActionId!.Value);
+                result = GlobalCommon.DataProvider!.Save(PluginParameter!.Path, name ?? Setting?.DataSaveName ?? "save", GetSaveData()!, ActionId!.Value);
             }
 
             if (0 > result.ErrorNo || !string.IsNullOrWhiteSpace(result.Message))
@@ -897,52 +940,57 @@ namespace Compete.Mis.Plugins
 
             var hasError = false;
             var builder = new StringBuilder();
-            if (Setting.RequiredTables is not null)
-                foreach (var pair in Setting.RequiredTables)
-                    if ((!Data.Tables.Contains(pair.Key) || !(from row in Data.Tables[pair.Key]!.AsEnumerable()
-                                                                where row.RowState != DataRowState.Unchanged
-                                                                select row).Any()) && !string.IsNullOrWhiteSpace(pair.Value))
+            try
+            {
+                if (Setting.RequiredDataTables is not null)
+                    foreach (var pair in Setting.RequiredDataTables)
+                        if ((!Data.Tables.Contains(pair.Key) || Data.Tables[pair.Key]!.Rows.Count == 0) && !string.IsNullOrWhiteSpace(pair.Value))
+                        {
+                            builder.Append(pair.Value);
+                            builder.Append('\t');
+                            hasError = true;
+                        }
+
+                var saveDate = GetSaveData();
+                if (saveDate is null || 0 == saveDate.Tables.Count)
+                    return false;
+
+                if (Setting.RequiredTables is not null)
+                    foreach (var pair in Setting.RequiredTables)
+                        if ((!saveDate.Tables.Contains(pair.Key) || saveDate.Tables[pair.Key]!.Rows.Count == 0) && !string.IsNullOrWhiteSpace(pair.Value))
+                        {
+                            builder.Append(pair.Value);
+                            builder.Append('\t');
+                            hasError = true;
+                            //if (string.IsNullOrWhiteSpace(MessageText))
+                            //    MessageText = pair.Value;
+                            //else
+                            //    MessageText += pair.Value;
+                            //return false;
+                        }
+
+                if (verifyMethod is not null)
+                {
+                    //var message = verifyMethod.Invoke(null, [Data!])?.ToString();
+                    var message = verifyMethod.Invoke(null, [saveDate])?.ToString();
+                    if (!string.IsNullOrWhiteSpace(message))
                     {
-                        builder.Append(pair.Value);
+                        builder.Append(GlobalCommon.GetMessage(message));
                         builder.Append('\t');
                         hasError = true;
-                        //if (string.IsNullOrWhiteSpace(MessageText))
-                        //    MessageText = pair.Value;
-                        //else
-                        //    MessageText += pair.Value;
+                        //MessageText = GlobalCommon.GetMessage(message);
                         //return false;
                     }
-
-            if (Setting.RequiredDataTables is not null)
-                foreach (var pair in Setting.RequiredDataTables)
-                    if ((!Data.Tables.Contains(pair.Key) || !Data.Tables[pair.Key]!.AsEnumerable().Any()) && !string.IsNullOrWhiteSpace(pair.Value))
-                    {
-                        builder.Append(pair.Value);
-                        builder.Append('\t');
-                        hasError = true;
-                    }
-
-            if (verifyMethod is not null)
-            {
-                var message = verifyMethod.Invoke(null, [Data!])?.ToString();
-                if (!string.IsNullOrWhiteSpace(message))
-                {
-                    builder.Append(GlobalCommon.GetMessage(message));
-                    builder.Append('\t');
-                    hasError = true;
-                    //MessageText = GlobalCommon.GetMessage(message);
-                    //return false;
                 }
             }
-
-            var messageText = builder.ToString();
-            if (hasError)
+            finally
             {
-                MessageText += messageText;
-                return false;
+                var messageText = builder.ToString();
+                if (hasError)
+                    MessageText += messageText;
             }
 
-            return true;
+            return !hasError;
         }
 
         protected override bool ExecuteSaveSql(string name)

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace Compete.Mis.MisControls
 {
-    public sealed class EnumTextBlock : TextBlock
+    public sealed partial class EnumTextBlock : TextBlock
     {
         //static EnumTextBlock() => DefaultStyleKeyProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata(typeof(TextBlock)));
 

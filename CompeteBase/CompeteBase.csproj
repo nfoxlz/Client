@@ -8,6 +8,7 @@
 	<TieredPGO>true</TieredPGO>
 	<Configurations>Debug;Release;Debug-Java;Release-Java</Configurations>
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
@@ -34,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.12.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />

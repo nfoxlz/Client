@@ -5,7 +5,6 @@ using System;
 using System.Data;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -77,7 +76,7 @@ namespace Compete.Mis.Plugins
 
         private ulong runCount = 0UL;
 
-        private readonly object runCountLock = new();
+        private readonly Lock runCountLock = new();
 
         private void RunBackground(Action action)
         {
@@ -256,7 +255,7 @@ namespace Compete.Mis.Plugins
 
         private bool isPaused;
 
-        private readonly object pausedLock = new();
+        private readonly Lock pausedLock = new();
 
         private void SaveData(string? name, Action action)
         {
@@ -318,13 +317,16 @@ namespace Compete.Mis.Plugins
 
         public bool HasSaveAuthorition { get => HasAuthorition(ReserveAuthorition.Save); }
 
+        protected virtual DataSet? GetSaveData() => Data;
+
         private bool VerifyNonnullData()
         {
             var builder = new StringBuilder();
             if (View is DependencyObject view && view.Verify(out string viewErrorText))
                 builder.Append(viewErrorText);
 
-            if (Data!.Verify(out string dataErrorText))
+            var saveData = GetSaveData();
+            if (saveData != null && saveData.Verify(out string dataErrorText))
                 builder.Append(dataErrorText);
 
             MessageText = builder.ToString();
