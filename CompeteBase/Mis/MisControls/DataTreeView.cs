@@ -198,9 +198,6 @@ namespace Compete.Mis.MisControls
 
         // Using a DependencyProperty as the backing store for DataSource.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataSourceProperty =
-            DependencyProperty.Register(nameof(DataSource), typeof(IEnumerable), typeof(DataTreeView), new PropertyMetadata((d, e) =>
-            {
-                ((DataTreeView)d).Refresh();
-            }));
+            DependencyProperty.Register(nameof(DataSource), typeof(IEnumerable), typeof(DataTreeView), new PropertyMetadata((d, e) => ((DataTreeView)d).Refresh()));
     }
 }

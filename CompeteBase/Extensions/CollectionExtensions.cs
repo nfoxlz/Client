@@ -164,9 +164,7 @@ namespace Compete.Extensions
         }
 
         public static List<TDestination?> ToDynamicMapList<TDestination>(this IEnumerable<object> list)
-        {
-            return list.Select(source => source.DynamicMapTo<TDestination>()).ToList();
-        }
+            => [.. list.Select(source => source.DynamicMapTo<TDestination>())];
 
         /// <summary>
         /// 取得当前元素。
@@ -204,6 +202,16 @@ namespace Compete.Extensions
             table.Rows.Add(row);
 
             return table;
+        }
+
+
+        public static IDictionary<TKey, TValue> ClearNull<TKey, TValue>(this IDictionary<TKey, TValue?> dic) where TKey : notnull
+        {
+            var result = new Dictionary<TKey, TValue>();
+            foreach (var pair in dic)
+                if (pair.Value is not null)
+                    result.Add(pair.Key, pair.Value);
+            return result;
         }
     }
 }

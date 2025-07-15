@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Compete.Extensions;
 using Compete.Mis.MisControls;
 using System;
 using System.Data;
@@ -283,14 +284,32 @@ namespace Compete.Mis.Plugins
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
-        private void Save(string? name) => RunBackground(() =>
-        SaveData(name, () =>
-        {
-            Data!.AcceptChanges();
+        private void Save(RoutedEventArgs args) => args.Run<string>(Save);
+        //{
+        //    args.Run<string>(Save);
+        //    var source = args.GetCommandSource();
+        //    var element = source as UIElement;
+        //    if (element != null)
+        //        element.IsEnabled = false;
+        //    try
+        //    {
+        //        Save(source?.CommandParameter.ToString());
+        //    }
+        //    finally
+        //    {
+        //        if (element != null)
+        //            element.IsEnabled = true;
+        //    }
+        //}
 
-            if (CanQuery())
-                Query(null);
-        }));
+        private void Save(string? name) => RunBackground(() =>
+            SaveData(name, () =>
+            {
+                Data!.AcceptChanges();
+
+                if (CanQuery())
+                    Query(null);
+            }));
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private void SaveClose(string? name) => RunBackground(() =>

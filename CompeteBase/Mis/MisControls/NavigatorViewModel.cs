@@ -105,7 +105,7 @@ namespace Compete.Mis.MisControls
                             this.NotifyPropertyChanged(p => p.CurrentPageNo);
                         }
                     }
-                    else if (PageSizeChangingCommand?.CanExecute(PageSizeChangingCommandParameter) == true)
+                    else if (PageSizeChangedCommand?.CanExecute(PageSizeChangedCommandParameter) == true)
                         PageSizeChangedCommand?.Execute(PageSizeChangedCommandParameter);
 
                     OnPropertyChanged(nameof(MaxPageNo));

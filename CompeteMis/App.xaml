@@ -5,6 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/themes/Fluent.xaml"/>-->
                 <ResourceDictionary Source="/PresentationFramework.Aero, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35;component/themes/aero.normalcolor.xaml" />
                 <!--<ResourceDictionary Source="/PresentationFramework.AeroLite, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35;component/themes/aerolite.normalcolor.xaml" />-->
                 <!--<ResourceDictionary Source="pack://siteOfOrigin:,,,/Languages/zh-CN.xaml" />-->

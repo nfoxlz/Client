@@ -8,8 +8,6 @@
 // 1.0.0.0 2018/3/7 16:56:15 LeeZheng 新建。
 //==============================================================
 using Compete.Extensions;
-using Compete.MemoryData;
-using Compete.Mis.Enums;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -74,9 +72,9 @@ namespace Compete.Mis.MisControls
 
         protected override Brush? GetTitleForeground(DataColumn column)
         {
-            if (IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]))
+            if (IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]))
                 return Constants.ReadOnlyBrush;
-            else if (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsRequired]))
+            else if (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired]))
                 return Constants.RequiredBrush;
             else
                 return base.GetTitleForeground(column);
@@ -113,20 +111,20 @@ namespace Compete.Mis.MisControls
         /// <returns>生成的编辑或显示控件。</returns>
         protected override FrameworkElement? CreateElement(DataColumn column, TextBlock titleControl)
         {
-            var isReadOnly = IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsReadOnly]);     // 是否只读。
-            var isRequired = !isReadOnly && (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[ExtendedPropertyNames.IsRequired])); // 是否必填。
+            var isReadOnly = IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]);     // 是否只读。
+            var isRequired = !isReadOnly && (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired])); // 是否必填。
 
             var binding = GetBinding(column);
 
-            var control = column.ExtendedProperties[ExtendedPropertyNames.Control];
+            var control = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Control];
             var controlType = control is null ? DataControlType.Default : control.ToString()!.ToEnum<DataControlType>();
 
             FrameworkElement? result;
             var columnName = column.ColumnName;
             var dataType = column.DataType;
-            var type = column.ExtendedProperties[ExtendedPropertyNames.DataType];
+            var type = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.DataType];
             var dbType = type is null ? DbType.String : type.ToString()!.ToEnum<DbType>();
-            var parameters = DataControlHelper.ConvertParameters((string)column.ExtendedProperties[ExtendedPropertyNames.Parameters]!);
+            var parameters = DataControlHelper.ConvertParameters((string)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!);
 
             if (isReadOnly) // 只读处理。
             {
@@ -224,7 +222,7 @@ namespace Compete.Mis.MisControls
                             {
                                 IsReadOnly = true,
                                 //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
-                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
+                                ItemData = Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -233,7 +231,7 @@ namespace Compete.Mis.MisControls
                             {
                                 IsReadOnly = true,
                                 //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
-                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
+                                ItemData = Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -251,18 +249,18 @@ namespace Compete.Mis.MisControls
             }
             else
             {   // 可写
-                var maximum = column.ExtendedProperties[ExtendedPropertyNames.Maximum]; // 最大值。
-                var minimum = column.ExtendedProperties[ExtendedPropertyNames.Minimum]; // 最小值。
+                var maximum = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Maximum]; // 最大值。
+                var minimum = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Minimum]; // 最小值。
 
                 if (isRequired)  // 是否必须。
                     binding.ValidationRules.Add(new NonnullRule() { DisplayName = column.Caption });
 
-                var regex = column.ExtendedProperties[ExtendedPropertyNames.Regex]?.ToString(); // 正则表达式。
+                var regex = column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Regex]?.ToString(); // 正则表达式。
                 if (!string.IsNullOrWhiteSpace(regex))
                     binding.ValidationRules.Add(new RegexnRule()
                     {
                         RegularExpression = regex,
-                        ErrorText = string.Format(column.ExtendedProperties[ExtendedPropertyNames.ErrorText]!.ToString()!, column.Caption)
+                        ErrorText = string.Format(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.ErrorText]!.ToString()!, column.Caption)
                     });
 
                 if (DataControlType.Default == controlType)
@@ -389,11 +387,11 @@ namespace Compete.Mis.MisControls
                         {
                             Name = columnName,
                             EnumName = columnName,  // .Replace("_", string.Empty)
-                            SelectedValuePath = nameof(EnumItem.Value),
-                            DisplayMemberPath = nameof(EnumItem.DisplayName),
+                            SelectedValuePath = nameof(Enums.EnumItem.Value),
+                            DisplayMemberPath = nameof(Enums.EnumItem.DisplayName),
                             IsRequired = isRequired,
                         };
-                        result.SetBinding(EnumComboBox.SelectedValueProperty, binding);
+                        result.SetBinding(System.Windows.Controls.Primitives.Selector.SelectedValueProperty, binding);
                     }
                     else if (typeof(ulong) == dataType)
                         result = CreateUpDown<ULongUpDown, ulong>(columnName, maximum, minimum, binding);
@@ -457,7 +455,7 @@ namespace Compete.Mis.MisControls
                             result = new SinglechoiceBox
                             {
                                 //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
-                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
+                                ItemData = Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;
@@ -465,7 +463,7 @@ namespace Compete.Mis.MisControls
                             result = new MultichoiceBox
                             {
                                 //ItemData = GlobalCommon.EnumDictionary[(column.ExtendedProperties[ExtendedPropertyNames.Parameters] ?? columnName).ToString()!]
-                                ItemData = EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
+                                ItemData = Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)
                             };
                             result.SetBinding(ChoiceBox.ValueProperty, binding);
                             break;

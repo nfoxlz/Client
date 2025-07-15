@@ -234,13 +234,13 @@ namespace Compete.Mis.MisControls
         public static bool Verify(this DataTable table, out string errorText, bool ignoreUnchanged = true)
         {
             errorText = string.Empty;
-            var builder = new StringBuilder();
 
             if (table is null)
                 return false;
 
             int index;
             var result = false;
+            var builder = new StringBuilder();
             foreach (DataColumn column in table.Columns)
                 if (Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]) && Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired])) // 检查数据列是否设置为必须。
                 {

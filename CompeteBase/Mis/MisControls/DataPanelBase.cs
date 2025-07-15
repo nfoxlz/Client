@@ -8,8 +8,8 @@
 // 1.0.0.0 2019/4/19 周五 8:41:22 LeeZheng 新建。
 // ======================================================
 using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -150,16 +150,20 @@ namespace Compete.Mis.MisControls
             TextBlock titleControl;     // 标题控件。
             double top = 2D;            // 数据项显示的顶部位置。
             int columnIndex = 0;
-            var columnList = new List<DataColumn>();
-            int displayIndex;
-            foreach(DataColumn column in columns)
-            {
-                displayIndex = Convert.ToInt32(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.DisplayIndex] ?? -1);
-                if (displayIndex < 0)
-                    columnList.Add(column);
-                else
-                    columnList.Insert(displayIndex, column);
-            }
+            //var columnList = new List<DataColumn>();
+            //int displayIndex;
+            //foreach(DataColumn column in columns)
+            //{
+            //    displayIndex = Convert.ToInt32(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.DisplayIndex] ?? -1);
+            //    if (displayIndex < 0)
+            //        columnList.Add(column);
+            //    else
+            //        columnList.Insert(displayIndex, column);
+            //}
+            var columnList = (from column in columns.Cast<DataColumn>()
+                              orderby Convert.ToInt32(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.DisplayIndex] ?? int.MaxValue), columns.IndexOf(column)
+                              select column).ToList();
+
             foreach (DataColumn column in columnList)
             {
                 if (column.ExtendedProperties.ContainsKey(MemoryData.ExtendedPropertyNames.IsVisible) && !Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible]))

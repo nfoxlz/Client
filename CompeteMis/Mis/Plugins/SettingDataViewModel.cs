@@ -1,6 +1,4 @@
-﻿using Compete.Extensions;
-using Compete.Mis.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -9,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Markup;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Compete.Extensions;
 
 namespace Compete.Mis.Plugins
 {
