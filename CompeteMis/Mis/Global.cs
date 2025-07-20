@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
@@ -80,11 +81,12 @@ namespace Compete.Mis
             if (File.Exists(path))
             {
                 using (var stream = File.OpenRead(path))
-                {
-                    var resourceDictionary = XamlReader.Load(stream) as ResourceDictionary;
-                    //Application.Current.Resources.MergedDictionaries.Remove(resourceDictionary);
-                    Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
+                    Application.Current.Resources.MergedDictionaries.Add(XamlReader.Load(stream) as ResourceDictionary);
+                //{
+                //    var resourceDictionary = XamlReader.Load(stream) as ResourceDictionary;
+                //    //Application.Current.Resources.MergedDictionaries.Remove(resourceDictionary);
+                //    Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+                //}
 
                 Application.Current.Dispatcher.Thread.CurrentUICulture
                     = Application.Current.Dispatcher.Thread.CurrentCulture

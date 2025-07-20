@@ -1,0 +1,24 @@
+﻿<Window x:Class="Compete.Mis.Chart.ChartSettingDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:Compete.Mis.Chart"
+        mc:Ignorable="d"
+        Title="{DynamicResource ChartSettingDialog.Title}" Height="180" Width="350" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="51"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock HorizontalAlignment="Right" Margin="0,13,5,0" TextWrapping="Wrap" Text="{DynamicResource ChartSettingDialog.Type}" VerticalAlignment="Top"/>
+        <ComboBox Margin="0,10,10,0" VerticalAlignment="Top" ItemsSource="{Binding ChartSetting.TypeSettings}" DisplayMemberPath="DisplayName" SelectedItem="{Binding ChartSetting.TypeSetting}" Grid.Column="1"/>
+        <TextBlock HorizontalAlignment="Right" Margin="0,41,5,0" TextWrapping="Wrap" Text="{DynamicResource ChartSettingDialog.FillColor}" VerticalAlignment="Top"/>
+        <xctk:ColorPicker Margin="0,36,10,0" VerticalAlignment="Top" SelectedColor="{Binding ChartSetting.FillColor}" Grid.Column="1"/>
+        <TextBlock HorizontalAlignment="Right" Margin="0,66,5,0" TextWrapping="Wrap" Text="{DynamicResource ChartSettingDialog.LineColor}" VerticalAlignment="Top"/>
+        <xctk:ColorPicker Margin="0,63,10,0" VerticalAlignment="Top" SelectedColor="{Binding ChartSetting.LineColor}" Grid.Column="1"/>
+        <Button Content="{DynamicResource OKButton}" HorizontalAlignment="Right" Margin="0,0,88,10" VerticalAlignment="Bottom" Height="23" Width="75" IsDefault="True" Grid.Column="1" Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
+        <Button Content="{DynamicResource CancelButton}" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="23" Width="75" IsCancel="True" Grid.Column="1"/>
+    </Grid>
+</Window>

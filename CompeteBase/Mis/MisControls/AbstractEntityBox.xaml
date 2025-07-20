@@ -8,8 +8,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="22" d:DesignWidth="600">
     <DockPanel>
-        <Button Name="SelectButton" Content="..." DockPanel.Dock="Right" Width="22"/>
-        <Button Name="ClearButton" Content="{DynamicResource ClearButton}" DockPanel.Dock="Right" Width="22"/>
+        <Button Name="SelectButton" Content="..." DockPanel.Dock="Right" Width="22" ToolTip="{DynamicResource SelectButton}"/>
+        <Button Name="ClearButton" DockPanel.Dock="Right" Width="22" ToolTip="{DynamicResource ClearButton}">
+            <Image Source="/CompeteBase;component/Assets/Images/Clear.png"/>
+        </Button>
         <xctk:WatermarkTextBox Name="DisplayTextBox" IsReadOnly="True"/>
     </DockPanel>
 </UserControl>

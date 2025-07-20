@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Compete.Mis.Chart;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Compete.Mis.Plugins
@@ -118,5 +120,12 @@ namespace Compete.Mis.Plugins
         public string[]? RunColumns { get; set; }
 
         public IDictionary<int, string>? ErrorDictionary { get; set; }
+
+        public IEnumerable<ChartPluginSetting>? ChartSettings { get; set; }
+
+        public string? XLabel { get; set; }
+
+        public string? YLabel { get; set; }
+
     }
 }

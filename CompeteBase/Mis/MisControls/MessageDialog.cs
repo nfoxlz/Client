@@ -40,13 +40,13 @@ namespace Compete.Mis.MisControls
         private static MessageBoxResult ShowMessageBox(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, MessageBoxResult defaultResult = MessageBoxResult.OK, params object[] args)
         {
 #if DEBUG
-            return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), Application.Current.Resources.MergedDictionaries[1][caption].ToString(), button, icon, defaultResult);
+            return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), GlobalCommon.GetMessage(caption), button, icon, defaultResult);
 #else
-            return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), Application.Current.Resources.MergedDictionaries[1][caption].ToString(), button, icon, defaultResult);
+            return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), GlobalCommon.GetMessage(caption), button, icon, defaultResult);
             //if (BrowserInteropHelper.IsBrowserHosted)
-            //    return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), Application.Current.Resources.MergedDictionaries[1][caption].ToString(), button, icon, defaultResult);
+            //    return MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), GlobalCommon.GetMessage(caption), button, icon, defaultResult);
             //else
-            //    return Xceed.Wpf.Toolkit.MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), Application.Current.Resources.MergedDictionaries[1][caption].ToString(), button, icon, defaultResult, messageBoxStyle);
+            //    return Xceed.Wpf.Toolkit.MessageBox.Show(GlobalCommon.GetMessage(messageBoxText, args), GlobalCommon.GetMessage(caption), button, icon, defaultResult, messageBoxStyle);
 #endif
         }
 

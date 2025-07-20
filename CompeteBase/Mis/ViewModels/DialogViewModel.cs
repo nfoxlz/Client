@@ -20,7 +20,7 @@ namespace Compete.Mis.ViewModels
         [RelayCommand(CanExecute = nameof(CanOk))]
         private void Ok(FrameworkElement sender) => DoOk(sender);
 
-        protected abstract void DoOk(FrameworkElement sender);
+        protected virtual void DoOk(FrameworkElement sender) => sender.GetWindow()!.DialogResult = true;
 
         protected abstract bool CanOk();
     }

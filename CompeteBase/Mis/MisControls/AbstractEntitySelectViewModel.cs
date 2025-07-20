@@ -152,13 +152,6 @@ namespace Compete.Mis.MisControls
         /// <param name="e">事件数据。</param>
         protected override bool CanOk() => SelectedItem is not null;
 
-        /// <summary>
-        /// OK 命令的Executed事件的处理程序。
-        /// </summary>
-        /// <param name="sender">事件处理程序所附加到的对象。</param>
-        /// <param name="e">事件数据。</param>
-        protected override void DoOk(FrameworkElement sender) => sender.GetWindow()!.DialogResult = true;
-
         [RelayCommand]
         private void Clear(FrameworkElement sender)
         {

@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Compete.Mis.Chart.ChartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:Compete.Mis.Chart"
+             mc:Ignorable="d" 
+             d:DesignHeight="540" d:DesignWidth="960">
+    <UserControl.DataContext>
+        <local:ChartViewModel/>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="{Binding SettingWidth}"/>
+        </Grid.ColumnDefinitions>
+        <ContentControl Content="{Binding PlotControl, Mode=OneTime}" Grid.RowSpan="2"/>
+        <GridSplitter HorizontalAlignment="Left" Width="5" Grid.Column="1" Grid.RowSpan="2"/>
+        <Button Grid.Column="1" Content="{DynamicResource AddButton}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding AddChartSettingCommand}"/>
+        <Button Grid.Column="1" Content="{DynamicResource ModifyButton}" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding ModifyChartSettingCommand}"/>
+        <Button Grid.Column="1" Content="{DynamicResource DeleteButton}" HorizontalAlignment="Left" Margin="170,10,0,0" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding RemoveChartSettingCommand}"/>
+        <Button Grid.Column="1" Content="{DynamicResource RefreshButton}" HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding RefreshCommand}"/>
+        <DataGrid  Grid.Column="1" Margin="5,38,0,0" ItemsSource="{Binding ChartSettings}" AutoGenerateColumns="False" IsReadOnly="True" SelectedItem="{Binding SelectedChartSetting}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="{DynamicResource Chart.Type}" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox IsEnabled="False" ItemsSource="{Binding TypeSettings}" DisplayMemberPath="DisplayName" SelectedItem="{Binding TypeSetting, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{DynamicResource Chart.FillColor}" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <xctk:ColorPicker IsEnabled="False" SelectedColor="{Binding FillColor}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{DynamicResource Chart.LineColor}" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <xctk:ColorPicker SelectedColor="{Binding LineColor}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Height="5" Margin="5,0,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <Button Grid.Column="1" Content="{DynamicResource AddButton}" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding AddColumnNameCommand}"/>
+        <Button Grid.Column="1" Content="{DynamicResource DeleteButton}" HorizontalAlignment="Left" Margin="90,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="23" Width="75" Command="{Binding RemoveColumnNameCommand}"/>
+        <ListBox Grid.Row="1" ItemsSource="{Binding CurrentColumnNames}" DisplayMemberPath="Value" Margin="5,38,0,0" Grid.Column="1" SelectedItem="{Binding CurrentColumnName}"/>
+    </Grid>
+</UserControl>

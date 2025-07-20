@@ -75,7 +75,7 @@ namespace Compete.Mis
         /// <param name="arg">格式化参数。</param>
         /// <returns>屏幕消息。</returns>
         public static string GetMessage(string displayName, params object[] arg)
-            => Application.Current.Resources.MergedDictionaries.Count > 1 ? string.Format((Application.Current.Resources.MergedDictionaries[1][displayName] ?? displayName).ToString()!, arg) : displayName;
+            => GetMessageOrDefault(displayName, displayName, arg);
 
         public static string GetMessageOrDefault(string displayName, string defaultMessage, params object[] arg)
             => Application.Current.Resources.MergedDictionaries.Count > 1 ? string.Format((Application.Current.Resources.MergedDictionaries[1][displayName] ?? defaultMessage).ToString()!, arg) : defaultMessage;

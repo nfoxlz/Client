@@ -9,7 +9,19 @@
     <s:String x:Key="OKButton">确定(_O)</s:String>
     <s:String x:Key="CancelButton">取消(_C)</s:String>
     <s:String x:Key="WaitMessage">请等待程序运行……</s:String>
-    <s:String x:Key="ClearButton">清</s:String>
+    <s:String x:Key="SelectButton">选取</s:String>
+    <s:String x:Key="ClearButton">清除</s:String>
+
+    <!--统计图-->
+    <s:String x:Key="Chart.Title">{0} 统计图</s:String>
+    <s:String x:Key="Chart.Signal">信号图</s:String>
+    <s:String x:Key="Chart.Bars">柱状图</s:String>
+    <s:String x:Key="Chart.Pie">饼图</s:String>
+    <s:String x:Key="Chart.Scatter">散布图</s:String>
+    <s:String x:Key="Chart.Radar">雷达图</s:String>
+    <s:String x:Key="Chart.Type">统计图类型</s:String>
+    <s:String x:Key="Chart.FillColor">填充色</s:String>
+    <s:String x:Key="Chart.LineColor">线色</s:String>
 
     <s:String x:Key="TitleSuffixTotal">总计</s:String>
 
@@ -33,8 +45,16 @@
     <!--实体选择对话框-->
     <s:String x:Key="EntitySelectDialog.Title">{0}选择</s:String>
     <s:String x:Key="EntitySelectDialog.FilterTextBlock">过滤</s:String>
-    <s:String x:Key="EntitySelectDialog.RefreshButton">刷新(_R)</s:String>
     <s:String x:Key="EntitySelectDialog.ClearButton">清除(_C)</s:String>
+
+    <!--列选择对话框-->
+    <s:String x:Key="ColumnSelectorDialog.Title">列选择</s:String>
+
+    <!--统计图设置对话框-->
+    <s:String x:Key="ChartSettingDialog.Title">统计图设置</s:String>
+    <s:String x:Key="ChartSettingDialog.Type">类型</s:String>
+    <s:String x:Key="ChartSettingDialog.FillColor">填充色</s:String>
+    <s:String x:Key="ChartSettingDialog.LineColor">线色</s:String>
 
     <!--主窗口-->
     <s:String x:Key="MainPage.EditMenu">编辑(_E)</s:String>
@@ -147,6 +167,8 @@
     <s:String x:Key="DeleteChildButton">删除子项</s:String>
 	<s:String x:Key="CloseButton">关闭(_C)</s:String>
     <s:String x:Key="ViewButton">查看(_V)</s:String>
+    <s:String x:Key="ChartButton">统计图(_C)</s:String>
+    <s:String x:Key="RefreshButton">刷新(_R)</s:String>
 
     <s:String x:Key="SaveSuccess">保存成功。</s:String>
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Compete.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Documents;
 using System.Windows.Markup;
-using Compete.Extensions;
+using System.Windows.Media;
 
 namespace Compete.Mis.Plugins
 {
@@ -171,6 +172,31 @@ namespace Compete.Mis.Plugins
                 }
 
                 runCheckMethod = CompileFile(basePath, "CheckRun.cs", Scripts.ScriptTemplates.RunCheckTemplate, Scripts.ScriptTemplates.RunCheckMethodClassName);
+
+                if (Setting.ChartSettings is not null)
+                {
+                    var chartSettings = new List<Chart.ChartSetting>();
+                    foreach (var setting in Setting.ChartSettings)
+                    {
+                        var chartSetting = new Chart.ChartSetting();
+                        chartSetting.TypeSetting = Chart.ChartTypeSetting.Settings[setting.Type];
+
+                        if (setting.FillColor is not null)
+                            chartSetting.FillColor = setting.FillColor.Value.ToColor();
+                        if (setting.LineColor is not null)
+                            chartSetting.FillColor = setting.LineColor.Value.ToColor();
+
+                        if (setting.ColumnNames is not null)
+                            foreach (var name in setting.ColumnNames)
+                                chartSetting.ColumnNames.Add(name, string.Empty);
+
+                        chartSettings.Add(chartSetting);
+                    }
+                    ChartSettings = chartSettings;
+                }
+
+                XLabel = Setting.XLabel;
+                YLabel = Setting.YLabel;
             }
 
             return base.Initializing();

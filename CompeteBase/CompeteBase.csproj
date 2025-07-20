@@ -26,6 +26,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Clear.png" />
+    <None Remove="Assets\Images\Column.png" />
     <None Remove="Assets\Images\First.png" />
     <None Remove="Assets\Images\Last.png" />
     <None Remove="Assets\Images\Next.png" />
@@ -40,11 +42,18 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.14.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="ScottPlot.WPF" Version="5.0.55" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
     <PackageReference Include="System.Runtime.Caching" Version="9.0.7" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Images\Clear.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Column.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\First.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

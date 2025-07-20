@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Compete.Extensions;
 using Compete.Mis.MisControls;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace Compete.Mis.Plugins
 {
@@ -56,6 +58,16 @@ namespace Compete.Mis.Plugins
 
         [ObservableProperty]
         private Guid? _actionId;
+
+        [ObservableProperty]
+        private IEnumerable<Chart.ChartSetting>? _chartSettings;
+
+        [ObservableProperty]
+        private string? _xLabel;
+
+        [ObservableProperty]
+        private string? _yLabel;
+
 
         public object? View { get; set; }
 
@@ -190,6 +202,49 @@ namespace Compete.Mis.Plugins
             return true;
         }
 
+        [RelayCommand(CanExecute = nameof(CanQuery))]
+        private void ShowChart()
+        {
+            //if (Data is null || Data.Tables.Count == 0)
+            //    return;
+            if (MasterData is null)
+                Query();
+
+            if (Data is null)
+                return;
+
+            var chart = new Chart.ChartView();
+            var vm = (chart.DataContext as Chart.ChartViewModel)!;
+            vm.Title = PluginParameter?.Title ?? string.Empty;
+            vm.MasterData = MasterData;
+
+            vm.XLabel = XLabel;
+            vm.YLabel = YLabel;
+
+            if (ChartSettings is not null)
+            {
+                var columns = Data.Tables[0].Columns;
+                foreach (var setting in ChartSettings)
+                {
+                    foreach (var name in setting.ColumnNames)
+                        if (columns.Contains(name.Key))
+                            setting.ColumnNames[name.Key] = columns[name.Key]!.Caption;
+                    vm.ChartSettings.Add(setting);
+                }
+
+                if (vm.ChartSettings.Count > 0)
+                {
+                    vm.SelectedChartSetting = vm.ChartSettings[0];
+                    vm.SettingWidth = new GridLength(0, GridUnitType.Star);
+                    vm.Refresh();
+                }
+            }
+
+            var document = new LayoutDocument() { Content = chart, Title = GlobalCommon.GetMessage("Chart.Title", PluginParameter?.Title??string.Empty) };
+            GlobalCommon.MainDocumentPane!.Children.Add(document);
+            GlobalCommon.MainDocumentPane.SelectedContentIndex = GlobalCommon.MainDocumentPane.Children.Count - 1;
+        }
+
         partial void OnMasterDataChanged(BindingListCollectionView? oldValue, BindingListCollectionView? newValue)
         {
             if (oldValue is not null)
@@ -308,7 +363,7 @@ namespace Compete.Mis.Plugins
                 Data!.AcceptChanges();
 
                 if (CanQuery())
-                    Query(null);
+                    Query();
             }));
 
         [RelayCommand(CanExecute = nameof(CanSave))]
@@ -331,7 +386,7 @@ namespace Compete.Mis.Plugins
                 Data!.AcceptChanges();
 
                 if (CanQuery())
-                    Query(null);
+                    Query();
             }));
 
         public bool HasSaveAuthorition { get => HasAuthorition(ReserveAuthorition.Save); }
