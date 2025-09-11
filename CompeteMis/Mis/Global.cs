@@ -1,9 +1,13 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.MemoryMappedFiles;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,9 +18,22 @@ namespace Compete.Mis
     internal static class Global
     {
         public static Frame.Services.WebApi.WebApiHelper ServiceHelper { get; }
-            = new Frame.Services.WebApi.WebApiHelper(ConfigurationManager.AppSettings["WebApiBaseAddress"] ?? Constants.DefaultBaseAddress, Constants.SignPassword);
+            = new Frame.Services.WebApi.WebApiHelper(ConfigurationManager.AppSettings["WebApiBaseAddress"] ?? Constants.DefaultBaseAddress, Constants.SignPassword) { UseDataSignature = Convert.ToBoolean(ConfigurationManager.AppSettings["UseDataSignature"] ?? "True") };
 
         private static readonly string settingPath = ConfigurationManager.AppSettings["SettingsPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../settings");
+
+        //private static readonly string updatePath = ConfigurationManager.AppSettings["UpdatePath"] ?? "/CompeteMIS";
+
+        private static readonly Frame.Services.IAccountService service = DispatchProxy.Create<Frame.Services.IAccountService, Frame.Services.WebApi.WpfWebApiServiceProxy>();
+
+        public static Utils.SFTPSetting SFTPSetting { get; private set; }
+
+        static Global()
+        {
+            var sftpSettingPath = Path.Combine(settingPath, "sftp.json");
+            SFTPSetting = File.Exists(sftpSettingPath) ? JsonSerializer.Deserialize<Utils.SFTPSetting>(File.ReadAllText(sftpSettingPath)) ?? Utils.SFTPSetting.Default : Utils.SFTPSetting.Default;
+            //SFTPSetting = File.Exists(sftpSettingPath) ? JsonSerializer.Deserialize<Utils.SFTPSetting>(File.ReadAllText(sftpSettingPath)) ?? new Utils.SFTPSetting() : new Utils.SFTPSetting();
+        }
 
         public static void Initialize()
         {
@@ -27,6 +44,10 @@ namespace Compete.Mis
 
             //LoadLanguage(ConfigurationManager.AppSettings["Language"] ?? "zh-CN");  // 设置语言。
             LoadLanguage(ConfigurationManager.AppSettings["Language"] ?? CultureInfo.CurrentUICulture.IetfLanguageTag);
+
+#if !DEBUG && !DEBUG_JAVA
+            CheckUpdate();
+#endif
 
             Common.ObjectHelper.AddAssembly(typeof(Global));
 
@@ -46,9 +67,15 @@ namespace Compete.Mis
             GlobalCommon.ServerDateTimeProvider = new Provider.DateTimeProvider();
             GlobalCommon.DataProvider = new Provider.DataProvider();
             GlobalCommon.EntityDataProvider = new Provider.EntityDataProvider();
-
+#if !JAVA_LANGUAGE
+            Utils.Cryptography.PublicKey = service.GetPublicKey();
+#endif
             Plugins.PluginHelper.DefaultCommand = new Plugins.SettingPlugin();
+
+            Application.Current.MainWindow.Visibility = Visibility.Visible;
         }
+
+        //public static void Initialized() => Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(ConfigurationManager.AppSettings["Language"] ?? CultureInfo.CurrentUICulture.IetfLanguageTag);
 
         private static readonly Enums.IEumnDataProvider provider = new Provider.EumnDataProvider();
 
@@ -75,7 +102,7 @@ namespace Compete.Mis
                 _ => null,
             });
 
-        public static void LoadLanguage(string language)
+        private static void LoadLanguage(string language)
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Languages", Path.ChangeExtension(language, ".xaml"));
             if (File.Exists(path))
@@ -91,8 +118,45 @@ namespace Compete.Mis
                 Application.Current.Dispatcher.Thread.CurrentUICulture
                     = Application.Current.Dispatcher.Thread.CurrentCulture
                     = CultureInfo.GetCultureInfo(language);
+            }
+            Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(language);
+        }
 
-                Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(language);
+        private const string SharedMemoryFileName = "UpdateSharedMemory";
+
+        private static void CheckUpdate()
+        {
+            var result = Frame.Services.GlobalServices.UpdateService.Chcek(SFTPSetting);
+            if (result.Data != null && result.Data.Count() > 0)
+            {
+                if (MisControls.MessageDialog.Question("Message.FoundNewVersion", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    var bytes = Encoding.UTF8.GetBytes(string.Join('|', result.Data));
+
+                    // 启动更新程序
+                    //using (var memoryMappedFile = MemoryMappedFile.CreateOrOpen(SharedMemoryFileName, bytes.Length + 4))
+                    var memoryMappedFile = MemoryMappedFile.CreateOrOpen(SharedMemoryFileName, bytes.Length + 4);
+                    using (var accessor = memoryMappedFile.CreateViewAccessor())
+                    {
+                        accessor.Write(0, bytes.Length);
+                        accessor.WriteArray(4, bytes, 0, bytes.Length);
+                    }
+
+                    Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Updater.exe"), $"{SharedMemoryFileName}");
+
+                    //var startInfo = new System.Diagnostics.ProcessStartInfo
+                    //{
+                    //    FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Updater.exe"),
+                    //    Arguments = $"{SharedMemoryFileName} {updatePath}",
+                    //    UseShellExecute = true,
+                    //    Verb = "runas"
+                    //};
+                    //var updateWindow = new UpdateWindow(fileList.Data);
+                    //updateWindow.ShowDialog();
+
+                    Application.Current.Shutdown();
+                    Environment.Exit(0);
+                }
             }
         }
     }

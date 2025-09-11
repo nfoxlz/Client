@@ -53,7 +53,7 @@ namespace Compete.Extensions
         /// </summary>
         /// <param name="souceRow"><see cref="DataRow"/> 类型源对象。</param>
         /// <param name="targetRow">目标对象。</param>
-        public static void CopyTo(this DataRow souceRow, DataRow targetRow, IEnumerable<string>? omittedColumns = null)
+        public static void CopyTo(this DataRow souceRow, DataRow targetRow, IEnumerable<string>? omittedColumns = null, bool ignoreNull = false)
         {
             var columns = targetRow.Table.Columns;
             foreach (DataColumn column in souceRow.Table.Columns)
@@ -62,8 +62,14 @@ namespace Compete.Extensions
                                                    where columnName == column.ColumnName
                                                    select columnName).Any())
                     continue;
-                if (columns.Contains(column.ColumnName) && !Mis.MisControls.DataVerifier.IsNull(souceRow[column], column))//souceRow[column.ColumnName] != DBNull.Value
-                    targetRow[column.ColumnName] = Convert.ChangeType(souceRow[column], columns[column.ColumnName]!.DataType);
+                if (columns.Contains(column.ColumnName))
+                    if (Mis.MisControls.DataVerifier.IsNull(souceRow[column], column))//souceRow[column.ColumnName] != DBNull.Value
+                    {
+                        if (!ignoreNull)
+                            targetRow[column.ColumnName] = DBNull.Value;
+                    }
+                    else
+                        targetRow[column.ColumnName] = Convert.ChangeType(souceRow[column], columns[column.ColumnName]!.DataType);
             }
 
             //var columns = souceRow.Table.Columns;

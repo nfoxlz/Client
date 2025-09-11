@@ -119,7 +119,7 @@ namespace Compete.Extensions
         /// <returns></returns>
         public static T[] Split<T>(this T[] source, long startIndex)
         {
-            return source.Split(startIndex, source.LongLength - 1L);
+            return source.Split(startIndex, source.LongLength);
         }
 
         /// <summary>
@@ -131,8 +131,9 @@ namespace Compete.Extensions
         /// <returns></returns>
         public static T[] Split<T>(this T[] source, long startIndex, long endIndex)
         {
-            T[] result = new T[endIndex - startIndex + 1L];
-            for (long i = 0; i <= endIndex - startIndex; i++)
+            var count = endIndex - startIndex;
+            T[] result = new T[count];
+            for (long i = 0; i < count; i++)
                 result[i] = source[i + startIndex];
             return result;
         }
@@ -145,7 +146,7 @@ namespace Compete.Extensions
         /// <returns></returns>
         public static T[] Split<T>(this T[] source, int startIndex)
         {
-            return source.Split(startIndex, source.Length - 1);
+            return source.Split(startIndex, source.Length);
         }
 
         /// <summary>
@@ -157,8 +158,9 @@ namespace Compete.Extensions
         /// <returns></returns>
         public static T[] Split<T>(this T[] source, int startIndex, int endIndex)
         {
-            T[] result = new T[endIndex - startIndex + 1];
-            for (int i = 0; i <= endIndex - startIndex; i++)
+            var count = endIndex - startIndex;
+            T[] result = new T[count];
+            for (int i = 0; i < count; i++)
                 result[i] = source[i + startIndex];
             return result;
         }

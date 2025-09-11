@@ -102,7 +102,7 @@ namespace Compete.Mis.MisControls
         /// 标识 PageSize 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty PageSizeProperty =
-            DependencyProperty.Register(nameof(PageSize), typeof(ushort), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageSize,
+            DependencyProperty.Register(nameof(PageSize), typeof(ushort), typeof(Navigator), new PropertyMetadata(GlobalConstants.DefaultNavigatorPageSize,
                 (d, e) =>
                 {
                     var navigator = d as Navigator;
@@ -124,7 +124,7 @@ namespace Compete.Mis.MisControls
         /// 标识 PageCollection 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty PageCollectionProperty =
-            DependencyProperty.Register(nameof(PageCollection), typeof(IEnumerable<ushort>), typeof(Navigator), new PropertyMetadata(Constants.DefaultNavigatorPageCollection, (d, e) =>
+            DependencyProperty.Register(nameof(PageCollection), typeof(IEnumerable<ushort>), typeof(Navigator), new PropertyMetadata(GlobalConstants.DefaultNavigatorPageCollection, (d, e) =>
             {
                 var navigator = d as Navigator;
                 navigator!.viewModel.PageCollection = navigator.PageCollection;

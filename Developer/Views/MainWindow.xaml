@@ -94,6 +94,7 @@
                 <Separator/>
                 <MenuItem Command="{Binding MemoryDataSet}" Header="{DynamicResource MainWindow.MemoryDataSetMenu}"/>
                 <MenuItem Command="{Binding GenerateMnemonicCodeCommand}" Header="{DynamicResource MainWindow.GenerateMnemonicCodeMenu}"/>
+                <MenuItem Command="{Binding BatchCarryOverCommand}" Header="{DynamicResource MainWindow.BatchCarryOverMenu}"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource MainWindow.ToolsMenu}">
                 <MenuItem Command="{Binding Regular}" Header="{DynamicResource MainWindow.RegularMenu}"/>
@@ -102,6 +103,7 @@
                 <MenuItem Command="{Binding FormatSqlFile}" Header="{DynamicResource MainWindow.FormatSqlFile}"/>
                 <MenuItem Command="{Binding GenerateFileListCommand}" Header="{DynamicResource MainWindow.GenerateFileList}"/>
                 <MenuItem Command="{Binding GenerateAssemblyListCommand}" Header="{DynamicResource MainWindow.GenerateAssemblyList}"/>
+                <!--<MenuItem Command="{Binding GenerateDocumentCommand}" Header="{DynamicResource MainWindow.GenerateDocument}"/>-->
             </MenuItem>
         </Menu>
         <ToolBarTray Name="mainToolBarTray" DockPanel.Dock="Top">

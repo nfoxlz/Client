@@ -1,0 +1,7 @@
+﻿<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:local="clr-namespace:UITemplate"
+              ColumnWidth="400" FontSize="14" FontFamily="Georgia">
+    <BlockUIContainer>
+        <Image Height="30" Width="200"/>
+    </BlockUIContainer>
+</FlowDocument>

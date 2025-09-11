@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Compete.Mis.Frame.Views"
         mc:Ignorable="d"
-        ShowsNavigationUI="False" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" WindowStyle="None" ResizeMode="NoResize" Navigating="NavigationWindow_Navigating">
+        ShowsNavigationUI="False" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" WindowStyle="None" ResizeMode="NoResize" Navigating="NavigationWindow_Navigating" Loaded="NavigationWindow_Loaded">
     <NavigationWindow.Content>
         <local:LoginPage/>
     </NavigationWindow.Content>

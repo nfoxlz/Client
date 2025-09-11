@@ -5,12 +5,22 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;ARM32;ARM64;x86;x64</Platforms>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <Title>标题12345</Title>
+    <Description>说明11111</Description>
+    <Copyright>版权22222</Copyright>
+    <PackageProjectUrl>项目url33333</PackageProjectUrl>
+    <RepositoryUrl>仓库url33333</RepositoryUrl>
+    <PackageTags>标记1;标记2;标记3</PackageTags>
+    <PackageReleaseNotes>发行说明444444</PackageReleaseNotes>
 	<!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.14.0" />
-    <PackageReference Include="System.CodeDom" Version="9.0.7" />
+    <PackageReference Include="System.CodeDom" Version="9.0.9" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,9 @@ using System.IO.Packaging;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using System.Windows.Media.Imaging;
+using System.Windows.Shell;
+using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
 
 namespace Compete.Mis.MisControls
@@ -13,32 +16,100 @@ namespace Compete.Mis.MisControls
     {
         public delegate void LoadXpsMethod(DocumentViewer viewer, FlowDocument document);
 
+        //public static void LoadXps(DocumentViewer viewer, FlowDocument document)
+        //{
+        //    var documentUri = new Uri("pack://InMemoryDocument.xps");
+        //    using var stream = new MemoryStream();
+        //    using (var package = Package.Open(stream, FileMode.Create, FileAccess.ReadWrite))
+        //    {
+        //        PackageStore.RemovePackage(documentUri);
+        //        PackageStore.AddPackage(documentUri, package);
+
+        //        using (var xpsDocument = new XpsDocument(package, CompressionOption.NotCompressed, documentUri.AbsoluteUri))
+        //            try
+        //            {
+
+        //                //将flow document写入基于内存的xps document中去
+        //                XpsDocument.CreateXpsDocumentWriter(xpsDocument).Write(((IDocumentPaginatorSource)document).DocumentPaginator);
+
+        //                //获取这个基于内存的xps document的fixed document
+        //                //viewer.Document = xpsDocument.GetFixedDocumentSequence();
+        //            }
+        //            finally
+        //            {
+        //                //关闭基于内存的xps document
+        //                xpsDocument.Close();
+        //                package.Close();
+        //                //stream.Close();
+        //            }
+        //    }
+
+        //    stream.Flush();
+
+        //    using (var package = Package.Open(stream, FileMode.Open, FileAccess.Read))
+        //    {
+        //        PackageStore.RemovePackage(documentUri);
+        //        PackageStore.AddPackage(documentUri, package);
+
+        //        using (var xpsDocument = new XpsDocument(package, CompressionOption.NotCompressed, documentUri.AbsoluteUri))
+        //            try
+        //            {
+
+        //                //将flow document写入基于内存的xps document中去
+        //                //XpsDocument.CreateXpsDocumentWriter(xpsDocument).Write(((IDocumentPaginatorSource)document).DocumentPaginator);
+
+        //                //获取这个基于内存的xps document的fixed document
+        //                viewer.Document = xpsDocument.GetFixedDocumentSequence();
+        //            }
+        //            finally
+        //            {
+        //                //关闭基于内存的xps document
+        //                xpsDocument.Close();
+        //                package.Close();
+        //                //stream.Close();
+        //            }
+        //    }
+
+        //    stream.Close();
+        //}
+
         public static void LoadXps(DocumentViewer viewer, FlowDocument document)
         {
-            using var stream = new MemoryStream();
-            var package = Package.Open(stream, FileMode.Create, FileAccess.ReadWrite);
-            var DocumentUri = new Uri("pack://InMemoryDocument.xps");
-            PackageStore.RemovePackage(DocumentUri);
-            PackageStore.AddPackage(DocumentUri, package);
+            // 创建临时XPS文件路径
+           var tempPath = Path.GetTempFileName();
+            File.Delete(tempPath); // 确保文件不存在
 
-            var xpsDocument = new XpsDocument(package, CompressionOption.Fast, DocumentUri.AbsoluteUri);
+            // 创建XPS文档
+            using var xpsDoc = new XpsDocument(tempPath, FileAccess.ReadWrite);
 
-            try
-            {
+            // 获取FlowDocument（假设flowDoc是已创建的FlowDocument对象）
+            // 将FlowDocument写入XPS文档
+            XpsDocument.CreateXpsDocumentWriter(xpsDoc).Write(((IDocumentPaginatorSource)document).DocumentPaginator);
 
-                //将flow document写入基于内存的xps document中去
-                var writer = XpsDocument.CreateXpsDocumentWriter(xpsDocument);
-                writer.Write(((IDocumentPaginatorSource)document).DocumentPaginator);
-
-                //获取这个基于内存的xps document的fixed document
-                viewer.Document = xpsDocument.GetFixedDocumentSequence();
-            }
-            finally
-            {
-                //关闭基于内存的xps document
-                xpsDocument.Close();
-            }
+            // 从XPS文档获取固定文档序列
+            // 绑定到DocumentViewer
+            viewer.Document = xpsDoc.GetFixedDocumentSequence();
         }
+
+        //public static void LoadXps(DocumentViewer viewer, FlowDocument document)
+        //{
+        //    using MemoryStream stream = new MemoryStream();
+        //    Package package = Package.Open(stream, FileMode.Create, FileAccess.ReadWrite);// 创建内存中的XPS文档包
+        //    var documentUri = new Uri("pack://InMemoryDocument.xps");
+        //    PackageStore.RemovePackage(documentUri);
+        //    PackageStore.AddPackage(documentUri, package);
+
+        //    using XpsDocument xpsDoc = new XpsDocument(package, CompressionOption.NotCompressed, documentUri.AbsoluteUri);  // 创建内存XPS文档
+        //    // 写入FlowDocument到内存XPS
+        //    XpsDocumentWriter writer = XpsDocument.CreateXpsDocumentWriter(xpsDoc);
+        //    writer.Write(((IDocumentPaginatorSource)document).DocumentPaginator);
+
+        //    // 直接从内存获取固定文档序列
+        //    var fixedDoc = xpsDoc.GetFixedDocumentSequence();
+        //    // 绑定到DocumentViewer
+        //    viewer.Document = fixedDoc;
+        //}
+
 
         public static void LoadManyXps(DocumentViewer viewer, IEnumerable<FlowDocument> documents)
         {

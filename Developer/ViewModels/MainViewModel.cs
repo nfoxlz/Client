@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Compete.Extensions;
+using Compete.Mis.Plugins;
 using Microsoft.Win32;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace Compete.Mis.Developer.ViewModels
@@ -26,7 +30,7 @@ namespace Compete.Mis.Developer.ViewModels
 
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ImportDataModelCommand), nameof(ShowDataModelCommand), nameof(SqlGeneraterCommand), nameof(DatabaseConnectionOptionsCommand), nameof(GenerateMnemonicCodeCommand))]
+        [NotifyCanExecuteChangedFor(nameof(ImportDataModelCommand), nameof(ShowDataModelCommand), nameof(SqlGeneraterCommand), nameof(DatabaseConnectionOptionsCommand), nameof(GenerateMnemonicCodeCommand), nameof(BatchCarryOverCommand))]
         private Models.ProjectSetting? _projectSetting;
 
         [ObservableProperty]
@@ -50,7 +54,7 @@ namespace Compete.Mis.Developer.ViewModels
         [RelayCommand]
         private void OpenProject()
         {
-            var dialog = new OpenFileDialog { Filter = projectFilter }; ;
+            var dialog = new OpenFileDialog { Filter = projectFilter };
 
             if (dialog.ShowDialog() == true)
             {
@@ -175,6 +179,14 @@ namespace Compete.Mis.Developer.ViewModels
             ((MnemonicCodeGeneraterViewModel)generater.DataContext).SetDatabaseSetting(ProjectSetting!.ConnectionSetting!);
         }
 
+        [RelayCommand(CanExecute = nameof(HasProjectSetting))]
+        private void BatchCarryOver()
+        {
+            var generater = ShowDocument<Views.BatchCarryOver>("批量结转");
+
+        }
+
+
         private bool HasProjectSetting() => ProjectSetting is not null;
 
         //[RelayCommand]
@@ -283,5 +295,31 @@ namespace Compete.Mis.Developer.ViewModels
                 }
             }
         }
+
+        //[RelayCommand]
+        //private static void GenerateDocument()
+        //{
+        //    var path = "D:\\Projects\\CompeteMIS\\workspace\\output\\client\\plugins\\procurement\\billing";
+
+        //    var file = Path.Combine(path, "ui.xaml");
+        //    if (!File.Exists(file))
+        //        return;
+
+        //    var ui = XamlReader.Parse(File.ReadAllText(file));
+        //    if (ui is FrameworkElement uiElement && uiElement.DataContext is null)
+        //    {
+        //        if (uiElement.DataContext is null)
+        //            uiElement.DataContext = new SettingDataViewModel();
+
+        //        if (uiElement.DataContext is SettingDataViewModel settingDataViewModel)
+        //        {
+        //            settingDataViewModel.TrySetPropertyValue("SettingFileName", path);
+        //            settingDataViewModel.Initialize();
+        //        }
+        //    }
+
+        //    var window = new Window { Content = ui };
+        //    window.Show();
+        //}
     }
 }

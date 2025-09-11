@@ -29,7 +29,7 @@ namespace Compete.Utils
             return path.IndexOf(Path.VolumeSeparatorChar) < 0 && path[0] != Path.DirectorySeparatorChar ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path) : path;
         }
 
-        public static string PluginPath { get; private set; } = Convert(ConfigurationManager.AppSettings["PluginPath"] ?? "../plugins");
+        public static string PluginPath { get; private set; } = Convert(ConfigurationManager.AppSettings["PluginsPath"] ?? "../plugins");
 
         public static string SettingPath { get; private set; } = Convert(ConfigurationManager.AppSettings["SettingPath"] ?? "../settings");
     }

@@ -42,7 +42,7 @@ namespace Compete.Mis.MisControls
         public EnumTextBox()
         {
             IsReadOnly = true;
-            Height = Constants.TextBoxHeight;
+            Height = GlobalConstants.TextBoxHeight;
         }
 
         private void RefreshValue()

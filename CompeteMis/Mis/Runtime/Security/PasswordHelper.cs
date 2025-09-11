@@ -8,7 +8,16 @@ namespace Compete.Mis.Runtime.Security
     internal static class PasswordHelper
     {
         private static string Encrypt(string password, byte[] salt)
-            => Convert.ToBase64String(salt.Merge(/*SHA3_512.HashData*/MD5.HashData(Encoding.UTF8.GetBytes(password).Merge(salt))));
+        {
+            var plaintext = Encoding.UTF8.GetBytes(password);
+            var count = Math.Min(plaintext.LongLength, salt.LongLength);
+            for (long i = 0L; i < count; i++)
+                plaintext[i] += salt[i];
+            //return Convert.ToBase64String(salt.Merge(SHA3_512.HashData(plaintext)));
+            return salt.Merge(SHA3_512.HashData(plaintext)).ToBase64String();
+        }
+            //=> Convert.ToBase64String(salt.Merge(/*SHA3_512.HashData*/MD5.HashData(Encoding.UTF8.GetBytes(password).Merge(salt))));
+            //=> Convert.ToBase64String(salt.Merge(/*SHA3_512.HashData*/SHA512.HashData(Encoding.UTF8.GetBytes(password).Merge(salt))));
         //{
         //    var plaintext = Encoding.UTF8.GetBytes(password);
         //    for (int i = 0; i < plaintext.Length && i < salt.Length; i++)

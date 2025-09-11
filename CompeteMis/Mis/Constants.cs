@@ -2,7 +2,7 @@
 {
     internal static class Constants
     {
-        public const string SignParameterName = "sign";
+        //public const string SignParameterName = "sign";
 
         public const string SignPassword = "F4AE7A53-01EB-4693-8A8A-37753D4B044B";
 

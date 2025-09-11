@@ -12,15 +12,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.VisualBasic;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Compete.Scripts
 {
@@ -56,7 +52,9 @@ namespace Compete.Scripts
             references = new List<MetadataReference>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
-                references.Add(MetadataReference.CreateFromFile(assembly.Location));
+                if (!string.IsNullOrEmpty(assembly.Location) && !assembly.IsDynamic)
+                    references.Add(MetadataReference.CreateFromFile(assembly.Location));
+            //references.Add(MetadataReference.CreateFromFile(assembly.Location));
         }
 
         private static readonly CSharpCompilationOptions cSharpCompilationOptions = new(OutputKind.DynamicallyLinkedLibrary);

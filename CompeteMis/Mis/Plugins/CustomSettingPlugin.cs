@@ -26,7 +26,7 @@ namespace Compete.Mis.Plugins
                     viewModel.PluginParameter ??= parameter;
                     viewModel.Authorition &= parameter.Authorition;
                     viewModel.TrySetPropertyValue("SettingFileName", path);
-                    uiElement.DataContext ??= viewModel;
+                    //uiElement.DataContext ??= viewModel;
                 }
                 //if (viewModel is not null && viewModel.Data is null)
                 //    viewModel.Data = GlobalCommon.DataProvider!.Query(basePath, setting.LoadName, setting.QueryParameters);

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Compete.Extensions;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Printing;
+using System.Xml.Linq;
 
 namespace Compete.Mis.Runtime.Security
 {
@@ -7,84 +11,72 @@ namespace Compete.Mis.Runtime.Security
     {
         private readonly string password = password;
 
-        private void AddAdditionalParameters(List<string> parameterList)
-        {
-            parameterList.Add(string.Format("timestamp={0}", DateTime.Now.ToString("yyyyMMdd")));
-            parameterList.Add(string.Format("password={0}", password));
-        }
-
-        public IDictionary<string, object?>? GenerateSignParameter(IDictionary<string, object?>? parameters)
-        {
-            if (parameters is null)
-                return null;
-
-            var result = new Dictionary<string, object?>(parameters);
-            var parameterList = new List<string>();
-            foreach (var parameter in parameters)
-                parameterList.Add(string.Format("{0}={1}", parameter.Key, parameter.Value));
-            AddAdditionalParameters(parameterList);
-            result.Add(Constants.SignParameterName, PasswordHelper.Encrypt(string.Join("&", parameterList)));
-
-            return result;
-        }
-
-        //public IDictionary<string, object>? GenerateSignParameter(object? parameters)
+        //private void AddAdditionalParameters(IDictionary<string, object?> parameters)
         //{
-        //    if (parameters is null)
-        //        return null;
-
-        //    var parameterList = new List<string>();
-        //    var result = new Dictionary<string, object>();
-        //    var changedpParameters = new Dictionary<string, object>();
-        //    object parameterValue;
-        //    foreach (var property in parameters.GetType().GetProperties())
-        //    {
-        //        parameterValue = property.GetValue(parameters)!;
-        //        if (parameterValue is not null && (parameterValue is IDictionary || parameterValue is IEnumerable<Models.Entity>) || parameterValue is IEnumerable<long>)
-        //        {
-        //            changedpParameters.Add(property.Name, parameterValue);
-        //            continue;
-        //        }
-
-        //        result.Add(property.Name, parameterValue ?? "");
-        //        parameterList.Add(string.Format("{0}={1}", property.Name, parameterValue));
-        //    }
-
-        //    AddAdditionalParameters(parameterList);
-
-        //    result.Add(Constants.SignParameterName, PasswordHelper.Encrypt(string.Join("&", parameterList)));
-
-        //    foreach (var parameter in changedpParameters)
-        //        result.Add(parameter.Key, parameter.Value);
-
-        //    return result;
+        //    parameters.Add("timestamp", DateTime.Now.ToString("yyyyMMdd"));
+        //    parameters.Add("Sign - password", password);
         //}
 
-        public bool Verify(IDictionary<string, object> parameters)
+
+        public string GenerateSignParameter(IDictionary<string, object?> parameters)
         {
-            if (parameters is null)
-                return true;
-
-            var parameterList = new List<string>();
-            //var properties = parameters.GetType().GetProperties();
-            string? sign = null;
-            foreach (var parameter in parameters)
+            var result = new Dictionary<string, object?>
             {
-                if (parameter.Value is not null)
-                    continue;
+                { "timestamp", DateTime.Now.ToString("yyyyMMdd") },
+                { "Sign - password", password }
+            };
+            //AddAdditionalParameters(result);
 
-                if (parameter.Key == Constants.SignParameterName)
-                    sign = parameter.Value?.ToString();
-                else
-                    parameterList.Add(string.Format("{0}={1}", parameter.Key, parameter.Value));
-            }
+            //if (parameters is not null)
+#if JAVA_LANGUAGE
+            foreach (var pair in parameters)
+                result.Add(pair.Key, pair.Value);
 
-            AddAdditionalParameters(parameterList);
+            var s = result.Values.ToJsonString();
 
-            return sign is null || PasswordHelper.Verify(string.Join("&", parameterList), sign);
+            return PasswordHelper.Encrypt(result.Values.ToJsonString());
+#else
+            foreach ( var pair in parameters)
+                    if (pair.Value is IDictionary<string, object?>)
+                        result.Add(pair.Key, new SortedDictionary<string, object?>((IDictionary<string, object?>)pair.Value, StringComparer.Ordinal));
+                    else if (pair.Value is null)
+                        result.Add(pair.Key, string.Empty);
+                    else
+                        result.Add(pair.Key, pair.Value);
+
+            //var s = result.ToJsonString();
+
+            //return PasswordHelper.Encrypt(result.ToJsonString().Replace("\\u002B", "+"));
+            return PasswordHelper.Encrypt(result.ToJsonString());
+#endif
+            //foreach ( var pair in parameters)
+            //        if (pair.Value is IDictionary<string, object?>)
+            //            result.Add(pair.Key, new SortedDictionary<string, object?>((IDictionary<string, object?>)pair.Value));
+            //        else if (pair.Value is null)
+            //            result.Add(pair.Key, string.Empty);
+            //        else
+            //            result.Add(pair.Key, pair.Value);
+
+            ////var s = result.ToJsonString();
         }
 
-        public bool Verify(string data, string sign) =>
-            PasswordHelper.Verify(data + string.Format("&timestamp={0}&password={1}", DateTime.Now.ToString("yyyyMMdd"), password), sign);
+        //public bool Verify(IDictionary<string, object> parameters)
+        //{
+        //    if (parameters is null)
+        //        return true;
+
+        //    string? sign = null;
+
+        //    if (parameters.TryGetValue(Constants.SignParameterName, out var signValue))
+        //    {
+        //        sign = signValue?.ToString();
+        //        parameters.Remove(Constants.SignParameterName);
+        //    }
+
+        //    return sign is null || PasswordHelper.Verify(parameters.ToJsonString(), sign);
+        //}
+
+        //public bool Verify(string data, string sign) =>
+        //    PasswordHelper.Verify(data + string.Format("&timestamp={0}&password={1}", DateTime.Now.ToString("yyyyMMdd"), password), sign);
     }
 }

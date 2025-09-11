@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Compete.Extensions;
 using System;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
@@ -42,8 +44,13 @@ namespace Compete.Mis.Frame.ViewModels
         [RelayCommand(CanExecute = nameof(CanOk))]
         private void Ok()
         {
-            var user = service.Authenticate(Tenant!, User!, Password!);
-            if (user is not null)
+#if JAVA_LANGUAGE
+            var user = service.Authenticate(Tenant!, User!, Utils.Cryptography.SymmetricEncrypt(Encoding.UTF8.GetBytes(Password!)).ToBase64String());
+            //var user = service.Authenticate(Tenant!, User!, Utils.Cryptography.Encryption(Encoding.UTF8.GetBytes(Password!)).ToBase64String());
+#else
+            var user = service.Authenticate(Tenant!, User!, Utils.Cryptography.Encryption(Encoding.UTF8.GetBytes(Password!)).ToBase64String());
+#endif
+            if (user is not null && 0L != user.Id)
             {
                 GC.Collect();
                 Tenant = string.Empty;
@@ -52,6 +59,7 @@ namespace Compete.Mis.Frame.ViewModels
 
                 GlobalCommon.CurrentTenant = user.Tenant;
                 GlobalCommon.CurrentUser = user;
+                //GlobalCommon.Refresher?.Refresh();
 
                 Task.Run(Global.LoginedInitialize);
 

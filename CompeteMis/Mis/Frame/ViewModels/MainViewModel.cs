@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,17 +9,34 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+#if DEBUG || DEBUG_JAVA
+using Microsoft.Win32;
+using NPOI.Util;
+using NPOI.XWPF.UserModel;
+using System.IO;
+#endif
 
 namespace Compete.Mis.Frame.ViewModels
 {
-    internal sealed partial class MainViewModel : PageViewModel
+    internal sealed partial class MainViewModel : PageViewModel, IRefresher
     {
         public ICollection<Control> Menus { get; set; } = new ObservableCollection<Control>();
 
         public bool CanGoBack { get; set; }
 
+        [ObservableProperty]
+        private string _currentUserName;
+
+        public MainViewModel()
+        {
+            CurrentUserName = GlobalCommon.CurrentUser!.Name!;
+            GlobalCommon.Refresher = this;
+        }
+
         private Control CreateMenu(Services.ServiceModels.MenuSetting setting, IEnumerable<Services.ServiceModels.MenuSetting> menuSettings)
         {
+            
+
             if (setting.DisplayName == "-")
                 return new Separator();
 
@@ -61,6 +79,8 @@ namespace Compete.Mis.Frame.ViewModels
 
         public override void Refresh()
         {
+            CurrentUserName = GlobalCommon.CurrentUser!.Name!;
+
             Menus.Clear();
 
             var menuSettings = Services.GlobalServices.FrameService.GetMenus();
@@ -84,11 +104,16 @@ namespace Compete.Mis.Frame.ViewModels
                         Command = ModifyPasswordCommand
                     },
                     new Separator(),
-#if DEBUG
+#if DEBUG || DEBUG_JAVA
                     new MenuItem()
                     {
                         Header = "清理缓存",
                         Command = CleanUpCacheCommand
+                    },
+                    new MenuItem()
+                    {
+                        Header = "生成文档",
+                        Command = GenerateDocumentCommand
                     },
                     new Separator(),
 #endif
@@ -183,7 +208,7 @@ namespace Compete.Mis.Frame.ViewModels
                             Width = 16D,
                             Height = 16D
                         }
-                    }
+                    },
                 }
             });
 
@@ -219,9 +244,89 @@ namespace Compete.Mis.Frame.ViewModels
             });
         }
 
-#if DEBUG
+#if DEBUG || DEBUG_JAVA
         [RelayCommand]
         private static void CleanUpCache() => Services.GlobalServices.FrameService.ClearCache();
+
+        [RelayCommand]
+        private void GenerateDocument()
+        {
+            var dialog = new SaveFileDialog { Filter = "Word 文档(*.docx)|*.docx|全部文件|*.*" };
+            if (dialog.ShowDialog() != true)
+                return;
+
+            GlobalCommon.MainDocumentPane!.Children.Clear();
+
+            var doc = new XWPFDocument();
+
+            ExecuteMenus(Menus, ref doc);
+
+            // 保存文档
+            using (var stream = new FileStream(dialog.FileName, FileMode.Create))
+                doc.Write(stream);
+
+            MisControls.MessageDialog.Success("文件生成完毕。");
+        }
+
+        private void ExecuteMenus(IEnumerable<Control> menus, ref XWPFDocument doc, int level = 1)
+        {
+            foreach (var control in menus)
+                if (control is MenuItem item)
+                {
+                    var header = item.Header.ToString()!;
+                    if (header.StartsWith("系统") || header.StartsWith("编辑") || header.StartsWith("帮助"))
+                        continue;
+
+                    var titlePara = doc.CreateParagraph();
+                    titlePara.Style = $"标题{level}"; // 继承模板的一级标题样式
+                    titlePara.CreateRun().SetText(header);
+
+                    var toolTip = item.ToolTip?.ToString();
+                    if (!string.IsNullOrWhiteSpace(toolTip))
+                        doc.CreateParagraph().CreateRun().SetText(toolTip);
+
+                    if (item.Command is not null)
+                    {
+                        item.Command.Execute(item.CommandParameter);
+                        if (GlobalCommon.MainDocumentPane!.Children.Count > 0)
+                        {
+                            var content = GlobalCommon.MainDocumentPane!.Children[0];
+
+                            try
+                            {
+                                if (content.Content is FrameworkElement element)
+                                {
+                                    var imagePath = Path.ChangeExtension(Path.GetTempFileName(), "png");
+                                    try
+                                    {
+                                        //var info = Document.Screenshot.SaveControl(element, imagePath, Document.ImageFormat.Png);
+                                        var info = Document.Screenshot.SaveWindow(Application.Current.MainWindow, imagePath, Document.ImageFormat.Png);
+
+                                        // 插入图片
+                                        byte[] imageBytes = File.ReadAllBytes(imagePath);
+                                        string picId = doc.AddPictureData(imageBytes, (int)PictureType.PNG);
+                                        var imgPara = doc.CreateParagraph();
+                                        var imgRun = imgPara.CreateRun();
+                                        imgRun.AddPicture(new MemoryStream(imageBytes),
+                                                         (int)PictureType.JPEG, imagePath,
+                                                         Units.ToEMU(info.Bounds.Width), Units.ToEMU(info.Bounds.Height));
+                                    }
+                                    finally
+                                    {
+                                        File.Delete(imagePath);
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                content.Close();
+                            }
+                        }
+                    }
+                    else
+                        ExecuteMenus(item.Items.Cast<Control>(), ref doc, level++);
+                }
+        }
 #endif
 
         [RelayCommand]

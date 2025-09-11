@@ -189,8 +189,8 @@ namespace Compete.Mis.MisControls
 
             return new Dictionary<DependencyProperty, object?>
             {
-                { ValuePathProperty, parameters is null || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters is null || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
                 { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
             };
         }
@@ -201,8 +201,8 @@ namespace Compete.Mis.MisControls
 
             return new Dictionary<DependencyProperty, object?>
             {
-                { ValuePathProperty, parameters is null || ! parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
-                { DisplayPathProperty, parameters is null || ! parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
+                { ValuePathProperty, parameters is null || !parameters.TryGetValue(nameof(ValuePath), out string ? valuePath) ? $"{entityName}_Id" : valuePath },
+                { DisplayPathProperty, parameters is null || !parameters.TryGetValue(nameof(DisplayPath), out string ? displayPath) ? $"{entityName}_Name" : displayPath },
                 { ServiceParameterProperty, parameters is null || !parameters.TryGetValue(nameof(ServiceParameter), out string? serviceParameter) ? entityName : serviceParameter }
             };
         }

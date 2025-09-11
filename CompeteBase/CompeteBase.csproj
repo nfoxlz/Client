@@ -9,12 +9,38 @@
 	<Configurations>Debug;Release;Debug-Java;Release-Java</Configurations>
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
+	<Title>Compete MIS($(AssemblyName))</Title>
+	<Authors>北极狐</Authors>
+	<Company>Compete Software Studio</Company>
+	<Product>Compete MIS</Product>
+	<Description>Compete Management Information System</Description>
+	<Copyright>Copyright ©  2025 Compete Software Studio.</Copyright>
+	<PackageProjectUrl>https://github.com/nfoxlz</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/nfoxlz</RepositoryUrl>
+	<PackageTags>MIS;ERP;MES</PackageTags>
 	<!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|AnyCPU'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|ARM64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|ARM32'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|x86'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|x64'">
     <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
   </PropertyGroup>
 
@@ -25,29 +51,60 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|ARM64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|ARM32'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|x86'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|x64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
+    <None Remove="Assets\Images\Chart.png" />
     <None Remove="Assets\Images\Clear.png" />
     <None Remove="Assets\Images\Column.png" />
     <None Remove="Assets\Images\First.png" />
+    <None Remove="Assets\Images\FreezeColumn.png" />
     <None Remove="Assets\Images\Last.png" />
     <None Remove="Assets\Images\Next.png" />
     <None Remove="Assets\Images\Previous.png" />
     <None Remove="Assets\Images\PrintPreviewDialog.png" />
     <None Remove="Assets\Images\Select.png" />
+    <None Remove="Assets\Images\Unhide.png" />
+    <None Remove="Assets\Images\Word.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.14.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageReference Include="ScottPlot.WPF" Version="5.0.55" />
+    <PackageReference Include="NPOI" Version="2.7.4" />
+    <PackageReference Include="ScottPlot.WPF" Version="5.0.56" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
-    <PackageReference Include="System.Runtime.Caching" Version="9.0.7" />
+    <PackageReference Include="SSH.NET" Version="2025.0.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="9.0.9" />
+    <PackageReference Include="ZXing.Net" Version="0.16.10" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.13" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Images\Chart.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\Clear.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -57,10 +114,19 @@
     <Resource Include="Assets\Images\First.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\Images\FreezeColumn.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Hide.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\Last.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Next.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Excel.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Previous.png">
@@ -70,6 +136,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Select.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Unhide.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Word.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

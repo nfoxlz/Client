@@ -70,6 +70,7 @@
     <s:String x:Key="MainWindow.SqlGeneraterMenu">SQL生成器</s:String>
     <s:String x:Key="MainWindow.MemoryDataSetMenu">内存数据集</s:String>
     <s:String x:Key="MainWindow.GenerateMnemonicCodeMenu">生成助记码</s:String>
+    <s:String x:Key="MainWindow.BatchCarryOverMenu">批量结转</s:String>
 
     <s:String x:Key="MainWindow.ToolsMenu">工具(_T)</s:String>
     <s:String x:Key="MainWindow.RegularMenu">正则表达式(_R)</s:String>
@@ -78,6 +79,7 @@
     <s:String x:Key="MainWindow.FormatSqlFile">格式化SQL文件</s:String>
     <s:String x:Key="MainWindow.GenerateFileList">生成FileList文件</s:String>
     <s:String x:Key="MainWindow.GenerateAssemblyList">生成AssemblyList文件</s:String>
+    <!--<s:String x:Key="MainWindow.GenerateDocument">生成文档</s:String>-->
 
     <s:String x:Key="MainWindow.DataModel">数据模型</s:String>
     <s:String x:Key="MainWindow.CustomDataModel">自定义数据模型</s:String>
@@ -88,4 +90,8 @@
     <s:String x:Key="MainWindow.NewItemMenu">新建项...</s:String>
     <s:String x:Key="MainWindow.AddItemMenu">现有项...</s:String>
     <s:String x:Key="MainWindow.CreateFolderMenu">新建文件夹</s:String>
+
+    <s:String x:Key="BatchCarryOver.BeginYearMonth">开始年月</s:String>
+    <s:String x:Key="BatchCarryOver.EndYearMonth">结束年月</s:String>
+    <s:String x:Key="BatchCarryOver.CarryOver">结束转</s:String>
 </ResourceDictionary>

@@ -3,11 +3,13 @@ using System.Windows.Media;
 
 namespace Compete.Mis
 {
-    internal static class Constants
+    public static class GlobalConstants
     {
         public const ushort DefaultNavigatorPageSize = 30;
 
         public const double TextBoxHeight = 24D;
+
+        //public const double SmallTextBoxHeight = 18D;
 
         public const string NavigatorMaxPageNoFormat = "/{0}";
 
@@ -25,7 +27,7 @@ namespace Compete.Mis
 
         public static readonly Brush ReadOnlyBrush; // DataPanel
 
-        static Constants()
+        static GlobalConstants()
         {
             var requiredColor = ConfigurationManager.AppSettings["RequiredColor"];
             RequiredBrush = string.IsNullOrWhiteSpace(requiredColor) ? Brushes.DarkRed : new SolidColorBrush((Color)ColorConverter.ConvertFromString(requiredColor));

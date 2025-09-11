@@ -10,6 +10,6 @@ namespace Compete.Mis.Frame.Services
 
         //public static IDataService DataService { get; } = DispatchProxy.Create<IDataService, WebApi.WebApiServiceProxy>();
 
-        public static IUpdateService UpdateService { get; } = new WebApi.UpdateService();
+        public static IUpdateService UpdateService { get; } = new Sftp.UpdateService();
     }
 }

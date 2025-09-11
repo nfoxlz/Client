@@ -68,7 +68,7 @@ namespace Compete.Mis.MisControls
         [NotifyCanExecuteChangedFor(nameof(FirstCommand), nameof(PreviousCommand), nameof(NextCommand), nameof(LastCommand))]
         private ulong _recordCount;
 
-        private ushort _pageSize = Constants.DefaultNavigatorPageSize;
+        private ushort _pageSize = GlobalConstants.DefaultNavigatorPageSize;
 
         /// <summary>
         /// 获取或设置一个值，该值指示每页的记录数。
@@ -155,7 +155,7 @@ namespace Compete.Mis.MisControls
         }
 
         [ObservableProperty]
-        private IEnumerable<ushort> _pageCollection = Constants.DefaultNavigatorPageCollection;
+        private IEnumerable<ushort> _pageCollection = GlobalConstants.DefaultNavigatorPageCollection;
 
         [RelayCommand(CanExecute = nameof(CanPrevious))]
         private void First() => CurrentPageNo = 1UL;

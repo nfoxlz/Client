@@ -114,7 +114,8 @@
 
     <!--消息-->
     <s:String x:Key="Message.NetError">应用服务器访问异常，请检查网络是否正常。</s:String>
-    <s:String x:Key="Message.ServiceError">应用服务异常。（服务【{0}】   方法【{1}】）</s:String>
+    <s:String x:Key="Message.ServiceError" xml:space="preserve">应用服务器访问异常，请检查网络是否正常。&#10;（服务【{0}】   方法【{1}】）</s:String>
+    <s:String x:Key="Message.FoundNewVersion">发现新版本，是否进行更新？</s:String>
     
     <!--操作错误提示-->
     <s:String x:Key="Message.ExecuteSaveSqlWarning">系统将直接变更数据，且变更成功后不能恢复，是否继续变更？</s:String>
@@ -173,5 +174,32 @@
     <s:String x:Key="SaveSuccess">保存成功。</s:String>
 
     <s:String x:Key="CarryOverButton">结转(_C)</s:String>
+
+    <!--数据网格-->
+    <s:String x:Key="DataGrid.ContextMenu.Freeze">冻结</s:String>
+    <s:String x:Key="DataGrid.ContextMenu.Hide">隐藏</s:String>
+    <s:String x:Key="DataGrid.ContextMenu.Unhide">取消隐藏</s:String>
+    <s:String x:Key="DataGrid.ContextMenu.ExportWord">导出 Word</s:String>
+    <s:String x:Key="DataGrid.ContextMenu.ExportExcel">导出 Excel</s:String>
+    <s:String x:Key="DataGrid.ContextMenu.Chart">统计图</s:String>
+    <s:String x:Key="DataGrid.Word.Filter">Word 文档 (*.docx)|*.docx|所有文件 (*.*)|*.*</s:String>
+    <s:String x:Key="DataGrid.Word.FileName">文档1.docx</s:String>
+    <s:String x:Key="DataGrid.Word.SaveFileDialog.Title">导出 Word</s:String>
+    <s:String x:Key="DataGrid.Word.Title">文档1.docx</s:String>
+    <s:String x:Key="DataGrid.Excel.Filter">Excel 工作簿 (*.xlsx)|*.xlsx|Excel 97-2003 工作簿 (*.xls)|*.xls|所有文件 (*.*)|*.*</s:String>
+    <s:String x:Key="DataGrid.Excel.FileName">工作簿1.xlsx</s:String>
+    <s:String x:Key="DataGrid.Excel.SaveFileDialog.Title">导出 Excel</s:String>
+    <s:String x:Key="DataGrid.ExportSuccess">{0}导出成功。</s:String>
+
+    <!--更新-->
+    <s:String x:Key="Updater.WindowTitle">更新</s:String>
+    <s:String x:Key="Updater.DownloadProgress">下载进度</s:String>
+    <s:String x:Key="Updater.CopyProgress">复制进度</s:String>
+    <s:String x:Key="Updater.StartUpdate">开始更新</s:String>
+    <s:String x:Key="Updater.DownloadPrompt">正在下载文件</s:String>
+    <s:String x:Key="Updater.DownloadComplete">下载文件完成。</s:String>
+    <s:String x:Key="Updater.CopyPrompt">正在复制文件</s:String>
+    <s:String x:Key="Updater.CopyComplete">复制文件完成。</s:String>
+    <s:String x:Key="Updater.UpdateComplete">更新完成。</s:String>
 
 </ResourceDictionary>

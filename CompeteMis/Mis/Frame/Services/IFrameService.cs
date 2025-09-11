@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !JAVA_LANGUAGE
+using System;
+#endif
 using System.Collections.Generic;
 
 namespace Compete.Mis.Frame.Services
@@ -27,7 +29,7 @@ namespace Compete.Mis.Frame.Services
 
         bool IsFinanceClosedByDate(int periodYearMonth);
 
-#if DEBUG
+#if DEBUG || DEBUG_JAVA
         void ClearCache();
 #endif
     }

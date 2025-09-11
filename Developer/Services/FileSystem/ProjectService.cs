@@ -53,15 +53,15 @@ namespace Compete.Mis.Developer.Services.FileSystem
             if (!Directory.Exists(outputPath))
                 Directory.CreateDirectory(outputPath);
 
-            var binPath = Path.Combine(outputPath, "bin");
+            var binPath = Path.Combine(outputPath, "client", "bin");
             if (!Directory.Exists(binPath))
                 Directory.CreateDirectory(binPath);
 
-            var pluginsPath = Path.Combine(outputPath, "plugins");
+            var pluginsPath = Path.Combine(outputPath, "client", "plugins");
             if (!Directory.Exists(pluginsPath))
                 Directory.CreateDirectory(pluginsPath);
 
-            var settingsPath = Path.Combine(outputPath, "settings");
+            var settingsPath = Path.Combine(outputPath, "client", "settings");
             if (!Directory.Exists(settingsPath))
                 Directory.CreateDirectory(settingsPath);
 

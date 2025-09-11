@@ -8,19 +8,16 @@
 // 1.0.0.0 2018/3/2 10:22:37 LeeZheng  新建。
 // ===================================================================
 using Compete.Extensions;
-using Compete.Mis.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit;
 
@@ -284,7 +281,7 @@ namespace Compete.Mis.MisControls
                 if (column.Table?.Columns.Contains(entityName + "Name") == true)
                     parameters = new Dictionary<string, string>
                     {
-                        { Constants.EntityBoxParameterDisplayPath, entityName + "Code" }
+                        { GlobalConstants.EntityBoxParameterDisplayPath, entityName + "Code" }
                     };
             }
 
@@ -295,8 +292,8 @@ namespace Compete.Mis.MisControls
                 if (controlType == DataControlType.Default)
                 {
                     if ((dataType == typeof(long) || dataType == typeof(Guid)) && columnName.EndsWith("_Id") && EntityDataHelper.IsEntityColumn(columnName))
-                        e.Column = CreateColumn(binding, typeof(EntityTextBlock), EntityTextBlock.ValueProperty,
-                            EntityTextBlock.GeneratePropertyDictionary(column, parameters), false, true);
+                        e.Column = CreateColumn(binding, typeof(EntityTextBlock), AbstractEntityTextBlock.ValueProperty,
+                            AbstractEntityTextBlock.GeneratePropertyDictionary(column, parameters), false, true);
                     else if (dataType == typeof(sbyte))
                         e.Column = CreateColumn(binding, typeof(EnumTextBlock), EnumTextBlock.ValueProperty,
                             new Dictionary<DependencyProperty, object?>
@@ -338,7 +335,7 @@ namespace Compete.Mis.MisControls
                                 new Dictionary<DependencyProperty, object?>
                                 {
                                     //{ ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
-                                    { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
+                                    { ChoiceBox.ItemDataProperty, Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
                 }, false, true,
                                 new Dictionary<DependencyProperty, object?>
                                 {
@@ -350,7 +347,7 @@ namespace Compete.Mis.MisControls
                                 new Dictionary<DependencyProperty, object?>
                                 {
                                     //{ ChoiceBox.ItemDataProperty, GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!] }
-                                    { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
+                                    { ChoiceBox.ItemDataProperty, Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!) }
                                 }, false, true,
                                 new Dictionary<DependencyProperty, object?>
                                 {
@@ -381,6 +378,9 @@ namespace Compete.Mis.MisControls
                     var propertyDictionary = AbstractEntityBox.GenerateGridPropertyDictionary(column, parameters);
                     propertyDictionary.Add(AbstractEntityBox.IsRequiredProperty, isRequired);
                     propertyDictionary.Add(AbstractEntityBox.FormatProperty, showFormat);
+                    //propertyDictionary.Add(AbstractEntityBox.IsSmallSizeProperty, true);
+                    if (dataGrid is EnhancedDataGrid enhancedDataGrid && enhancedDataGrid.CallBackCommand is not null)
+                        propertyDictionary.Add(AbstractEntityBox.CallBackProperty, () => enhancedDataGrid.CallBackCommand.Execute(null));
 
                     var displayPropertyDictionary = AbstractEntityTextBlock.GenerateGridPropertyDictionary(column, parameters);
                     displayPropertyDictionary.Add(AbstractEntityTextBlock.FormatProperty, showFormat);
@@ -495,8 +495,8 @@ namespace Compete.Mis.MisControls
                         new Dictionary<DependencyProperty, object?>
                         {
                             { EnumComboBox.EnumNameProperty, columnName },
-                            { Selector.SelectedValuePathProperty, nameof(EnumItem.Value) },
-                            { ItemsControl.DisplayMemberPathProperty, nameof(EnumItem.DisplayName) },
+                            { Selector.SelectedValuePathProperty, nameof(Enums.EnumItem.Value) },
+                            { ItemsControl.DisplayMemberPathProperty, nameof(Enums.EnumItem.DisplayName) },
                         });
             }
             else
@@ -512,6 +512,8 @@ namespace Compete.Mis.MisControls
                         var propertyDictionary = AbstractEntityBox.GenerateGridPropertyDictionary(column, parameters);
                         propertyDictionary.Add(AbstractEntityBox.IsRequiredProperty, isRequired);
                         propertyDictionary.Add(AbstractEntityBox.FormatProperty, showFormat);
+                        if (dataGrid is EnhancedDataGrid enhancedDataGrid && enhancedDataGrid.CallBackCommand is not null)
+                            propertyDictionary.Add(AbstractEntityBox.CallBackProperty, () => enhancedDataGrid.CallBackCommand.Execute(null));
 
                         var displayPropertyDictionary = AbstractEntityTextBlock.GenerateGridPropertyDictionary(column, parameters);
                         displayPropertyDictionary.Add(AbstractEntityTextBlock.FormatProperty, showFormat);
@@ -545,7 +547,7 @@ namespace Compete.Mis.MisControls
                             {
                                 {
                                     ChoiceBox.ItemDataProperty,
-                                    EnumHelper.GetDictionary(enumName!)
+                                    Enums.EnumHelper.GetDictionary(enumName!)
                                     //GlobalCommon.EnumDictionary[enumName!]
                                 }
                             });
@@ -554,7 +556,7 @@ namespace Compete.Mis.MisControls
                         e.Column = CreateColumn(binding, typeof(MultichoiceBox), ChoiceBox.ValueProperty,
                             new Dictionary<DependencyProperty, object?>
                             {
-                                { ChoiceBox.ItemDataProperty, EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)/*GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!]*/ }
+                                { ChoiceBox.ItemDataProperty, Enums.EnumHelper.GetDictionary(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!)/*GlobalCommon.EnumDictionary[column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!.ToString()!]*/ }
                             });
                         break;
                 }
@@ -577,7 +579,7 @@ namespace Compete.Mis.MisControls
 
             if (!((DataGrid)sender!).IsReadOnly)
             {
-                var foregroundBrush = e.Column.IsReadOnly ? null : isRequired ? Constants.RequiredBrush : Constants.CanWriteBrush;
+                var foregroundBrush = e.Column.IsReadOnly ? null : isRequired ? GlobalConstants.RequiredBrush : GlobalConstants.CanWriteBrush;
                 if (foregroundBrush is not null)
                 {
                     e.Column.HeaderStyle = new Style { TargetType = typeof(DataGridColumnHeader) };

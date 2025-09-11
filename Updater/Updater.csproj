@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64;x86;ARM64;ARM32</Platforms>
+    <BaseOutputPath>..\CompeteMis\bin</BaseOutputPath>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <RootNamespace>Compete.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <Authors>北极狐</Authors>
+    <Company>Compete Software Studio</Company>
+    <Product>Compete MIS</Product>
+    <Description>Compete Management Information System</Description>
+    <Title>Compete MIS($(AssemblyName))</Title>
+    <PackageProjectUrl>https://github.com/nfoxlz</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nfoxlz</RepositoryUrl>
+    <Copyright>Copyright ©  2025 Compete Software Studio.</Copyright>
+    <ApplicationIcon>Update.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Update.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Update.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CompeteBase\CompeteBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\Update.png" />
+  </ItemGroup>
+
+</Project>

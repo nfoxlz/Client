@@ -73,9 +73,9 @@ namespace Compete.Mis.MisControls
         protected override Brush? GetTitleForeground(DataColumn column)
         {
             if (IsReadOnly || column.ReadOnly || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]))
-                return Constants.ReadOnlyBrush;
+                return GlobalConstants.ReadOnlyBrush;
             else if (!column.AllowDBNull || Convert.ToBoolean(column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsRequired]))
-                return Constants.RequiredBrush;
+                return GlobalConstants.RequiredBrush;
             else
                 return base.GetTitleForeground(column);
         }
@@ -181,7 +181,7 @@ namespace Compete.Mis.MisControls
                         }
                         else
                         {
-                            result = new WatermarkTextBox() { IsReadOnly = true, Height = Constants.TextBoxHeight };
+                            result = new WatermarkTextBox() { IsReadOnly = true, Height = GlobalConstants.TextBoxHeight };
                             if (dataType.IsNumeric())
                                 ((TextBox)result).TextAlignment = TextAlignment.Right;
                             else if (DbType.Date == dbType)
@@ -273,7 +273,7 @@ namespace Compete.Mis.MisControls
                             ? new TreeEntityBox
                             {
                                 IsRequired = isRequired,
-                                EntityName = treeEntitySetting.DisplayName ?? entityName,
+                                EntityName = treeEntitySetting.DisplayName ?? column.Caption,
                                 ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
                                 DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
                                 ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],
@@ -415,7 +415,7 @@ namespace Compete.Mis.MisControls
                     }
                     else
                     {
-                        var textBox = new WatermarkTextBox() { Height = Constants.TextBoxHeight };
+                        var textBox = new WatermarkTextBox() { Height = GlobalConstants.TextBoxHeight };
                         result = textBox;
                         if (column.MaxLength >= 0)
                             ((TextBox)result).MaxLength = column.MaxLength;
@@ -434,7 +434,7 @@ namespace Compete.Mis.MisControls
                                 ? new TreeEntityBox
                                 {
                                     IsReadOnly = true,
-                                    EntityName = treeEntitySetting.DisplayName ?? entityName,
+                                    EntityName = treeEntitySetting.DisplayName ?? column.Caption,
                                     ValuePath = parameters is null ? treeEntitySetting.IdPath ?? columnName : parameters["ValuePath"],
                                     DisplayPath = parameters is null ? treeEntitySetting.NamePath ?? $"{entityName}_Name" : parameters["DisplayPath"],
                                     ServiceParameter = parameters is null ? entityName : parameters["ServiceParameter"],

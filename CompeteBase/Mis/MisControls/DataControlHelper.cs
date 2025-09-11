@@ -15,7 +15,7 @@ namespace Compete.Mis.MisControls
     /// <summary>
     /// DataControlHelper 类。
     /// </summary>
-    internal static class DataControlHelper
+    public static class DataControlHelper
     {
         /// <summary>
         /// 将 <see cref="string"/> 格式的参数改为字<see cref="IDictionary<string, string>"/>式。
@@ -49,6 +49,16 @@ namespace Compete.Mis.MisControls
             }
 
             return result;
+        }
+
+        public static string ConvertParameters(IDictionary<string, string> parameters)
+        {
+            if (parameters.Count == 0)
+                return string.Empty;
+            var result = string.Empty;
+            foreach (var pair in parameters)
+                result += $"{pair.Key}={pair.Value};";
+            return result[..^1];
         }
     }
 }

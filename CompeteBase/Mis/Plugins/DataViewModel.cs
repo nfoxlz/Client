@@ -157,6 +157,9 @@ namespace Compete.Mis.Plugins
 
         public bool HasQueryAuthorition { get => HasAuthorition(ReserveAuthorition.Query); }
 
+        [RelayCommand]
+        private void NotifySave() => SaveCommandNotifyCanExecuteChanged();
+
         private void SaveCommandNotifyCanExecuteChanged()
         {
             SaveCommand.NotifyCanExecuteChanged();

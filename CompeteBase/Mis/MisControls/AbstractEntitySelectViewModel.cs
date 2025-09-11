@@ -4,11 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Compete.Mis.MisControls
 {
     internal abstract partial class AbstractEntitySelectViewModel : ViewModels.DialogViewModel
     {
+        private const string filterName = "filter";
+
         /// <summary>
         /// 获取或设置服务参数。
         /// </summary>
@@ -29,20 +32,24 @@ namespace Compete.Mis.MisControls
         [ObservableProperty]
         private string? _sortDescription;
 
-        private string? _filter;
+        [ObservableProperty]
+        private string _filter = string.Empty;
 
-        /// <summary>
-        /// 获取或设置过滤条件。
-        /// </summary>
-        public string? Filter
-        {
-            get => _filter;
-            set
-            {
-                _filter = value;
-                QueryData();
-            }
-        }
+        ///// <summary>
+        ///// 获取或设置过滤条件。
+        ///// </summary>
+        //public string Filter
+        //{
+        //    get => _filter;
+        //    set
+        //    {
+        //        if (_filter != value)
+        //        {
+        //            _filter = value;
+        //            QueryData();
+        //        }
+        //    }
+        //}
 
         public string? FilterFormat { get; set; }
 
@@ -121,8 +128,15 @@ namespace Compete.Mis.MisControls
             //}, "Query");
             //var (data, count) = GlobalCommon.EntityDataProvider!.Query(ServiceParameter, Conditions, string.IsNullOrWhiteSpace(FilterFormat) ? string.Empty : string.Format(FilterFormat, Filter), CurrentPageNo, PageSize);  // 取得数据。
             Conditions ??= new Dictionary<string, object>();
-            if (!string.IsNullOrWhiteSpace(Filter))
-                Conditions.Add("filter", Filter);
+            if (string.IsNullOrWhiteSpace(Filter))
+            {
+                if (Conditions.ContainsKey(filterName))
+                    Conditions.Remove(filterName);
+            }
+            else if (Conditions.ContainsKey(filterName))
+                Conditions[filterName] = Filter;
+            else
+                Conditions.Add(filterName, Filter);
 
             Querying();
 
@@ -161,6 +175,19 @@ namespace Compete.Mis.MisControls
 
         [RelayCommand(CanExecute = nameof(CanRefresh))]
         private void Refresh() => QueryData();
+
+
+        private string oldFilter = string.Empty;
+
+        [RelayCommand]
+        public void GotFocus() => oldFilter = Filter;
+
+        [RelayCommand]
+        public void LostFocus()
+        {
+            if (oldFilter != Filter && CanRefresh())
+                QueryData();
+        }
 
         private bool CanRefresh() => ServiceParameter is not null;
     }

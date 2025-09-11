@@ -11,6 +11,18 @@
 	<Configurations>Debug;Release;Debug-Java;Release-Java</Configurations>
 	<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	<AnalysisLevel>latest</AnalysisLevel>
+	<Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
+	<AssemblyVersion></AssemblyVersion>
+	<Title>Compete MIS($(AssemblyName))</Title>
+	<Copyright>Copyright ©  2025 Compete Software Studio.</Copyright>
+	<Company>Compete Software Studio</Company>
+	<Product>Compete MIS</Product>
+	<Description>Compete Management Information System</Description>
+	<RepositoryUrl>https://github.com/nfoxlz</RepositoryUrl>
+	<PackageProjectUrl>https://github.com/nfoxlz</PackageProjectUrl>
+	<PackageTags>MIS;ERP;MES</PackageTags>
+	<Authors>北极狐</Authors>
+	<!--<PlatformTarget>x64</PlatformTarget>-->
 	<!--<PublishAot>true</PublishAot>
 	<PublishTrimmed>false</PublishTrimmed>-->
   </PropertyGroup>
@@ -19,7 +31,43 @@
     <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|ARM64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|ARM32'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|x86'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Java|x64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|AnyCPU'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|ARM64'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|ARM32'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|x86'">
+    <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Java|x64'">
     <DefineConstants>$(DefineConstants);JAVA_LANGUAGE</DefineConstants>
     <Optimize>True</Optimize>
   </PropertyGroup>
@@ -33,6 +81,7 @@
     <None Remove="Assets\Images\Undo.png" />
     <None Remove="Mis\Frame\Views\Background.png" />
     <None Remove="Mis\Frame\Views\Login.png" />
+    <None Remove="sftp.json" />
     <None Remove="SplashScreen.png" />
   </ItemGroup>
 
@@ -43,6 +92,9 @@
   <ItemGroup>
     <Content Include="Compete.ico" />
     <Content Include="Languages\zh-CN.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sftp.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -71,10 +123,11 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
+    <PackageReference Include="NPOI" Version="2.7.4" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
-    <PackageReference Include="System.Management" Version="9.0.7" />
+    <PackageReference Include="System.Management" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@ namespace Compete.Extensions
 {
     public static class RoutedEventArgsExtensions
     {
-        public static ICommandSource? GetCommandSource(this RoutedEventArgs args) => args.OriginalSource as ICommandSource;
+        public static ICommandSource? GetCommandSource(this RoutedEventArgs args) => args?.OriginalSource as ICommandSource;
 
         public static object? GetParamater(this RoutedEventArgs args) => args.GetCommandSource()?.CommandParameter;
 

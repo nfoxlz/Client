@@ -10,8 +10,8 @@ namespace Compete.Mis.Frame.Views
     {
         public MainWindow()
         {
-            Global.Initialize();
             InitializeComponent();
+            //Global.Initialize();
         }
 
         private void NavigationWindow_Navigating(object sender, NavigatingCancelEventArgs e)
@@ -38,6 +38,12 @@ namespace Compete.Mis.Frame.Views
             {
                 viewModel.Refresh();
             }
+        }
+
+        private void NavigationWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Visibility = Visibility.Collapsed;
+            Global.Initialize();
         }
     }
 }

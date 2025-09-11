@@ -47,6 +47,8 @@ namespace Compete.Mis.Plugins
 
         public bool IsInitialQuery { get; set; } = true;
 
+        public IEnumerable<string>? InitialQueryConditionColumns { get; set; }
+
         public bool IsAddMaster { get; set; } = true;
 
         public IEnumerable<string>? ConditionRequiredColumns { get; set; }
@@ -82,6 +84,8 @@ namespace Compete.Mis.Plugins
         public IDictionary<string, IDictionary<string, string>>? ColumnCalculateScriptFileNames { get; set; }
 
         public IDictionary<string, IDictionary<string, string>>? ColumnVerifyScriptFileNames { get; set; }
+
+        public IDictionary<string, IDictionary<string, string>>? EntitySelectorNames { get; set; }
 
         public string? PrintDocumentFileName { get; set; } = "print.xaml";
 

@@ -30,9 +30,18 @@
         </local:EnhancedDataGrid>
         <local:Navigator Margin="10,0,0,11" VerticalAlignment="Bottom" CurrentPageNo="{Binding CurrentPageNo,Mode=OneWayToSource}" PageSize="{Binding PageSize,Mode=TwoWay}" RecordCount="{Binding RecordCount}" CurrentPageNoChangedCommand="{Binding RefreshCommand}" PageSizeChangedCommand="{Binding RefreshCommand}"/>
         <TextBlock HorizontalAlignment="Left" Margin="220,0,0,17" TextWrapping="Wrap" Text="{DynamicResource EntitySelectDialog.FilterTextBlock}" VerticalAlignment="Bottom"/>
-        <xctk:WatermarkTextBox Margin="249,0,330,11" TextWrapping="Wrap" Text="{Binding Filter,Mode=OneWayToSource}" VerticalAlignment="Bottom"/>
+        <xctk:WatermarkTextBox Margin="249,0,330,11" TextWrapping="Wrap" Text="{Binding Filter,Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom">
+            <behaviour:Interaction.Triggers>
+                <behaviour:EventTrigger EventName="GotFocus">
+                    <behaviour:InvokeCommandAction Command="{Binding GotFocusCommand}"/>
+                </behaviour:EventTrigger>
+                <behaviour:EventTrigger EventName="LostFocus">
+                    <behaviour:InvokeCommandAction Command="{Binding LostFocusCommand}"/>
+                </behaviour:EventTrigger>
+            </behaviour:Interaction.Triggers>
+        </xctk:WatermarkTextBox>
         <Button Content="{DynamicResource RefreshButton}" HorizontalAlignment="Right" Margin="0,0,250,12" VerticalAlignment="Bottom" Width="75" IsDefault="True" Command="{Binding RefreshCommand}"/>
-        <Button Content="{DynamicResource EntitySelectDialog.ClearButton}" HorizontalAlignment="Right" Margin="0,0,170,12" VerticalAlignment="Bottom" Width="75" Visibility="{Binding ClearButtonVisibility}" Command="{Binding ClearCommand}"/>
+        <Button Content="{DynamicResource EntitySelectDialog.ClearButton}" HorizontalAlignment="Right" Margin="0,0,170,12" VerticalAlignment="Bottom" Width="75" Visibility="{Binding ClearButtonVisibility}" Command="{Binding ClearCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
         <Button Content="{DynamicResource OKButton}" HorizontalAlignment="Right" Margin="0,0,90,12" VerticalAlignment="Bottom" Width="75" IsDefault="True" Command="{Binding OkCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"/>
         <Button Content="{DynamicResource CancelButton}" HorizontalAlignment="Right" Margin="0,0,10,12" VerticalAlignment="Bottom" Width="75" IsCancel="True"/>
     </Grid>

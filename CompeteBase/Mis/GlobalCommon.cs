@@ -34,6 +34,8 @@ namespace Compete.Mis
 
         public static Models.Entity? CurrentUser { get; set; }
 
+        public static IRefresher? Refresher { get; set; }
+
         public static MisControls.IEntityDataProvider? EntityDataProvider { get; set; }
 
         public static DataTable GetEntity(string name, object id)
@@ -112,7 +114,7 @@ namespace Compete.Mis
 
         public static ILoggerFactory CreateLoggerFactory(LogLevel level) => CreateLoggerFactory(defaultLoggerPath, level);
 
-        public static string PluginPath { get; } = ConfigurationManager.AppSettings["PluginPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../plugins");
+        public static string PluginPath { get; } = ConfigurationManager.AppSettings["PluginsPath"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../plugins");
 
         public static MemoryData.IServerDateTimeProvider? ServerDateTimeProvider { get; set; }
 

@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using Calendar = System.Windows.Controls.Calendar;
 
 namespace Compete.Mis.MisControls
 {

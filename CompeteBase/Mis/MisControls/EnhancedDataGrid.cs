@@ -7,6 +7,7 @@
 // ------------------------------------------------------
 // 1.0.0.0 2018/9/2 周日 14:51:17 LeeZheng 新建。
 // ======================================================
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -14,6 +15,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace Compete.Mis.MisControls
 {
@@ -48,20 +51,183 @@ namespace Compete.Mis.MisControls
     /// </summary>
     public class EnhancedDataGrid : DataGrid
     {
-        /// <summary>
-        /// 初始化 EnhancedDataGrid 的静态成员。
-        /// </summary>
-        //static EnhancedDataGrid()
-        //{
-        //    DefaultStyleKeyProperty.OverrideMetadata(typeof(EnhancedDataGrid), new FrameworkPropertyMetadata(typeof(EnhancedDataGrid)));
-        //}
-
         public EnhancedDataGrid()
         {
             CurrentCellChanged += EnhancedDataGrid_CurrentCellChanged;
             BeginningEdit += EnhancedDataGrid_BeginningEdit;
             PreviewKeyDown += EnhancedDataGrid_PreviewKeyDown;
             MouseDoubleClick += EnhancedDataGrid_MouseDoubleClick;
+
+            ContextMenu = new ContextMenu();
+            ContextMenu.Items.Add(new MenuItem  // 冻结
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.Freeze"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/FreezeColumn.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        if (CurrentColumn != null)
+                            FrozenColumnCount = CurrentColumn.DisplayIndex;
+                    },
+                },
+            });
+            ContextMenu.Items.Add(new MenuItem  // 隐藏
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.Hide"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/Hide.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        if (CurrentColumn != null)
+                        {
+                            CurrentColumn.Visibility = Visibility.Collapsed;
+                            if (EditIndexes != null && EditIndexes.Contains(CurrentColumn.DisplayIndex))
+                                EditIndexes.Remove(CurrentColumn.DisplayIndex);
+                        }
+                    },
+                },
+            });
+            ContextMenu.Items.Add(new MenuItem  // 取消隐藏
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.Unhide"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/Unhide.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        foreach (var column in Columns)
+                            if (column.Visibility == Visibility.Collapsed)
+                            {
+                                column.Visibility = Visibility.Visible;
+                                if (EditIndexes != null && !EditIndexes.Contains(column.DisplayIndex))
+                                    EditIndexes.Add(column.DisplayIndex);
+                            }
+                    }
+                },
+            });
+
+            ContextMenu.Items.Add(new MenuItem  // 导出 Word
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.ExportWord"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/Word.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        if (Columns.Count == 0)
+                            return;
+
+                        var saveFileDialog = new SaveFileDialog
+                        {
+                            Filter = GlobalCommon.GetMessage("DataGrid.Word.Filter"),
+                            FileName = GlobalCommon.GetMessage("DataGrid.Word.FileName"),
+                            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                            Title = GlobalCommon.GetMessage("DataGrid.Word.SaveFileDialog.Title"),
+                        };
+
+                        if (saveFileDialog.ShowDialog() == true)
+                        {
+                            Documents.WordExporter.Export(this, saveFileDialog.FileName, GlobalCommon.GetMessage("DataGrid.Word.Title"));
+                            MessageDialog.Success("DataGrid.ExportSuccess", saveFileDialog.FileName);
+                            //if (MessageDialog.Question("DataGrid.ExportSuccess", MessageBoxButton.YesNo, saveFileDialog.FileName) == MessageBoxResult.Yes)
+                            //    try
+                            //    {
+                            //        Process.Start("WINWORD.EXE", saveFileDialog.FileName); // 调用默认程序打开文件
+                            //    }
+                            //    catch { }
+                        }
+                    }
+                },
+            });
+            ContextMenu.Items.Add(new MenuItem  // 导出 Excel
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.ExportExcel"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/Excel.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        if (Columns.Count == 0)
+                            return;
+
+                        var saveFileDialog = new SaveFileDialog
+                        {
+                            Filter = GlobalCommon.GetMessage("DataGrid.Excel.Filter"),
+                            FileName = GlobalCommon.GetMessage("DataGrid.Excel.FileName"),
+                            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                            Title = GlobalCommon.GetMessage("DataGrid.Excel.SaveFileDialog.Title"),
+                        };
+
+                        if (saveFileDialog.ShowDialog() == true)
+                        {
+                            Documents.ExcelExporter.Export(this, saveFileDialog.FileName);
+                            MessageDialog.Success("DataGrid.ExportSuccess", saveFileDialog.FileName);
+                            //if (MessageDialog.Question("DataGrid.ExportSuccess", MessageBoxButton.YesNo, saveFileDialog.FileName) == MessageBoxResult.Yes)
+                            //    try
+                            //    {
+                            //        Process.Start("EXCEL.EXE", saveFileDialog.FileName); // 调用默认程序打开文件
+                            //    }
+                            //    catch(Exception ex)
+                            //    {
+                            //        MessageDialog.Exception(ex);
+                            //    }
+                        }
+                    }
+                },
+            });
+            ContextMenu.Items.Add(new MenuItem  // 统计图
+            {
+                Header = GlobalCommon.GetMessage("DataGrid.ContextMenu.Chart"),
+                Icon = new Image
+                {
+                    Source = new BitmapImage(new Uri("/CompeteBase;component/Assets/Images/Chart.png", UriKind.Relative)),
+                    Width = 16,
+                    Height = 16
+                },
+                Command = new RelayCommand
+                {
+                    ExecuteAction = pamater =>
+                    {
+                        if (ItemsSource == null)
+                            return;
+
+                        var chart = new Chart.ChartView();
+                        var vm = (chart.DataContext as Chart.ChartViewModel)!;
+                        vm.MasterData = ItemsSource;
+
+                        var document = new LayoutDocument() { Content = chart, Title = GlobalCommon.GetMessage("Chart.Title", string.Empty) };
+                        GlobalCommon.MainDocumentPane!.Children.Add(document);
+                        GlobalCommon.MainDocumentPane.SelectedContentIndex = GlobalCommon.MainDocumentPane.Children.Count - 1;
+                    }
+                },
+            });
 
             _ = new DataGridDecorator(this);
         }
@@ -249,5 +415,19 @@ namespace Compete.Mis.MisControls
         // Using a DependencyProperty as the backing store for CommandTarget.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CommandTargetProperty =
             DependencyProperty.Register(nameof(CommandTarget), typeof(IInputElement), typeof(EnhancedDataGrid));
+
+
+
+        public ICommand CallBackCommand
+        {
+            get { return (ICommand)GetValue(CallBackCommandProperty); }
+            set { SetValue(CallBackCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CallBackCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CallBackCommandProperty =
+            DependencyProperty.Register(nameof(CallBackCommand), typeof(ICommand), typeof(EnhancedDataGrid));
+
+
     }
 }

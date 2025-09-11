@@ -54,7 +54,7 @@ namespace Compete.Mis.MisControls
 
         public NameBox()
         {
-            Height = Constants.TextBoxHeight;
+            Height = GlobalConstants.TextBoxHeight;
             TextChanged += NameBox_TextChanged;
         }
 

@@ -419,7 +419,26 @@ namespace Compete.Mis.Plugins
 
         protected virtual void ProcessData(DataSet data) { }
 
-        protected override bool CanQuery() => (!IsInitializing || Setting!.IsInitialQuery) && base.CanQuery();
+        protected override bool CanQuery()
+        {
+            if (!IsInitializing)
+                return base.CanQuery();
+
+            if (Setting!.IsInitialQuery)
+                if (Setting.InitialQueryConditionColumns is null)
+                    return base.CanQuery();
+                else if (ConditionTable is null || ConditionTable.Columns.Count == 0 || ConditionTable.Rows.Count == 0)
+                    return false;
+                else
+                {
+                    foreach (var column in Setting.InitialQueryConditionColumns)
+                        if (!ConditionTable.Columns.Contains(column) || ConditionTable.Rows[0][column] is DBNull)
+                            return false;
+                    return base.CanQuery();
+                }
+
+            return false;
+        }
 
         protected override DataSet? QueryData(string? name)
         {
@@ -529,11 +548,11 @@ namespace Compete.Mis.Plugins
                         }
                 }
 
-                SetBooleanProperty(mainData, Setting?.InvisibleColumns, MemoryData.ExtendedPropertyNames.IsVisible, false);
-                SetBooleanProperty(mainData, Setting?.ReadOnlyColumns, MemoryData.ExtendedPropertyNames.IsReadOnly);
-                SetBooleanProperty(mainData, Setting?.RequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);
+                SetBooleanProperty(mainData, Setting?.InvisibleColumns, MemoryData.ExtendedPropertyNames.IsVisible, false); // 不可见列
+                SetBooleanProperty(mainData, Setting?.ReadOnlyColumns, MemoryData.ExtendedPropertyNames.IsReadOnly);        // 只读列
+                SetBooleanProperty(mainData, Setting?.RequiredColumns, MemoryData.ExtendedPropertyNames.IsRequired);        // 必填列
 
-                if (Setting?.EditableColumns is not null)
+                if (Setting?.EditableColumns is not null)   // 可编辑列
                 {
                     bool isReadOnly;
                     foreach (var pair in Setting.EditableColumns)
@@ -562,7 +581,7 @@ namespace Compete.Mis.Plugins
                                         = (column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsVisible] as bool? ?? true)
                                         && !(bool)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.IsReadOnly]!;
 
-                if (Setting?.UniqueColumns is not null)
+                if (Setting?.UniqueColumns is not null) // 唯一列
                     foreach (var pair in Setting.UniqueColumns)
                         if (mainData.Tables.Contains(pair.Key))
                             foreach (DataColumn column in mainData.Tables[pair.Key]!.Columns)
@@ -570,6 +589,27 @@ namespace Compete.Mis.Plugins
                                     if (column.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase))
                                     {
                                         column.Unique = true;
+                                        break;
+                                    }
+
+                if (Setting?.EntitySelectorNames is not null)   // 实体选择器
+                    foreach (var pair in Setting.EntitySelectorNames)
+                        if (mainData.Tables.Contains(pair.Key))
+                            foreach (DataColumn column in mainData.Tables[pair.Key]!.Columns)
+                                foreach (var columnPair in pair.Value)
+                                    if (column.ColumnName.Equals(columnPair.Key, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        var parameters = MisControls.DataControlHelper.ConvertParameters((string)column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters]!);
+
+                                        if (parameters is null)
+                                            parameters = new Dictionary<string, string> { { GlobalConstants.EntityBoxParameterServiceParameter, columnPair.Value } };
+                                        else if (parameters.ContainsKey(GlobalConstants.EntityBoxParameterServiceParameter))
+                                            parameters[GlobalConstants.EntityBoxParameterServiceParameter] = columnPair.Value;
+                                        else
+                                            parameters.Add(GlobalConstants.EntityBoxParameterServiceParameter, columnPair.Value);
+
+                                        column.ExtendedProperties[MemoryData.ExtendedPropertyNames.Parameters] = MisControls.DataControlHelper.ConvertParameters(parameters);
+
                                         break;
                                     }
 
@@ -1071,7 +1111,14 @@ namespace Compete.Mis.Plugins
                 return null;
 
             var path = Path.Combine(GlobalCommon.PluginPath, PluginParameter!.Path, Setting.PrintDocumentFileName);
-            return File.Exists(path) ? (FlowDocument)XamlReader.Parse(File.ReadAllText(path)) : null;
+            try
+            {
+                return File.Exists(path) ? (FlowDocument)XamlReader.Parse(File.ReadAllText(path)) : null;
+            }
+            catch
+            {
+                return null;
+            }
         }
         //=> string.IsNullOrWhiteSpace(Setting?.PrintDocumentFileName) || !File.Exists(Path.Combine(GlobalCommon.PluginPath, PluginParameter!.Path, Setting.PrintDocumentFileName))
         //? null

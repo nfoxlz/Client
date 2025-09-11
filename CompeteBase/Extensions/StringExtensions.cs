@@ -10,6 +10,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Compete.Extensions
 {
@@ -79,5 +82,18 @@ namespace Compete.Extensions
         public static bool IsUpper(this char ch) => ch >= 'A' && ch <= 'Z';
 
         public static bool IsLower(this char ch) => ch >= 'a' && ch <= 'z';
+
+        //private static string Recovery(this string str) => str.Replace("\\u002B", "+").Replace("\\u0026", "&").Replace("\\u003D", "=").Replace("\\u002F", "/");
+        private static string Recovery(this string str) => str.Replace("\\u002B", "+");
+
+#if JAVA_LANGUAGE
+        public static string ToJsonString(this object obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All), });
+
+        public static string ToBase64String(this byte[] inArray) => Convert.ToBase64String(inArray);
+#else
+        public static string ToJsonString(this object obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All), }).Recovery();
+
+        public static string ToBase64String(this byte[] inArray) => Convert.ToBase64String(inArray).Recovery();
+#endif
     }
 }

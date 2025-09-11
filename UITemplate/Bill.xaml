@@ -11,7 +11,7 @@
     <Grid>
         <TextBlock Margin="10,10,10,0" Text="TextBlock" VerticalAlignment="Top" TextAlignment="Center" FontSize="24" Foreground="Maroon"/>
         <DatePicker Name="mainDatePicker" Margin="10,45,318,380" CalendarOpened="DatePicker_CalendarOpened" CalendarClosed="MainDatePicker_CalendarClosed"/>
-        <DatePickerTextBox Margin="10,75,318,350" Text="{Binding aaa, Mode=TwoWay}" IsEnabled="True"/>
+        <DatePickerTextBox Margin="10,75,318,350" Text="{Binding aaa, Mode=OneWay}" IsEnabled="True"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="558,45,0,0" VerticalAlignment="Top">
             <Button.CommandParameter>
                 <plugins:PluginCommandParameter CommandAuthorition="Add" RequiredCurrentItem="False"/>
