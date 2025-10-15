@@ -31,3 +31,5 @@ http {
 ```
 
 **作者邮箱：** 4043171@qq.com
+![公众号二维码](https://images.cnblogs.com/cnblogs_com/competesoft/2478061/o_251015021543_%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.jpg)
+![QQ群二维码](https://images.cnblogs.com/cnblogs_com/competesoft/2478061/o_251015021543_QQ%E7%BE%A4%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
